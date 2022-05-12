@@ -1,0 +1,83 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/work-tracker/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/work-tracker",
+        "index": "apps/work-tracker/src/index.html",
+        "baseHref": "/",
+        "main": "apps/work-tracker/src/main.tsx",
+        "polyfills": "apps/work-tracker/src/polyfills.ts",
+        "tsConfig": "apps/work-tracker/tsconfig.app.json",
+        "assets": [
+          "apps/work-tracker/src/favicon.ico",
+          "apps/work-tracker/src/assets"
+        ],
+        "styles": ["apps/work-tracker/src/styles.scss"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/work-tracker/src/environments/environment.ts",
+              "with": "apps/work-tracker/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "work-tracker:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "work-tracker:build:development"
+        },
+        "production": {
+          "buildTarget": "work-tracker:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/work-tracker/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/work-tracker"],
+      "options": {
+        "jestConfig": "apps/work-tracker/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
