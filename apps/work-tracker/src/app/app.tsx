@@ -6,13 +6,13 @@ export function App() {
   const [workDialogOpen, setWorkDialogOpen] = useState(false);
 
   return (
-    <>
+    <div>
       <button onClick={() => setWorkDialogOpen(true)}>Open</button>
       <WorkDialog
         open={workDialogOpen}
         onClose={() => setWorkDialogOpen(false)}
       />
-    </>
+    </div>
   );
 }
 
