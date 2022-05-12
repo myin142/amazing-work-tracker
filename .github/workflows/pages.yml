@@ -17,3 +17,4 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: dist/apps/work-tracker
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
