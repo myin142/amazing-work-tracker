@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useState } from 'react';
-import Button from '../components/button/button';
+import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 
 export function App() {
@@ -8,9 +8,7 @@ export function App() {
 
   return (
     <div>
-      <div className="fixed inset-0 flex items-center justify-center">
-        <Button onClick={() => setWorkDialogOpen(true)}>Open Dialog</Button>
-      </div>
+      <Calendar onDateClicked={() => setWorkDialogOpen(true)} />
 
       <WorkDialog
         open={workDialogOpen}
