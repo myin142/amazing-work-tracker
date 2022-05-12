@@ -5,7 +5,9 @@
   "targets": {
     "build": {
       "executor": "@nrwl/web:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
@@ -19,7 +21,9 @@
           "apps/work-tracker/src/favicon.ico",
           "apps/work-tracker/src/assets"
         ],
-        "styles": ["apps/work-tracker/src/styles.scss"],
+        "styles": [
+          "apps/work-tracker/src/styles.scss"
+        ],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },
@@ -31,6 +35,7 @@
           "vendorChunk": true
         },
         "production": {
+          "baseHref": "/work-tracker/",
           "fileReplacements": [
             {
               "replace": "apps/work-tracker/src/environments/environment.ts",
@@ -65,14 +70,20 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["apps/work-tracker/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "apps/work-tracker/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/work-tracker"],
+      "outputs": [
+        "coverage/apps/work-tracker"
+      ],
       "options": {
         "jestConfig": "apps/work-tracker/jest.config.ts",
         "passWithNoTests": true
