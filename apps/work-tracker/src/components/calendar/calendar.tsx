@@ -7,6 +7,10 @@ import {
   format,
   formatISO,
   isSameMonth,
+  isSunday,
+  isSaturday,
+  sub,
+  add,
 } from 'date-fns';
 import { useState } from 'react';
 
@@ -18,16 +22,24 @@ export interface CalendarProps {
 export function Calendar({ onDateClicked }: CalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  const date = new Date();
+
   const dateClicked = (date: Date) => {
     setSelectedDate(date);
     onDateClicked(date);
   };
 
-  const date = new Date();
-  const weeks = eachWeekOfInterval({
-    start: startOfMonth(date),
-    end: endOfMonth(date),
-  }).map((day) => {
+  let start = startOfMonth(date);
+  if (isSunday(start)) {
+    start = sub(start, { days: 1 });
+  }
+
+  let end = endOfMonth(date);
+  if (isSaturday(end)) {
+    end = add(end, { days: 1 });
+  }
+
+  const weeks = eachWeekOfInterval({ start, end }).map((day) => {
     const weekDays = [day];
     for (let i = 1; i <= 6; i++) {
       weekDays.push(addDays(day, i));
