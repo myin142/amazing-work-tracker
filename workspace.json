@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "work-time-mapper": "libs/work-time-mapper",
     "work-tracker": "apps/work-tracker",
     "work-tracker-e2e": "apps/work-tracker-e2e"
   }
