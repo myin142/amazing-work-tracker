@@ -5,21 +5,23 @@ import {
   startOfMonth,
   endOfMonth,
   format,
-  formatISO,
   isSameMonth,
   isSunday,
   isSaturday,
   sub,
   add,
+  isToday,
 } from 'date-fns';
 import { useState } from 'react';
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 
 /* eslint-disable-next-line */
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
+  cell?: (d: Date) => JSX.Element;
 }
 
-export function Calendar({ onDateClicked }: CalendarProps) {
+export function Calendar({ onDateClicked, cell }: CalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const date = new Date();
@@ -46,48 +48,51 @@ export function Calendar({ onDateClicked }: CalendarProps) {
     }
 
     return (
-      <div
-        className="inline-flex items-center justify-start h-full w-full"
-        key={day.toISOString()}
-      >
+      <tr key={day.toISOString()}>
         {weekDays.map((d) => {
           const isSelected = isSameDay(selectedDate, d);
 
           return (
-            <div
-              className={`flex items-start justify-start w-40 h-full pl-2 pr-32 pt-2.5 pb-24 border border-gray-200 ${
-                !isSameMonth(selectedDate, d) ? 'opacity-50' : ''
+            <td
+              className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${
+                !isSameMonth(date, d) ? 'opacity-50' : ''
               }`}
               key={d.toISOString()}
-              title={formatISO(d, { representation: 'date' })}
               onClick={() => dateClicked(d)}
             >
-              <p className="text-sm font-medium text-gray-800">
-                {format(d, 'dd')}
-              </p>
-            </div>
+              <div className="flex flex-col">
+                <span className="font-bold">{format(d, 'dd')}</span>
+                {cell && cell(d)}
+              </div>
+            </td>
           );
         })}
-      </div>
+      </tr>
     );
   });
 
-  const title = format(selectedDate, 'MMMM yyyy');
-  const weekDayLetters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const title = format(date, 'MMMM yyyy');
+  const weekDayLetters = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="bg-white md:py-8 px-4 lg:max-w-7xl lg:mx-auto lg:px-8">
-      <p className="text-4xl font-bold text-gray-800 mb-8">{title}</p>
-      <div className="inline-flex flex-col space-y-1 items-start justify-start h-full w-full">
-        <div className="inline-flex space-x-28 items-start justify-start pr-24 h-full w-full">
-          {weekDayLetters.map((l) => (
-            <p className="w-12 h-full text-sm font-medium text-gray-800 uppercase">
-              {l}
-            </p>
-          ))}
-        </div>
-        <div className="flex flex-col items-start justify-start">{weeks}</div>
+    <div className="bg-white text-gray-800">
+      <div className="text-4xl font-bold flex items-center">
+        <button>
+          <HiChevronLeft />
+        </button>
+        <span>{title}</span>
+        <button>
+          <HiChevronRight />
+        </button>
       </div>
+      <table className="border-collapse mt-4">
+        <tr>
+          {weekDayLetters.map((l) => (
+            <th className="text-sm text800 uppercase">{l}</th>
+          ))}
+        </tr>
+        {weeks}
+      </table>
     </div>
   );
 }
