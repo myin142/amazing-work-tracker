@@ -42,13 +42,21 @@ export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
     const workTime = parseWorkTime(workTimeInput);
     if (workTime) {
       setWorkTimes([...workTimes, workTime]);
+      setWorkTimeInput('');
     }
-    setWorkTimeInput('');
+  };
+
+  const updateWorkTime = (index: number, value: Partial<WorkTime>) => {
+    workTimes[index] = { ...workTimes[index], ...value };
+    setWorkTimes([...workTimes]);
   };
 
   const removeWorkTime = (i: number) => {
-    setWorkTimes(workTimes.filter((_, idx) => idx !== i));
+    setWorkTimes(filterRemovedWorkTime(i));
   };
+
+  const filterRemovedWorkTime = (idx: number) =>
+    workTimes.filter((_, i) => i !== idx);
 
   const workTimeInputKeyUp = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -112,7 +120,7 @@ export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
 
                 <div className="flex flex-col gap-4">
                   {workTimes.map((work, i) => (
-                    <div className="flex items-center gap-4">
+                    <div key={i} className="flex items-center gap-4">
                       <div>
                         {formatTime(work.timeFrom)} - {formatTime(work.timeTo)}
                         {work.breakFrom &&
@@ -123,7 +131,10 @@ export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
                       </div>
                       <Select
                         className="flex-grow"
-                        selected={1}
+                        selected={work.projectId}
+                        onSelected={(id) =>
+                          updateWorkTime(i, { projectId: id })
+                        }
                         options={[
                           { value: 1, label: 'UCS' },
                           { value: 2, label: 'ÖBB' },

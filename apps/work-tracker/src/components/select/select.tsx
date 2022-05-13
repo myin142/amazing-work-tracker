@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { HiCheck, HiSelector } from 'react-icons/hi';
 
@@ -6,7 +6,7 @@ import { HiCheck, HiSelector } from 'react-icons/hi';
 export interface SelectProps {
   disabled?: boolean;
   selected?: any;
-  onSelected?: (v: any) => void;
+  onSelected: (v: any) => void;
   options: { value: any; label: string }[];
   className?: string;
 }
@@ -20,8 +20,15 @@ export function Select({
 }: SelectProps) {
   const selectedOption = options.find((opt) => opt.value === selected);
 
+  useEffect(() => {
+    if (!selectedOption && options.length > 0) {
+      onSelected(options[0].value);
+      console.log('select');
+    }
+  }, [selectedOption, onSelected, options]);
+
   return (
-    <Listbox value={selected} onChange={(e) => onSelected} disabled={disabled}>
+    <Listbox value={selected} onChange={onSelected} disabled={disabled}>
       <div className={`relative mt-1 ${className}`}>
         <Listbox.Button
           className={({ disabled }) =>
