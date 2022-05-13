@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { WorkTime } from '@myin/models';
+import { WorkDay, WorkTime } from '@myin/models';
 import {
   add,
   format,
@@ -18,6 +18,7 @@ export interface WorkDialogProps {
   date: Date;
   open: boolean;
   onClose: () => void;
+  onSave: (workDay: WorkDay) => void;
 }
 
 const formatTime = (date: Date) => {
@@ -32,11 +33,19 @@ const intervalTotalTime = (intervals: Interval[]): Date =>
     .map((i) => intervalToDuration(i))
     .reduce((date, dur) => add(date, dur), startOfToday());
 
-export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
+export function WorkDialog({ date, open, onClose, onSave }: WorkDialogProps) {
   const [workTimeInput, setWorkTimeInput] = useState('');
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
   const [sickLeave, setSickLeave] = useState(false);
   const [homeoffice, setHomeOffice] = useState(false);
+
+  const save = () => {
+    onSave({
+      workTimes,
+      sickLeave,
+      homeoffice,
+    });
+  };
 
   const addWorkTime = () => {
     const workTime = parseWorkTime(workTimeInput);
@@ -148,7 +157,7 @@ export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
 
                   <div className="flex gap-2">
                     <input
-                      className="flex-grow rounded-md outline-0 ring-outset ring-1 ring-slate-200 hover:ring-slate-400 bg-white p-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      className="flex-grow rounded-md outline-none ring-outset ring-1 ring-slate-200 hover:ring-slate-400 bg-white p-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       placeholder="Example: 8-17/12-13"
                       value={workTimeInput}
                       onChange={(e) => setWorkTimeInput(e.target.value)}
@@ -175,7 +184,7 @@ export function WorkDialog({ date, open, onClose }: WorkDialogProps) {
                         <HiEmojiSad />
                       </Button>
                     </div>
-                    <Button>Save</Button>
+                    <Button onClick={() => save()}>Save</Button>
                   </div>
                 </div>
               </Dialog.Panel>

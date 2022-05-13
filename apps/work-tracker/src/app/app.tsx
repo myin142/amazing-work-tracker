@@ -1,8 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
+import { WorkDay } from '@myin/models';
 
 export function App() {
   const [workDialogOpen, setWorkDialogOpen] = useState(false);
@@ -11,6 +12,13 @@ export function App() {
   const onDateClicked = (d: Date) => {
     setSelectedDate(d);
     setWorkDialogOpen(true);
+  };
+
+  const closeDialog = () => setWorkDialogOpen(false);
+
+  const saveDay = (workDay: WorkDay) => {
+    console.log(workDay);
+    closeDialog();
   };
 
   return (
@@ -29,7 +37,8 @@ export function App() {
       <WorkDialog
         date={selectedDate}
         open={workDialogOpen}
-        onClose={() => setWorkDialogOpen(false)}
+        onClose={closeDialog}
+        onSave={saveDay}
       />
     </div>
   );
