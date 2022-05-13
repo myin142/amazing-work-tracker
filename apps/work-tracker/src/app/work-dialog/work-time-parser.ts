@@ -1,5 +1,5 @@
 import { WorkTime } from '@myin/models';
-import { parse } from 'date-fns';
+import { isValid, parse } from 'date-fns';
 
 export function parseWorkTime(
   input: string,
@@ -29,10 +29,10 @@ export function parseWorkTime(
 
 function parseInterval(time: string, refDate: Date): Interval | null {
   const ranges = time.split('-');
-  const start = parseTime(ranges[0], refDate);
-  const end = parseTime(ranges[1], refDate);
+  const start = parseTime(ranges[0], refDate) as Date;
+  const end = parseTime(ranges[1], refDate) as Date;
 
-  if (!start || !end) {
+  if (!isValid(start) || !isValid(end)) {
     return null;
   }
 

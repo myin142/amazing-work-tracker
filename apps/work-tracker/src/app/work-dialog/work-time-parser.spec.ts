@@ -29,7 +29,7 @@ describe('Parse Work Time', () => {
     );
   });
 
-  test('should not parse project for break time', () => {
+  test('should parse with break time', () => {
     expect(parseWorkTime('8-17/12-13', new Date('2020-01-01'))).toEqual(
       expect.objectContaining({
         timeFrom: new Date('2020-01-01T08:00:00'),
@@ -38,6 +38,10 @@ describe('Parse Work Time', () => {
         breakTo: new Date('2020-01-01T13:00:00'),
       } as WorkTime)
     );
+  });
+
+  test('should parse with large time', () => {
+    expect(parseWorkTime('8-100', new Date('2020-01-01'))).toEqual(null);
   });
 
   test('should parse empty input', () => {
