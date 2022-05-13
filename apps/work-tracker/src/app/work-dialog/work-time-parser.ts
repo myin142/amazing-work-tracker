@@ -32,7 +32,7 @@ function parseInterval(time: string, refDate: Date): Interval | null {
   const start = parseTime(ranges[0], refDate) as Date;
   const end = parseTime(ranges[1], refDate) as Date;
 
-  if (!isValid(start) || !isValid(end) || isBefore(end, start)) {
+  if (!isValid(start) || !isValid(end)) {
     return null;
   }
 
