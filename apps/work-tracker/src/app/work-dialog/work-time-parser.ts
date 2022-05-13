@@ -1,5 +1,5 @@
 import { WorkTime } from '@myin/models';
-import { isValid, parse } from 'date-fns';
+import { isBefore, isValid, parse } from 'date-fns';
 
 export function parseWorkTime(
   input: string,
@@ -32,7 +32,7 @@ function parseInterval(time: string, refDate: Date): Interval | null {
   const start = parseTime(ranges[0], refDate) as Date;
   const end = parseTime(ranges[1], refDate) as Date;
 
-  if (!isValid(start) || !isValid(end)) {
+  if (!isValid(start) || !isValid(end) || isBefore(end, start)) {
     return null;
   }
 
@@ -45,22 +45,3 @@ function parseTime(time?: string, date = new Date()): Date | null {
   const f = time.includes(':') ? 'HH:mm' : 'HH';
   return parse(time, f, date);
 }
-
-// function intervalToTime({ start, end }: Interval, project?: number): WorkTime {
-//   const time: WorkTime = {
-//     timeFrom: new Date(),
-//     timeTo: new Date(),
-//   };
-
-//   const from = format(start, 'HH:mm');
-//   if (from !== '00:00') {
-//     time.timeFrom = from;
-//   }
-
-//   const to = format(end, 'HH:mm');
-//   if (to !== '00:00') {
-//     time.timeTo = to;
-//   }
-
-//   return time;
-// }

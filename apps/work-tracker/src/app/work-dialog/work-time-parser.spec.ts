@@ -44,6 +44,10 @@ describe('Parse Work Time', () => {
     expect(parseWorkTime('8-100', new Date('2020-01-01'))).toEqual(null);
   });
 
+  test('should parse reverse time', () => {
+    expect(parseWorkTime('10-8', new Date('2020-01-01'))).toEqual(null);
+  });
+
   test('should parse empty input', () => {
     expect(parseWorkTime('', new Date('2020-01-01'))).toEqual(null);
   });

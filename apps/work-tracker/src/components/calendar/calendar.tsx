@@ -1,7 +1,6 @@
 import {
   eachWeekOfInterval,
   addDays,
-  isSameDay,
   startOfMonth,
   endOfMonth,
   format,
@@ -22,12 +21,9 @@ export interface CalendarProps {
 }
 
 export function Calendar({ onDateClicked, cell }: CalendarProps) {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
   const date = new Date();
 
   const dateClicked = (date: Date) => {
-    setSelectedDate(date);
     onDateClicked(date);
   };
 
@@ -50,8 +46,6 @@ export function Calendar({ onDateClicked, cell }: CalendarProps) {
     return (
       <tr key={day.toISOString()}>
         {weekDays.map((d) => {
-          const isSelected = isSameDay(selectedDate, d);
-
           return (
             <td
               className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${

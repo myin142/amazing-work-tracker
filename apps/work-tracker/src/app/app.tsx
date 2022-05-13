@@ -8,8 +8,10 @@ import { WorkDay } from '@myin/models';
 export function App() {
   const [workDialogOpen, setWorkDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentWorkDay, setCurrentWorkDay] = useState(null as WorkDay | null);
 
   const onDateClicked = (d: Date) => {
+    setCurrentWorkDay({} as WorkDay);
     setSelectedDate(d);
     setWorkDialogOpen(true);
   };
@@ -36,6 +38,7 @@ export function App() {
 
       <WorkDialog
         date={selectedDate}
+        workDay={currentWorkDay}
         open={workDialogOpen}
         onClose={closeDialog}
         onSave={saveDay}

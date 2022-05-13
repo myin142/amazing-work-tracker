@@ -8,7 +8,7 @@ import {
   startOfToday,
   sub,
 } from 'date-fns';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
@@ -16,6 +16,7 @@ import { parseWorkTime } from './work-time-parser';
 
 export interface WorkDialogProps {
   date: Date;
+  workDay?: WorkDay | null;
   open: boolean;
   onClose: () => void;
   onSave: (workDay: WorkDay) => void;
@@ -33,11 +34,23 @@ const intervalTotalTime = (intervals: Interval[]): Date =>
     .map((i) => intervalToDuration(i))
     .reduce((date, dur) => add(date, dur), startOfToday());
 
-export function WorkDialog({ date, open, onClose, onSave }: WorkDialogProps) {
+export function WorkDialog({
+  date,
+  workDay,
+  open,
+  onClose,
+  onSave,
+}: WorkDialogProps) {
   const [workTimeInput, setWorkTimeInput] = useState('');
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
   const [sickLeave, setSickLeave] = useState(false);
   const [homeoffice, setHomeOffice] = useState(false);
+
+  useEffect(() => {
+    setWorkTimes(workDay?.workTimes || []);
+    setSickLeave(workDay?.sickLeave || false);
+    setHomeOffice(workDay?.homeoffice || false);
+  }, [workDay]);
 
   const save = () => {
     onSave({

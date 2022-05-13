@@ -23,7 +23,6 @@ export function Select({
   useEffect(() => {
     if (!selectedOption && options.length > 0) {
       onSelected(options[0].value);
-      console.log('select');
     }
   }, [selectedOption, onSelected, options]);
 
