@@ -14,7 +14,9 @@ import {
   isBefore,
   addMonths,
   subMonths,
+  isToday,
 } from 'date-fns';
+import { isMonday } from 'date-fns/esm';
 import { useEffect, useState } from 'react';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 
@@ -46,12 +48,12 @@ export function Calendar({
   useEffect(() => setRangeStart(null), [rangeSelect]);
 
   let start = startOfMonth(date);
-  if (isSunday(start)) {
+  if (isMonday(start)) {
     start = sub(start, { days: 1 });
   }
 
   let end = endOfMonth(date);
-  if (isSaturday(end)) {
+  if (isMonday(end)) {
     end = add(end, { days: 1 });
   }
 
@@ -89,28 +91,30 @@ export function Calendar({
         weekDays.push(addDays(day, i));
       }
 
-      return (
-        <tr key={day.toISOString()}>
-          {weekDays.map((d) => {
-            return (
-              <td
-                className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${
-                  !isSameMonth(date, d) ? 'opacity-50' : ''
-                } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
-                key={d.toISOString()}
-                onClick={() => onCellClick(d)}
-                onMouseEnter={() => setHoverDate(d)}
-                onMouseLeave={() => setHoverDate(null)}
+      return weekDays.map((d) => {
+        return (
+          <div
+            className={`border border-gray-200 p-2 text-sm cursor-pointer ${
+              !isSameMonth(date, d) ? 'opacity-50' : ''
+            } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
+            key={d.toISOString()}
+            onClick={() => onCellClick(d)}
+            onMouseEnter={() => setHoverDate(d)}
+            onMouseLeave={() => setHoverDate(null)}
+          >
+            <div className="flex flex-col items-start">
+              <span
+                className={`rounded-full w-6 h-6 flex justify-center items-center ${
+                  isToday(d) ? 'text-white bg-blue-700 font-bold' : ''
+                }`}
               >
-                <div className="flex flex-col">
-                  <span className="font-bold">{format(d, 'dd')}</span>
-                  {cell && cell(d)}
-                </div>
-              </td>
-            );
-          })}
-        </tr>
-      );
+                <span>{format(d, 'dd')}</span>
+              </span>
+              {cell && cell(d)}
+            </div>
+          </div>
+        );
+      });
     }
   );
 
@@ -118,7 +122,7 @@ export function Calendar({
   const weekDayLetters = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Son'];
 
   return (
-    <div className="bg-white text-gray-800">
+    <div className=" text-gray-800 w-full flex-grow flex flex-col">
       <div className="text-4xl font-bold flex items-center justify-between">
         <button onClick={() => setDate(subMonths(date, 1))}>
           <HiChevronLeft />
@@ -128,14 +132,14 @@ export function Calendar({
           <HiChevronRight />
         </button>
       </div>
-      <table className="border-collapse mt-4">
-        <tr>
-          {weekDayLetters.map((l) => (
-            <th className="text-sm text800 uppercase">{l}</th>
-          ))}
-        </tr>
+      <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
+        {weekDayLetters.map((l) => (
+          <div className="text-sm border font-bold border-gray-200 p-2 flex items-center justify-center">
+            {l}
+          </div>
+        ))}
         {weeks}
-      </table>
+      </div>
     </div>
   );
 }

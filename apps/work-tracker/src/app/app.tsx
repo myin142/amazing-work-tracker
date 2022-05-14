@@ -4,6 +4,7 @@ import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import { WorkDay, FullDayType } from '@myin/models';
+import { isWeekend } from 'date-fns';
 
 export function App() {
   const [workDialogOpen, setWorkDialogOpen] = useState(false);
@@ -47,12 +48,12 @@ export function App() {
   ));
 
   return (
-    <div className="flex flex-col gap-4 items-center p-4">
+    <div className="flex flex-col gap-4 items-center p-4 h-full">
       <Calendar
         rangeSelect={!!fullDayType}
         onRangeSelected={onRangeSelected}
         onDateClicked={onDateClicked}
-        cell={(d: Date) => <div>8h / 1h</div>}
+        cell={(d: Date) => <div>{!isWeekend(d) ? '8h / 1h' : ''}</div>}
       />
 
       <div className="flex gap-2">{fullDayTypeButtons}</div>
