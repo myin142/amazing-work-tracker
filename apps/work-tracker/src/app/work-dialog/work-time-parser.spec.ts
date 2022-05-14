@@ -40,6 +40,10 @@ describe('Parse Work Time', () => {
     );
   });
 
+  test('should parse only break within time', () => {
+    expect(parseWorkTime('8-10/12-13', new Date('2020-01-01'))).toEqual(null);
+  });
+
   test('should parse with large time', () => {
     expect(parseWorkTime('8-100', new Date('2020-01-01'))).toEqual(null);
   });

@@ -1,5 +1,5 @@
 import { WorkTime } from '@myin/models';
-import { isBefore, isValid, parse } from 'date-fns';
+import { isValid, isWithinInterval, parse } from 'date-fns';
 
 export function parseWorkTime(
   input: string,
@@ -19,8 +19,15 @@ export function parseWorkTime(
   if (times.length > 1) {
     const breakInterval = parseInterval(times[1], refDate);
     if (breakInterval) {
-      workTime.breakFrom = breakInterval.start as Date;
-      workTime.breakTo = breakInterval.end as Date;
+      if (
+        isWithinInterval(breakInterval.start, timeInterval) &&
+        isWithinInterval(breakInterval.end, timeInterval)
+      ) {
+        workTime.breakFrom = breakInterval.start as Date;
+        workTime.breakTo = breakInterval.end as Date;
+      } else {
+        return null;
+      }
     }
   }
 
