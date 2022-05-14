@@ -19,6 +19,7 @@ import {
 import { isMonday } from 'date-fns/esm';
 import { useEffect, useState } from 'react';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import Button from '../button/button';
 
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
@@ -46,6 +47,10 @@ export function Calendar({
   const [hoverDate, setHoverDate] = useState(null as Date | null);
 
   useEffect(() => setRangeStart(null), [rangeSelect]);
+
+  const updateDate = (date: Date) => {
+    setDate(startOfMonth(date));
+  };
 
   let start = startOfMonth(date);
   if (isMonday(start)) {
@@ -133,6 +138,9 @@ export function Calendar({
             <HiChevronRight />
           </button>
         </div>
+        <Button className="text-base" onClick={() => updateDate(new Date())}>
+          Today
+        </Button>
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (
