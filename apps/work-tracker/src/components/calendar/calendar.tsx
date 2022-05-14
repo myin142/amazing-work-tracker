@@ -12,6 +12,8 @@ import {
   isSameDay,
   isWithinInterval,
   isBefore,
+  addMonths,
+  subMonths,
 } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
@@ -37,8 +39,7 @@ export function Calendar({
   cell,
   rangeSelect,
 }: CalendarProps) {
-  const date = new Date();
-
+  const [date, setDate] = useState(startOfMonth(new Date()));
   const [rangeStart, setRangeStart] = useState(null as Date | null);
   const [hoverDate, setHoverDate] = useState(null as Date | null);
 
@@ -118,12 +119,12 @@ export function Calendar({
 
   return (
     <div className="bg-white text-gray-800">
-      <div className="text-4xl font-bold flex items-center">
-        <button>
+      <div className="text-4xl font-bold flex items-center justify-between">
+        <button onClick={() => setDate(subMonths(date, 1))}>
           <HiChevronLeft />
         </button>
         <span>{title}</span>
-        <button>
+        <button onClick={() => setDate(addMonths(date, 1))}>
           <HiChevronRight />
         </button>
       </div>
