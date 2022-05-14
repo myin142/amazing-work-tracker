@@ -11,3 +11,9 @@ export interface WorkDay {
   sickLeave: boolean;
   homeoffice: boolean;
 }
+
+export enum FullDayType {
+  VACATION = 'Vacation',
+  SICK = 'Sick',
+  OFF_DUTY = 'Off-Duty',
+}

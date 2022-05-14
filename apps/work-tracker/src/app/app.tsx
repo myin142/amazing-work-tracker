@@ -3,17 +3,23 @@ import { useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
-import { WorkDay } from '@myin/models';
+import { WorkDay, FullDayType } from '@myin/models';
 
 export function App() {
   const [workDialogOpen, setWorkDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWorkDay, setCurrentWorkDay] = useState(null as WorkDay | null);
+  const [fullDayType, setFullDayType] = useState(null as FullDayType | null);
 
   const onDateClicked = (d: Date) => {
     setCurrentWorkDay({} as WorkDay);
     setSelectedDate(d);
     setWorkDialogOpen(true);
+  };
+
+  const onRangeSelected = (i: Interval) => {
+    console.log(i);
+    setFullDayType(null);
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
@@ -23,18 +29,33 @@ export function App() {
     closeDialog();
   };
 
+  const toggleFullDayType = (type: FullDayType) => {
+    if (fullDayType === type) {
+      setFullDayType(null);
+    } else {
+      setFullDayType(type);
+    }
+  };
+
+  const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
+    <Button
+      onClick={() => toggleFullDayType(type)}
+      pressed={fullDayType === type}
+    >
+      {type}
+    </Button>
+  ));
+
   return (
     <div className="flex flex-col gap-4 items-center p-4">
       <Calendar
+        rangeSelect={!!fullDayType}
+        onRangeSelected={onRangeSelected}
         onDateClicked={onDateClicked}
         cell={(d: Date) => <div>8h / 1h</div>}
       />
 
-      <div className="flex gap-2">
-        <Button>Vacation</Button>
-        <Button>Off-Duty</Button>
-        <Button>Sick</Button>
-      </div>
+      <div className="flex gap-2">{fullDayTypeButtons}</div>
 
       <WorkDialog
         date={selectedDate}

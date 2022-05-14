@@ -9,23 +9,40 @@ import {
   isSaturday,
   sub,
   add,
-  isToday,
+  isSameDay,
+  isWithinInterval,
+  isBefore,
 } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 
-/* eslint-disable-next-line */
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
+  onRangeSelected: (i: Interval) => void;
   cell?: (d: Date) => JSX.Element;
+  rangeSelect: boolean;
 }
 
-export function Calendar({ onDateClicked, cell }: CalendarProps) {
+const createIntervalBetween = (date1: Date, date2: Date): Interval => {
+  if (isBefore(date1, date2)) {
+    return { start: date1, end: date2 };
+  } else {
+    return { start: date2, end: date1 };
+  }
+};
+
+export function Calendar({
+  onDateClicked,
+  onRangeSelected,
+  cell,
+  rangeSelect,
+}: CalendarProps) {
   const date = new Date();
 
-  const dateClicked = (date: Date) => {
-    onDateClicked(date);
-  };
+  const [rangeStart, setRangeStart] = useState(null as Date | null);
+  const [hoverDate, setHoverDate] = useState(null as Date | null);
+
+  useEffect(() => setRangeStart(null), [rangeSelect]);
 
   let start = startOfMonth(date);
   if (isSunday(start)) {
@@ -36,6 +53,33 @@ export function Calendar({ onDateClicked, cell }: CalendarProps) {
   if (isSaturday(end)) {
     end = add(end, { days: 1 });
   }
+
+  const onCellClick = (date: Date) => {
+    if (rangeSelect) {
+      if (!rangeStart) {
+        setRangeStart(date);
+      } else {
+        onRangeSelected({ start: rangeStart, end: date });
+      }
+    } else {
+      onDateClicked(date);
+    }
+  };
+
+  const isInsideRange = (date: Date) => {
+    if (rangeSelect) {
+      const isHoverDate = hoverDate && isSameDay(hoverDate, date);
+      const isRangeStartDate = rangeStart && isSameDay(rangeStart, date);
+      const isBetweenStartAndHover =
+        hoverDate &&
+        rangeStart &&
+        isWithinInterval(date, createIntervalBetween(hoverDate, rangeStart));
+
+      return isHoverDate || isRangeStartDate || isBetweenStartAndHover;
+    }
+
+    return false;
+  };
 
   const weeks = eachWeekOfInterval({ start, end }).map((day) => {
     const weekDays = [day];
@@ -50,9 +94,11 @@ export function Calendar({ onDateClicked, cell }: CalendarProps) {
             <td
               className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${
                 !isSameMonth(date, d) ? 'opacity-50' : ''
-              }`}
+              } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
               key={d.toISOString()}
-              onClick={() => dateClicked(d)}
+              onClick={() => onCellClick(d)}
+              onMouseEnter={() => setHoverDate(d)}
+              onMouseLeave={() => setHoverDate(null)}
             >
               <div className="flex flex-col">
                 <span className="font-bold">{format(d, 'dd')}</span>
