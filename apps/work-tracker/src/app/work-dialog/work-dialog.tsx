@@ -45,6 +45,7 @@ export function WorkDialog({
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
   const [sickLeave, setSickLeave] = useState(false);
   const [homeoffice, setHomeOffice] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
 
   useEffect(() => {
     setWorkTimes(workDay?.workTimes || []);
@@ -65,6 +66,8 @@ export function WorkDialog({
     if (workTime) {
       setWorkTimes([...workTimes, workTime]);
       setWorkTimeInput('');
+    } else {
+      setIsInvalid(true);
     }
   };
 
@@ -81,6 +84,7 @@ export function WorkDialog({
     workTimes.filter((_, i) => i !== idx);
 
   const workTimeInputKeyUp = (event: React.KeyboardEvent) => {
+    setIsInvalid(false);
     if (event.key === 'Enter') {
       addWorkTime();
     }
@@ -170,7 +174,12 @@ export function WorkDialog({
 
                   <div className="flex gap-2">
                     <input
-                      className="flex-grow rounded-md outline-none ring-outset ring-1 ring-slate-200 hover:ring-slate-400 bg-white p-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      className={`flex-grow rounded-md outline-none ring-outset ring-1
+                      bg-white p-2 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                        isInvalid
+                          ? 'ring-red-400 focus-visible:ring-red-600'
+                          : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500'
+                      }`}
                       placeholder="Example: 8-17/12-13"
                       value={workTimeInput}
                       onChange={(e) => setWorkTimeInput(e.target.value)}
