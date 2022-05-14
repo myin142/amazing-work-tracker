@@ -81,38 +81,40 @@ export function Calendar({
     return false;
   };
 
-  const weeks = eachWeekOfInterval({ start, end }).map((day) => {
-    const weekDays = [day];
-    for (let i = 1; i <= 6; i++) {
-      weekDays.push(addDays(day, i));
-    }
+  const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 1 }).map(
+    (day) => {
+      const weekDays = [day];
+      for (let i = 1; i <= 6; i++) {
+        weekDays.push(addDays(day, i));
+      }
 
-    return (
-      <tr key={day.toISOString()}>
-        {weekDays.map((d) => {
-          return (
-            <td
-              className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${
-                !isSameMonth(date, d) ? 'opacity-50' : ''
-              } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
-              key={d.toISOString()}
-              onClick={() => onCellClick(d)}
-              onMouseEnter={() => setHoverDate(d)}
-              onMouseLeave={() => setHoverDate(null)}
-            >
-              <div className="flex flex-col">
-                <span className="font-bold">{format(d, 'dd')}</span>
-                {cell && cell(d)}
-              </div>
-            </td>
-          );
-        })}
-      </tr>
-    );
-  });
+      return (
+        <tr key={day.toISOString()}>
+          {weekDays.map((d) => {
+            return (
+              <td
+                className={`rounded-lg ring-1 border-separate space-4 gap-4 p-4 text-sm cursor-pointer ${
+                  !isSameMonth(date, d) ? 'opacity-50' : ''
+                } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
+                key={d.toISOString()}
+                onClick={() => onCellClick(d)}
+                onMouseEnter={() => setHoverDate(d)}
+                onMouseLeave={() => setHoverDate(null)}
+              >
+                <div className="flex flex-col">
+                  <span className="font-bold">{format(d, 'dd')}</span>
+                  {cell && cell(d)}
+                </div>
+              </td>
+            );
+          })}
+        </tr>
+      );
+    }
+  );
 
   const title = format(date, 'MMMM yyyy');
-  const weekDayLetters = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDayLetters = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Son'];
 
   return (
     <div className="bg-white text-gray-800">
