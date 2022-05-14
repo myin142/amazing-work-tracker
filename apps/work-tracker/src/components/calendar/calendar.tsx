@@ -124,13 +124,15 @@ export function Calendar({
   return (
     <div className=" text-gray-800 w-full flex-grow flex flex-col">
       <div className="text-4xl font-bold flex items-center justify-between">
-        <button onClick={() => setDate(subMonths(date, 1))}>
-          <HiChevronLeft />
-        </button>
-        <span>{title}</span>
-        <button onClick={() => setDate(addMonths(date, 1))}>
-          <HiChevronRight />
-        </button>
+        <div className="flex items-center w-96">
+          <button onClick={() => setDate(subMonths(date, 1))}>
+            <HiChevronLeft />
+          </button>
+          <span className="flex-grow text-center">{title}</span>
+          <button onClick={() => setDate(addMonths(date, 1))}>
+            <HiChevronRight />
+          </button>
+        </div>
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (
