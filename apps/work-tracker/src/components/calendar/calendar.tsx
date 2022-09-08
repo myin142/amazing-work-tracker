@@ -5,8 +5,6 @@ import {
   endOfMonth,
   format,
   isSameMonth,
-  isSunday,
-  isSaturday,
   sub,
   add,
   isSameDay,

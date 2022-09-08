@@ -1,19 +1,31 @@
+import { format, parse } from 'date-fns';
+
 export interface WorkTime {
-  timeFrom: Date;
-  timeTo: Date;
-  breakFrom?: Date;
-  breakTo?: Date;
+  timeFrom: string;
+  timeTo: string;
+  breakFrom?: string;
+  breakTo?: string;
   projectId?: number;
 }
 
 export interface WorkDay {
+  date: Date;
   workTimes: WorkTime[];
-  sickLeave: boolean;
-  homeoffice: boolean;
+  sickLeave?: boolean;
+  homeoffice?: boolean;
 }
 
 export enum FullDayType {
   VACATION = 'Vacation',
   SICK = 'Sick',
   OFF_DUTY = 'Off-Duty',
+}
+
+export function formatTime(date: Date | number) {
+  return format(date, 'HH:mm');
+}
+
+export function parseTime(timeStr?: string) {
+  if (!timeStr) return new Date();
+  return parse(timeStr, 'HH:mm', new Date());
 }

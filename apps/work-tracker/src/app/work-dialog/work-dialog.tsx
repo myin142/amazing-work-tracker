@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { WorkDay, WorkTime } from '@myin/models';
+import { parseTime, WorkDay, WorkTime } from '@myin/models';
 import {
   add,
   format,
@@ -21,10 +21,6 @@ export interface WorkDialogProps {
   onClose: () => void;
   onSave: (workDay: WorkDay) => void;
 }
-
-const formatTime = (date: Date) => {
-  return format(date, 'HH:mm');
-};
 
 const formatDuration = (date: Date): string =>
   isToday(date) ? `${format(date, 'H')} h` : `> 24 h`;
@@ -55,6 +51,7 @@ export function WorkDialog({
 
   const save = () => {
     onSave({
+      date,
       workTimes,
       sickLeave,
       homeoffice,
@@ -91,12 +88,18 @@ export function WorkDialog({
   };
 
   const workTimeIntervals = (): Interval[] =>
-    workTimes.map((w) => ({ start: w.timeFrom, end: w.timeTo }));
+    workTimes.map((w) => ({
+      start: parseTime(w.timeFrom),
+      end: parseTime(w.timeTo),
+    }));
 
   const breakIntervals = (): Interval[] =>
     workTimes
       .filter((w) => w.breakFrom && w.breakTo)
-      .map((w) => ({ start: w.breakFrom as Date, end: w.breakTo as Date }));
+      .map((w) => ({
+        start: parseTime(w.breakFrom),
+        end: parseTime(w.breakTo),
+      }));
 
   const totalTimes = (): string => {
     const time = intervalTotalTime(workTimeIntervals());
@@ -148,12 +151,10 @@ export function WorkDialog({
                   {workTimes.map((work, i) => (
                     <div key={i} className="flex items-center gap-4">
                       <div>
-                        {formatTime(work.timeFrom)} - {formatTime(work.timeTo)}
+                        {work.timeFrom} - {work.timeTo}
                         {work.breakFrom &&
                           work.breakTo &&
-                          ` / ${formatTime(work.breakFrom)} - ${formatTime(
-                            work.breakTo
-                          )}`}
+                          ` / ${work.breakFrom} - ${work.breakTo}`}
                       </div>
                       <Select
                         className="flex-grow"

@@ -19,14 +19,14 @@ export function App() {
   };
 
   const onRangeSelected = (i: Interval) => {
-    console.log(i);
+    console.log(i); // TODO set full days
     setFullDayType(null);
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
 
   const saveDay = (workDay: WorkDay) => {
-    console.log(workDay);
+    console.log(workDay); // TODO save day
     closeDialog();
   };
 
