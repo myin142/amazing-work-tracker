@@ -49,6 +49,28 @@ paths:
             operationId: time_bookingPost
             summary: Save a time booking
 
+    /csv:
+        get:
+            parameters:
+                -   $ref: '#/components/parameters/fromDateParam'
+                -   $ref: '#/components/parameters/toDateParam'
+                -   name: exportEmployeeId
+                    description: 'ID of employee to export CSV for'
+                    schema:
+                        format: int64
+                        type: integer
+                    in: query
+            responses:
+                '200':
+                    content:
+                        text/csv:
+                            schema:
+                                type: string
+                                format: byte
+                    description: CSV File as Blob
+            operationId: csvGet
+            summary: Export timebookings as CSV file
+
     /project-time-booking:
         get:
             parameters:
@@ -111,11 +133,11 @@ paths:
         delete:
             parameters:
                 -   name: day
-                    description: 'Date of project time e.g. 2021-01-30'
+                    description: 'Date of project time e.g. 2022-01-30'
                     schema:
                         type: string
                         format: date
-                        example: '2021-12-30'
+                        example: '2022-12-30'
                     in: query
                     required: true
                 -   name: project
@@ -266,7 +288,16 @@ paths:
                     description: Forbidden
             operationId: time_bookingCommitPatch
             summary: Submit/withdraw time booking
-
+    /userinfo/me:
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GETUserinfoResponse'
+                    description: OK
+            description: Gets information about the related employee with the api key
 components:
     parameters:
         employeeIdParam:
@@ -284,8 +315,8 @@ components:
             schema:
                 type: string
                 format: date
-                example: '2021-01-01'
-            description: 'Example: 2021-01-01'
+                example: '2022-01-01'
+            description: 'Example: 2022-01-01'
 
         toDateParam:
             in: query
@@ -294,8 +325,8 @@ components:
             schema:
                 type: string
                 format: date
-                example: '2021-01-31'
-            description: 'Example: 2021-01-31'
+                example: '2022-01-31'
+            description: 'Example: 2022-01-31'
 
     schemas:
         TimeSpanWithID:
@@ -359,8 +390,8 @@ components:
                 date:
                     type: string
                     format: date
-                    description: 'Date of time period e.g. 2021-01-30'
-                    example: '2021-01-30'
+                    description: 'Date of time period e.g. 2022-01-30'
+                    example: '2022-01-30'
                 timePeriods:
                     description: 'Array of time periods'
                     type: array
@@ -438,7 +469,7 @@ components:
                     type: string
                     format: date
                     description: 'Date of project date time spans'
-                    example: '2021-12-30'
+                    example: '2022-12-30'
                 project:
                     $ref: '#/components/schemas/ProjectID'
                 timeSpans:
@@ -458,14 +489,13 @@ components:
             required:
                 - date
                 - type
-                - homeoffice
             type: object
             properties:
                 date:
                     type: string
                     format: date
-                    description: 'Date e.g. 2021-01-30'
-                    example: '2021-12-30'
+                    description: 'Date e.g. 2022-01-30'
+                    example: '2022-12-30'
                 type:
                     $ref: '#/components/schemas/TimeSpanTypeEnum'
                 fromTime:
@@ -473,7 +503,7 @@ components:
                 toTime:
                     $ref: '#/components/schemas/Time'
                 homeoffice:
-                    description: 'Homeoffice day or not'
+                    description: 'Whether this time has been spent in Homeoffice or not'
                     type: boolean
                 offDutyReason:
                     $ref: '#/components/schemas/OffDutyReasonEnum'
@@ -501,7 +531,7 @@ components:
                     type: string
                     format: date
                     description: 'Date of timebooking span'
-                    example: '2021-12-30'
+                    example: '2022-12-30'
                 toTime:
                     $ref: '#/components/schemas/Time'
                 fromTime:
@@ -636,8 +666,8 @@ components:
                 date:
                     type: string
                     format: date
-                    description: 'Date of project time span e.g. 2021-01-30'
-                    example: '2021-01-30'
+                    description: 'Date of project time span e.g. 2022-01-30'
+                    example: '2022-01-30'
                 project:
                     $ref: '#/components/schemas/ProjectID'
                 timeSpans:
@@ -645,7 +675,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ProjectTimeSpan'
-
+        GETUserinfoResponse:
+            description: ''
+            required:
+                - email
+            type: object
+            properties:
+                email:
+                    description: ''
+                    type: string
     responses:
         ErrorResponse:
             content:

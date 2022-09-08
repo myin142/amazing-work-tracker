@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@myin/models": ["libs/models/src/index.ts"],
+      "@myin/openapi": ["libs/openapi/src/index.ts"],
       "@myin/work-time-mapper": ["libs/work-time-mapper/src/index.ts"]
     }
   },
