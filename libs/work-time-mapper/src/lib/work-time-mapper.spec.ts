@@ -1,5 +1,6 @@
-import { TimeSpanTypeEnum } from '@myin/openapi';
-import { mapToNewTimespans } from './work-time-mapper';
+import { FullDayType } from '@myin/models';
+import { OffDutyReasonEnum, TimeSpanTypeEnum } from '@myin/openapi';
+import { mapFullDayTypes, mapToNewTimespans } from './work-time-mapper';
 
 describe('workTimeMapper', () => {
   it('should return work time without break', () => {
@@ -177,5 +178,104 @@ describe('workTimeMapper', () => {
         },
       ])
     );
+  });
+
+  describe('FullDayType', () => {
+    it('should create vacation times without weekend', () => {
+      const times = mapFullDayTypes(
+        FullDayType.VACATION,
+        new Date('2020-01-01'),
+        new Date('2020-01-05') // weekend 04 and 05
+      );
+
+      expect(times).toEqual(
+        expect.arrayContaining([
+          {
+            date: '2020-01-01',
+            type: TimeSpanTypeEnum.FullDayVacation,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-02',
+            type: TimeSpanTypeEnum.FullDayVacation,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-03',
+            type: TimeSpanTypeEnum.FullDayVacation,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+        ])
+      );
+    });
+
+    it('should create sick times without weekend', () => {
+      const times = mapFullDayTypes(
+        FullDayType.SICK,
+        new Date('2020-01-01'),
+        new Date('2020-01-05') // weekend 04 and 05
+      );
+
+      expect(times).toEqual(
+        expect.arrayContaining([
+          {
+            date: '2020-01-01',
+            type: TimeSpanTypeEnum.SickLeave,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-02',
+            type: TimeSpanTypeEnum.SickLeave,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-03',
+            type: TimeSpanTypeEnum.SickLeave,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+        ])
+      );
+    });
+
+    it('should create offduty times without weekend', () => {
+      const times = mapFullDayTypes(
+        FullDayType.OFF_DUTY,
+        new Date('2020-01-01'),
+        new Date('2020-01-05'), // weekend 04 and 05
+        OffDutyReasonEnum.ChangeOfResidence
+      );
+
+      expect(times).toEqual(
+        expect.arrayContaining([
+          {
+            date: '2020-01-01',
+            type: TimeSpanTypeEnum.OffDuty,
+            offDutyReason: OffDutyReasonEnum.ChangeOfResidence,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-02',
+            type: TimeSpanTypeEnum.OffDuty,
+            offDutyReason: OffDutyReasonEnum.ChangeOfResidence,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-03',
+            type: TimeSpanTypeEnum.OffDuty,
+            offDutyReason: OffDutyReasonEnum.ChangeOfResidence,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+        ])
+      );
+    });
   });
 });

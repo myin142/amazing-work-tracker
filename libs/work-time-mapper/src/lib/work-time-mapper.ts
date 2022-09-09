@@ -1,16 +1,24 @@
-import { formatDate, WorkDay, WorkTime } from '@myin/models';
+import { formatDate, FullDayType, WorkDay, WorkTime } from '@myin/models';
 import {
+  OffDutyReasonEnum,
   ProjectDateTimeSpans,
   ProjectTimeSpan,
   TimeSpanTypeEnum,
   TimeSpanWithoutID,
 } from '@myin/openapi';
+import { eachDayOfInterval, isWeekend } from 'date-fns';
 
 const projectTimeType: TimeSpanTypeEnum[] = [
   TimeSpanTypeEnum.OnCallDuty,
   TimeSpanTypeEnum.Work,
   TimeSpanTypeEnum.SpecialWork,
 ];
+
+const fullDayTypeMap = {
+  [FullDayType.VACATION]: TimeSpanTypeEnum.FullDayVacation,
+  [FullDayType.SICK]: TimeSpanTypeEnum.SickLeave,
+  [FullDayType.OFF_DUTY]: TimeSpanTypeEnum.OffDuty,
+};
 
 export function mapToNewTimespans(
   workDay: WorkDay
@@ -114,4 +122,23 @@ function toTimespan(
     toTime: to,
     homeoffice: day.homeoffice || false,
   };
+}
+
+export function mapFullDayTypes(
+  type: FullDayType,
+  from: Date,
+  to: Date,
+  offDutyReason: OffDutyReasonEnum = OffDutyReasonEnum.Other
+): TimeSpanWithoutID[] {
+  return eachDayOfInterval({ start: from, end: to })
+    .filter((date) => !isWeekend(date))
+    .map((date) => {
+      const reason = type == FullDayType.OFF_DUTY ? offDutyReason : undefined;
+
+      return {
+        date: formatDate(date),
+        type: fullDayTypeMap[type],
+        offDutyReason: reason,
+      };
+    });
 }
