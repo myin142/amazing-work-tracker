@@ -14,6 +14,7 @@ export function parseWorkTime(
   const workTime: WorkTime = {
     timeFrom: formatTime(timeInterval.start),
     timeTo: formatTime(timeInterval.end),
+    projectId: -1,
   };
 
   if (times.length > 1) {

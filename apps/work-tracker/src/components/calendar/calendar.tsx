@@ -142,7 +142,10 @@ export function Calendar({
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (
-          <div className="text-sm border font-bold border-gray-200 p-2 flex items-center justify-center">
+          <div
+            key={l}
+            className="text-sm border font-bold border-gray-200 p-2 flex items-center justify-center"
+          >
             {l}
           </div>
         ))}

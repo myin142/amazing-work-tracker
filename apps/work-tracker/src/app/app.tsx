@@ -40,6 +40,7 @@ export function App() {
 
   const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
     <Button
+      key={type}
       onClick={() => toggleFullDayType(type)}
       pressed={fullDayType === type}
     >

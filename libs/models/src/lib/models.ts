@@ -5,7 +5,7 @@ export interface WorkTime {
   timeTo: string;
   breakFrom?: string;
   breakTo?: string;
-  projectId?: number;
+  projectId: number;
 }
 
 export interface WorkDay {
@@ -28,4 +28,8 @@ export function formatTime(date: Date | number) {
 export function parseTime(timeStr?: string) {
   if (!timeStr) return new Date();
   return parse(timeStr, 'HH:mm', new Date());
+}
+
+export function formatDate(date: Date | number) {
+  return format(date, 'yyyy-MM-dd');
 }
