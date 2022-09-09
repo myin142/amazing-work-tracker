@@ -1,5 +1,5 @@
 import { formatTime, WorkTime } from '@myin/models';
-import { format, isValid, isWithinInterval, parse } from 'date-fns';
+import { isValid, isWithinInterval, parse } from 'date-fns';
 
 export function parseWorkTime(
   input: string,
