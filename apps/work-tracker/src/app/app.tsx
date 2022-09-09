@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
@@ -8,6 +8,7 @@ import { WorkDay, FullDayType } from '@myin/models';
 import { isWeekend } from 'date-fns';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
+import { ProjectNameIDMap } from '@myin/openapi';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -20,7 +21,15 @@ export function App() {
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
 
+  const [projects, setProjects] = useState([] as ProjectNameIDMap[]);
+
   const getClient = () => new IMSClient(token, environment.baseUrl);
+
+  useEffect(() => {
+    getClient()
+      .getProjects()
+      .then((p) => setProjects(p));
+  }, []);
 
   const onTokenLogin = (loginToken: string) => {
     localStorage.setItem(LOGIN_TOKEN_KEY, loginToken);
@@ -82,6 +91,7 @@ export function App() {
             date={selectedDate}
             workDay={currentWorkDay}
             open={workDialogOpen}
+            projects={projects}
             onClose={closeDialog}
             onSave={saveDay}
           />
