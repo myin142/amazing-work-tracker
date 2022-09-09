@@ -6,6 +6,8 @@ import Button from '../components/button/button';
 import Login from './login/login';
 import { WorkDay, FullDayType } from '@myin/models';
 import { isWeekend } from 'date-fns';
+import { environment } from '../environments/environment';
+import { IMSClient } from '@myin/client';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -14,7 +16,11 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWorkDay, setCurrentWorkDay] = useState(null as WorkDay | null);
   const [fullDayType, setFullDayType] = useState(null as FullDayType | null);
-  const [token, setToken] = useState(localStorage.getItem(LOGIN_TOKEN_KEY));
+  const [token, setToken] = useState(
+    localStorage.getItem(LOGIN_TOKEN_KEY) || ''
+  );
+
+  const getClient = () => new IMSClient(token, environment.baseUrl);
 
   const onTokenLogin = (loginToken: string) => {
     localStorage.setItem(LOGIN_TOKEN_KEY, loginToken);
@@ -28,14 +34,16 @@ export function App() {
   };
 
   const onRangeSelected = (i: Interval) => {
-    console.log(i); // TODO set full days
-    setFullDayType(null);
+    if (fullDayType) {
+      getClient().saveFullDay(fullDayType, i);
+      setFullDayType(null);
+    }
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
 
-  const saveDay = (workDay: WorkDay) => {
-    console.log(workDay); // TODO save day
+  const saveDay = async (workDay: WorkDay) => {
+    getClient().saveDay(workDay);
     closeDialog();
   };
 

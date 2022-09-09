@@ -184,8 +184,7 @@ describe('workTimeMapper', () => {
     it('should create vacation times without weekend', () => {
       const times = mapFullDayTypes(
         FullDayType.VACATION,
-        new Date('2020-01-01'),
-        new Date('2020-01-05') // weekend 04 and 05
+        { start: new Date('2020-01-01'), end: new Date('2020-01-05') }
       );
 
       expect(times).toEqual(
@@ -215,8 +214,7 @@ describe('workTimeMapper', () => {
     it('should create sick times without weekend', () => {
       const times = mapFullDayTypes(
         FullDayType.SICK,
-        new Date('2020-01-01'),
-        new Date('2020-01-05') // weekend 04 and 05
+        { start: new Date('2020-01-01'), end: new Date('2020-01-05') }
       );
 
       expect(times).toEqual(
@@ -246,8 +244,7 @@ describe('workTimeMapper', () => {
     it('should create offduty times without weekend', () => {
       const times = mapFullDayTypes(
         FullDayType.OFF_DUTY,
-        new Date('2020-01-01'),
-        new Date('2020-01-05'), // weekend 04 and 05
+        { start: new Date('2020-01-01'), end: new Date('2020-01-05') },
         OffDutyReasonEnum.ChangeOfResidence
       );
 

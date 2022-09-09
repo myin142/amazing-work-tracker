@@ -126,11 +126,10 @@ function toTimespan(
 
 export function mapFullDayTypes(
   type: FullDayType,
-  from: Date,
-  to: Date,
+  range: Interval,
   offDutyReason: OffDutyReasonEnum = OffDutyReasonEnum.Other
 ): TimeSpanWithoutID[] {
-  return eachDayOfInterval({ start: from, end: to })
+  return eachDayOfInterval(range)
     .filter((date) => !isWeekend(date))
     .map((date) => {
       const reason = type == FullDayType.OFF_DUTY ? offDutyReason : undefined;

@@ -3,4 +3,5 @@
 
 export const environment = {
   production: false,
+  baseUrl: 'https://ims-dev.it-experts.at/ims/api/v1',
 };
