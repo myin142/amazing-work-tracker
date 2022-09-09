@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "client": "libs/client",
     "models": "libs/models",
     "openapi": "libs/openapi",
     "work-time-mapper": "libs/work-time-mapper",
