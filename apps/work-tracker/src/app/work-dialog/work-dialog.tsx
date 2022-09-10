@@ -1,5 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { parseTime, Project, WorkDay, WorkTime } from '@myin/models';
+import {
+  formatTime,
+  parseTime,
+  Project,
+  WorkDay,
+  WorkTime,
+} from '@myin/models';
 import {
   add,
   format,
@@ -24,7 +30,7 @@ export interface WorkDialogProps {
 }
 
 const formatDuration = (date: Date): string =>
-  isToday(date) ? `${format(date, 'H')} h` : `> 24 h`;
+  isToday(date) ? `${formatTime(date)} h` : `> 24 h`;
 
 const intervalTotalTime = (intervals: Interval[]): Date =>
   intervals
