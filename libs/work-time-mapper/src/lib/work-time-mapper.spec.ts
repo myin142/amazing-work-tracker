@@ -54,7 +54,7 @@ describe('workTimeMapper', () => {
           fromTime: '12:00',
           toTime: '13:00',
           type: TimeSpanTypeEnum.Break,
-          homeoffice: false,
+          homeoffice: undefined,
         },
         {
           date: '2020-01-01',

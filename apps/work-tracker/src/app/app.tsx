@@ -44,6 +44,7 @@ export function App() {
 
   const onRangeSelected = (i: Interval) => {
     if (fullDayType) {
+      console.log(fullDayType, i);
       getClient().saveFullDay(fullDayType, i);
       setFullDayType(null);
     }
@@ -63,6 +64,7 @@ export function App() {
   const closeDialog = () => setWorkDialogOpen(false);
 
   const saveDay = async (workDay: WorkDay) => {
+    console.log(workDay);
     getClient().saveDay(workDay);
     closeDialog();
   };

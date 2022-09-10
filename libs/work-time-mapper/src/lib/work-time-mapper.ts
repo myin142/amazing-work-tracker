@@ -122,7 +122,7 @@ function toTimespan(
     type,
     fromTime: from,
     toTime: to,
-    homeoffice: day.homeoffice || false,
+    homeoffice: type === TimeSpanTypeEnum.Break ? undefined : (day.homeoffice || false),
   };
 }
 
