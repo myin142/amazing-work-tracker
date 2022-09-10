@@ -22,6 +22,7 @@ import Button from '../button/button';
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
   onRangeSelected: (i: Interval) => void;
+  onCalendarChange: (i: Interval) => void;
   cell?: (d: Date) => JSX.Element;
   rangeSelect: boolean;
 }
@@ -37,6 +38,7 @@ const createIntervalBetween = (date1: Date, date2: Date): Interval => {
 export function Calendar({
   onDateClicked,
   onRangeSelected,
+  onCalendarChange,
   cell,
   rangeSelect,
 }: CalendarProps) {
@@ -59,6 +61,8 @@ export function Calendar({
   if (isMonday(end)) {
     end = add(end, { days: 1 });
   }
+
+  useEffect(() => onCalendarChange({ start, end }), [date]);
 
   const onCellClick = (date: Date) => {
     if (rangeSelect) {

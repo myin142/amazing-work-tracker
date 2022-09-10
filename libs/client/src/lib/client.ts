@@ -1,5 +1,5 @@
 import { Configuration, DefaultApi, ProjectNameIDMap } from '@myin/openapi';
-import { formatDate, FullDayType, WorkDay } from '@myin/models';
+import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import { mapFullDayTypes, mapToNewTimespans } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
 
@@ -40,8 +40,9 @@ export class IMSClient {
     await Promise.all(timeSpans.map(timeSpan => this.api.timeBookingPost(timeSpan)));
   }
 
-  async getProjects(): Promise<ProjectNameIDMap[]> {
-    return this.api.projectGet().then(x => x.data.projects || []);
+  async getProjects(): Promise<Project[]> {
+    return this.api.projectGet().then(x => x.data.projects || [])
+      .then(projects => projects.map(p => ({ name: p.projectName || '', id: p.projectId || -1 })));
   }
 }
 

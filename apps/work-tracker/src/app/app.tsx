@@ -4,11 +4,10 @@ import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import Login from './login/login';
-import { WorkDay, FullDayType } from '@myin/models';
+import { WorkDay, FullDayType, Project } from '@myin/models';
 import { isWeekend } from 'date-fns';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
-import { ProjectNameIDMap } from '@myin/openapi';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -21,7 +20,8 @@ export function App() {
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
 
-  const [projects, setProjects] = useState([] as ProjectNameIDMap[]);
+  const [workDays, setWorkDays] = useState([] as WorkDay[]);
+  const [projects, setProjects] = useState([] as Project[]);
 
   const getClient = () => new IMSClient(token, environment.baseUrl);
 
@@ -47,6 +47,10 @@ export function App() {
       getClient().saveFullDay(fullDayType, i);
       setFullDayType(null);
     }
+  };
+
+  const onCalendarChange = (i: Interval) => {
+    console.log(i);
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
@@ -82,6 +86,7 @@ export function App() {
             rangeSelect={!!fullDayType}
             onRangeSelected={onRangeSelected}
             onDateClicked={onDateClicked}
+            onCalendarChange={onCalendarChange}
             cell={(d: Date) => <div>{!isWeekend(d) ? '8h / 1h' : ''}</div>}
           />
 

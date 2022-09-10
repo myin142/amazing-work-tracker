@@ -21,6 +21,11 @@ export enum FullDayType {
   OFF_DUTY = 'Off-Duty',
 }
 
+export interface Project {
+  id: number;
+  name: string;
+}
+
 export function formatTime(date: Date | number) {
   return format(date, 'HH:mm');
 }

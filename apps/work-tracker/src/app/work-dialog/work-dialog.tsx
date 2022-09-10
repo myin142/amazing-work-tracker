@@ -1,6 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { parseTime, WorkDay, WorkTime } from '@myin/models';
-import { ProjectNameIDMap } from '@myin/openapi';
+import { parseTime, Project, WorkDay, WorkTime } from '@myin/models';
 import {
   add,
   format,
@@ -19,7 +18,7 @@ export interface WorkDialogProps {
   date: Date;
   workDay?: WorkDay | null;
   open: boolean;
-  projects: ProjectNameIDMap[];
+  projects: Project[];
   onClose: () => void;
   onSave: (workDay: WorkDay) => void;
 }
@@ -166,8 +165,8 @@ export function WorkDialog({
                           updateWorkTime(i, { projectId: id })
                         }
                         options={projects.map((p) => ({
-                          value: p.projectId || -1,
-                          label: p.projectName || '',
+                          value: p.id,
+                          label: p.name,
                         }))}
                       />
                       <Button onClick={() => removeWorkTime(i)}>
