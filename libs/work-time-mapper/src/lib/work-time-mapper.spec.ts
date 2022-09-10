@@ -1,6 +1,6 @@
-import { FullDayType } from '@myin/models';
+import { FullDayType, WorkDay } from '@myin/models';
 import { OffDutyReasonEnum, TimeSpanTypeEnum } from '@myin/openapi';
-import { mapFullDayTypes, mapToNewTimespans } from './work-time-mapper';
+import { mapFullDayTypes, mapToNewTimespans, mapToWorkDay } from './work-time-mapper';
 
 describe('workTimeMapper', () => {
   it('should return work time without break', () => {
@@ -274,5 +274,80 @@ describe('workTimeMapper', () => {
         ])
       );
     });
+  });
+
+  describe('Map to WorkDay', () => {
+
+    it('should map timespans with projects', () => {
+      const workDays = mapToWorkDay(
+        [
+          { type: TimeSpanTypeEnum.Work, fromTime: '08:00', toTime: '10:00', date: '2020-01-01', id: 1, homeoffice: true },
+          { type: TimeSpanTypeEnum.Break, fromTime: '10:00', toTime: '12:00', date: '2020-01-01', id: 1 },
+          { type: TimeSpanTypeEnum.Work, fromTime: '12:00', toTime: '15:00', date: '2020-01-01', id: 1, homeoffice: true },
+        ],
+        [{
+          date: '2020-01-01', project: 1, timeSpans: [
+            { fromTime: '08:00', toTime: '10:00' },
+            { fromTime: '12:00', toTime: '15:00' }
+          ]
+        }]);
+
+      expect(workDays).toEqual([
+        expect.objectContaining({
+          date: new Date('2020-01-01'),
+          homeoffice: true,
+          workTimes: [{ timeFrom: '08:00', timeTo: '15:00', projectId: 1, breakFrom: '10:00', breakTo: '12:00' }]
+        })
+      ]);
+    });
+
+    it('should map full days', () => {
+      const workDays = mapToWorkDay(
+        [
+          { type: TimeSpanTypeEnum.FullDayVacation, id: 1, date: '2020-01-01' },
+          { type: TimeSpanTypeEnum.OffDuty, id: 1, date: '2020-01-02', offDutyReason: OffDutyReasonEnum.ChangeOfResidence },
+          { type: TimeSpanTypeEnum.SickLeave, id: 1, date: '2020-01-03' },
+        ],
+        []);
+
+      expect(workDays).toEqual([
+        expect.objectContaining({
+          date: new Date('2020-01-01'),
+          vacation: true,
+        }),
+        expect.objectContaining({
+          date: new Date('2020-01-02'),
+          offDuty: OffDutyReasonEnum.ChangeOfResidence,
+        }),
+        expect.objectContaining({
+          date: new Date('2020-01-03'),
+          sickLeave: true,
+        })
+      ]);
+    });
+
+    it('should map half sick day', () => {
+      const workDays = mapToWorkDay(
+        [
+          { type: TimeSpanTypeEnum.Work, id: 1, date: '2020-01-01', fromTime: '08:00', toTime: '10:00' },
+          { type: TimeSpanTypeEnum.SickLeave, id: 1, date: '2020-01-01', fromTime: '10:00' },
+        ],
+        [{
+          date: '2020-01-01', project: 1, timeSpans: [
+            { fromTime: '08:00', toTime: '10:00' },
+          ]
+        }]);
+
+      expect(workDays).toEqual([
+        expect.objectContaining({
+          date: new Date('2020-01-01'),
+          sickLeave: true,
+          workTimes: [
+            { timeFrom: '08:00', timeTo: '10:00', projectId: 1 },
+          ]
+        }),
+      ]);
+    });
+
   });
 });

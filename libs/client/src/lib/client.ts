@@ -1,4 +1,4 @@
-import { Configuration, DefaultApi, ProjectNameIDMap } from '@myin/openapi';
+import { Configuration, DefaultApi } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import { mapFullDayTypes, mapToNewTimespans } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
@@ -43,6 +43,16 @@ export class IMSClient {
   async getProjects(): Promise<Project[]> {
     return this.api.projectGet().then(x => x.data.projects || [])
       .then(projects => projects.map(p => ({ name: p.projectName || '', id: p.projectId || -1 })));
+  }
+
+  async getDays(interval: Interval): Promise<WorkDay[]> {
+    const fromStr = formatDate(interval.start);
+    const toStr = formatDate(interval.end);
+
+    const timeSpans = await this.api.timeBookingGet(fromStr, toStr);
+    const projectTimes = await this.api.projectTimeBookingGet(fromStr, toStr);
+
+    return [];
   }
 }
 

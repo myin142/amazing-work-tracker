@@ -4,9 +4,11 @@ import {
   ProjectDateTimeSpans,
   ProjectTimeSpan,
   TimeSpanTypeEnum,
+  TimeSpanWithID,
   TimeSpanWithoutID,
 } from '@myin/openapi';
 import { eachDayOfInterval, isWeekend } from 'date-fns';
+import { groupBy } from 'lodash';
 
 const projectTimeType: TimeSpanTypeEnum[] = [
   TimeSpanTypeEnum.OnCallDuty,
@@ -140,4 +142,88 @@ export function mapFullDayTypes(
         offDutyReason: reason,
       };
     });
+}
+
+export function mapToWorkDay(
+  timeSpans: TimeSpanWithID[],
+  projectTimes: ProjectDateTimeSpans[]
+): WorkDay[] {
+  const timeSpanByDate = groupBy(timeSpans, (t) => t.date);
+  const projectTimesByDate = groupBy(projectTimes, (t) => t.date);
+
+  const days: { [date: string]: WorkDay } = {};
+
+  Object.keys(timeSpanByDate).forEach(date => {
+    const timeSpans = timeSpanByDate[date];
+    if (timeSpans.length === 1) {
+      const timeSpan = timeSpans[0];
+      if (!timeSpan.toTime && !timeSpan.fromTime) {
+        if (!days[date]) {
+          days[date] = {
+            date: new Date(date),
+            homeoffice: !!timeSpans.find(t => t.homeoffice),
+            workTimes: [],
+          };
+        }
+
+        switch (timeSpan.type) {
+          case TimeSpanTypeEnum.FullDayVacation:
+            days[date].vacation = true;
+            break;
+          case TimeSpanTypeEnum.SickLeave:
+            days[date].sickLeave = true;
+            break;
+          case TimeSpanTypeEnum.OffDuty:
+            days[date].offDuty = timeSpan.offDutyReason;
+            break;
+        }
+      }
+    }
+
+  });
+
+  Object.keys(projectTimesByDate).forEach((date) => {
+    const projectTimes = projectTimesByDate[date];
+    const timeSpans = timeSpanByDate[date];
+    const breaks = timeSpans.filter(t => t.type === TimeSpanTypeEnum.Break);
+
+    if (!days[date]) {
+      days[date] = {
+        date: new Date(date),
+        homeoffice: !!timeSpans.find(t => t.homeoffice),
+        sickLeave: !!timeSpans.find(t => t.type === TimeSpanTypeEnum.SickLeave),
+        workTimes: [],
+      };
+    }
+
+    projectTimes.forEach((project) => {
+      let currentTime: WorkTime | null = null;
+      for (const time of project.timeSpans) {
+        if (currentTime && currentTime.breakTo === time.fromTime) {
+          currentTime.timeTo = time.toTime;
+          days[date].workTimes.push(currentTime);
+          currentTime = null;
+        } else {
+          const matchingBreak = breaks.find(b => b.fromTime === time.toTime);
+          if (matchingBreak) {
+            currentTime = {
+              timeFrom: time.fromTime,
+              timeTo: time.toTime,
+              breakFrom: matchingBreak.fromTime,
+              breakTo: matchingBreak.toTime,
+              projectId: project.project,
+            };
+          } else {
+            days[date].workTimes.push({
+              timeFrom: time.fromTime,
+              timeTo: time.toTime,
+              projectId: project.project,
+            });
+          }
+        }
+      }
+    });
+  });
+
+  return Object.values(days);
 }

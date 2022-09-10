@@ -1,4 +1,5 @@
 import { format, parse } from 'date-fns';
+import { OffDutyReasonEnum } from '@myin/openapi';
 
 export interface WorkTime {
   timeFrom: string;
@@ -13,6 +14,8 @@ export interface WorkDay {
   workTimes: WorkTime[];
   sickLeave?: boolean;
   homeoffice?: boolean;
+  vacation?: boolean;
+  offDuty?: OffDutyReasonEnum;
 }
 
 export enum FullDayType {
