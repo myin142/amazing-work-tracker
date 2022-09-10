@@ -5,9 +5,9 @@ import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import Login from './login/login';
 import { WorkDay, FullDayType, Project } from '@myin/models';
-import { isWeekend } from 'date-fns';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
+import { WorkCell } from './work-cell';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -20,7 +20,7 @@ export function App() {
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
 
-  const [workDays, setWorkDays] = useState([] as WorkDay[]);
+  const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
 
   const getClient = () => new IMSClient(token, environment.baseUrl);
@@ -49,8 +49,15 @@ export function App() {
     }
   };
 
-  const onCalendarChange = (i: Interval) => {
-    console.log(i);
+  const onCalendarChange = async (i: Interval) => {
+    const days = await getClient().getDays(i);
+
+    const dayMap: { [d: string]: WorkDay } = {};
+    days.forEach((day) => {
+      dayMap[day.date.toDateString()] = day;
+    });
+
+    setWorkDays(dayMap);
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
@@ -87,7 +94,11 @@ export function App() {
             onRangeSelected={onRangeSelected}
             onDateClicked={onDateClicked}
             onCalendarChange={onCalendarChange}
-            cell={(d: Date) => <div>{!isWeekend(d) ? '8h / 1h' : ''}</div>}
+            cell={(d: Date) => (
+              <div>
+                <WorkCell day={workDays[d.toDateString()]} />
+              </div>
+            )}
           />
 
           <div className="flex gap-2">{fullDayTypeButtons}</div>

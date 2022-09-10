@@ -62,7 +62,9 @@ export function Calendar({
     end = add(end, { days: 1 });
   }
 
-  useEffect(() => onCalendarChange({ start, end }), [date]);
+  useEffect(() => {
+    onCalendarChange({ start, end });
+  }, [date]);
 
   const onCellClick = (date: Date) => {
     if (rangeSelect) {

@@ -1,6 +1,6 @@
 import { Configuration, DefaultApi } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
-import { mapFullDayTypes, mapToNewTimespans } from '@myin/work-time-mapper';
+import { mapFullDayTypes, mapToNewTimespans, mapToWorkDay } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
 
 export class IMSClient {
@@ -49,10 +49,10 @@ export class IMSClient {
     const fromStr = formatDate(interval.start);
     const toStr = formatDate(interval.end);
 
-    const timeSpans = await this.api.timeBookingGet(fromStr, toStr);
-    const projectTimes = await this.api.projectTimeBookingGet(fromStr, toStr);
+    const { data: timeSpans } = await this.api.timeBookingGet(fromStr, toStr);
+    const { data: projectTimes } = await this.api.projectTimeBookingGet(fromStr, toStr);
 
-    return [];
+    return mapToWorkDay(timeSpans.timeSpans || [], projectTimes.projectTimeSpans || []);
   }
 }
 
