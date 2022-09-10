@@ -8,6 +8,7 @@ import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
 import { WorkCell } from './work-cell';
+import { Interval } from 'date-fns';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -20,6 +21,9 @@ export function App() {
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
 
+  const [calendarInterval, setCalendarInterval] = useState(
+    null as Interval | null
+  );
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
 
@@ -42,15 +46,20 @@ export function App() {
     setWorkDialogOpen(true);
   };
 
-  const onRangeSelected = (i: Interval) => {
+  const onRangeSelected = async (i: Interval) => {
     if (fullDayType) {
       console.log(fullDayType, i);
-      getClient().saveFullDay(fullDayType, i);
+      await getClient().saveFullDay(fullDayType, i);
+      await loadWorkDays();
       setFullDayType(null);
     }
   };
 
-  const onCalendarChange = async (i: Interval) => {
+  const loadWorkDays = async (i: Interval | null = calendarInterval) => {
+    if (!i) {
+      return;
+    }
+
     const days = await getClient().getDays(i);
 
     const dayMap: { [d: string]: WorkDay } = {};
@@ -59,13 +68,15 @@ export function App() {
     });
 
     setWorkDays(dayMap);
+    setCalendarInterval(i);
   };
 
   const closeDialog = () => setWorkDialogOpen(false);
 
   const saveDay = async (workDay: WorkDay) => {
     console.log(workDay);
-    getClient().saveDay(workDay);
+    await getClient().saveDay(workDay);
+    await loadWorkDays();
     closeDialog();
   };
 
@@ -95,7 +106,7 @@ export function App() {
             rangeSelect={!!fullDayType}
             onRangeSelected={onRangeSelected}
             onDateClicked={onDateClicked}
-            onCalendarChange={onCalendarChange}
+            onCalendarChange={loadWorkDays}
             cell={(d: Date) => (
               <div>
                 <WorkCell day={workDays[d.toDateString()]} />
