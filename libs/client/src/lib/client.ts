@@ -1,7 +1,8 @@
-import { Configuration, DefaultApi } from '@myin/openapi';
+import { Configuration, DefaultApi, ProjectDateTimeSpans, TimeSpanWithoutID } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import { mapFullDayTypes, mapToNewTimespans, mapToWorkDay } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
+import { RequiredError } from 'libs/openapi/src/lib/base';
 
 export class IMSClient {
 
@@ -19,11 +20,11 @@ export class IMSClient {
     await this.deleteExistingTimes(workDay.date);
 
     await Promise.all(
-      timeSpans.map((timespan) => this.api.timeBookingPost(timespan))
+      timeSpans.map((timespan) => this.saveTimeSpan(timespan))
     );
 
     await Promise.all(
-      projectTimes.map((timespan) => this.api.projectTimeBookingPost(timespan))
+      projectTimes.map((timespan) => this.saveProjectTime(timespan))
     );
   }
 
@@ -37,7 +38,23 @@ export class IMSClient {
   async saveFullDay(type: FullDayType, interval: Interval) {
     const timeSpans = mapFullDayTypes(type, interval);
     await this.deleteExistingTimes(interval.start, interval.end);
-    await Promise.all(timeSpans.map(timeSpan => this.api.timeBookingPost(timeSpan)));
+    await Promise.all(timeSpans.map(timeSpan => this.saveTimeSpan(timeSpan)));
+  }
+
+  private async saveTimeSpan(timeSpan: TimeSpanWithoutID): Promise<void> {
+    try {
+      await this.api.timeBookingPost(timeSpan);
+    } catch (e: any) {
+      console.warn(`Failed to save timespan for ${timeSpan.date}`, (e as RequiredError));
+    }
+  }
+
+  private async saveProjectTime(timeSpan: ProjectDateTimeSpans): Promise<void> {
+    try {
+      await this.api.projectTimeBookingPost(timeSpan);
+    } catch (e: any) {
+      console.warn(`Failed to save project time for ${timeSpan.date}`, (e as RequiredError));
+    }
   }
 
   async getProjects(): Promise<Project[]> {
