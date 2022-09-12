@@ -15,6 +15,7 @@ import {
   sub,
 } from 'date-fns';
 import { Fragment, useEffect, useState } from 'react';
+import { FaUmbrellaBeach } from 'react-icons/fa';
 import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
@@ -49,12 +50,14 @@ export function WorkDialog({
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
   const [sickLeave, setSickLeave] = useState(false);
   const [homeoffice, setHomeOffice] = useState(false);
+  const [vacation, setVacation] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
 
   useEffect(() => {
     setWorkTimes(workDay?.workTimes || []);
     setSickLeave(workDay?.sickLeave || false);
     setHomeOffice(workDay?.homeoffice || false);
+    setVacation(workDay?.vacation || false);
   }, [workDay]);
 
   const save = () => {
@@ -63,6 +66,7 @@ export function WorkDialog({
       workTimes,
       sickLeave,
       homeoffice,
+      vacation,
     });
   };
 
@@ -213,6 +217,13 @@ export function WorkDialog({
                         onClick={() => setSickLeave(!sickLeave)}
                       >
                         <HiEmojiSad />
+                      </Button>
+                      <Button
+                        title="vacation"
+                        pressed={vacation}
+                        onClick={() => setVacation(!vacation)}
+                      >
+                        <FaUmbrellaBeach />
                       </Button>
                     </div>
                     <Button onClick={() => save()}>Save</Button>

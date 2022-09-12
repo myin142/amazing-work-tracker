@@ -41,7 +41,7 @@ export function App() {
   };
 
   const onDateClicked = (d: Date) => {
-    setCurrentWorkDay(workDays[d.toDateString()]);
+    setCurrentWorkDay(workDays[d.toDateString()] || {});
     setSelectedDate(d);
     setWorkDialogOpen(true);
   };

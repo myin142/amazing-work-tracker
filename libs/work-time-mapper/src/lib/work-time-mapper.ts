@@ -27,6 +27,11 @@ export function mapToNewTimespans(
 ): [TimeSpanWithoutID[], ProjectDateTimeSpans[]] {
   const times: TimeSpanWithoutID[] = [];
   const projectTimes: ProjectDateTimeSpans[] = [];
+  const date = formatDate(workDay.date);
+
+  if (workDay.vacation) {
+    return [[{ type: TimeSpanTypeEnum.FullDayVacation, date }], []];
+  }
 
   workDay.workTimes
     .map((workTime) => {
@@ -57,7 +62,7 @@ export function mapToNewTimespans(
     const maxTime = sorted[sorted.length - 1];
 
     times.push({
-      date: formatDate(workDay.date),
+      date,
       type: TimeSpanTypeEnum.SickLeave,
       fromTime: maxTime,
     });
@@ -122,7 +127,8 @@ function toTimespan(
     type,
     fromTime: from,
     toTime: to,
-    homeoffice: type === TimeSpanTypeEnum.Break ? undefined : (day.homeoffice || false),
+    homeoffice:
+      type === TimeSpanTypeEnum.Break ? undefined : day.homeoffice || false,
   };
 }
 
@@ -148,20 +154,20 @@ export function mapToWorkDay(
   timeSpans: TimeSpanWithID[],
   projectTimes: ProjectDateTimeSpans[]
 ): WorkDay[] {
-  const timeSpanByDate = groupBy(timeSpans, (t) => t.date);
+  const timeSpanByDate = groupBy(timeSpans, (t: TimeSpanWithID) => t.date);
   const projectTimesByDate = groupBy(projectTimes, (t) => t.date);
 
   const days: { [date: string]: WorkDay } = {};
 
-  Object.keys(timeSpanByDate).forEach(date => {
-    const timeSpans = timeSpanByDate[date];
+  Object.keys(timeSpanByDate).forEach((date) => {
+    const timeSpans: TimeSpanWithID[] = timeSpanByDate[date];
     if (timeSpans.length === 1) {
       const timeSpan = timeSpans[0];
       if (!timeSpan.toTime && !timeSpan.fromTime) {
         if (!days[date]) {
           days[date] = {
             date: new Date(date),
-            homeoffice: !!timeSpans.find(t => t.homeoffice),
+            homeoffice: !!timeSpans.find((t: TimeSpanWithID) => t.homeoffice),
             workTimes: [],
           };
         }
@@ -179,19 +185,22 @@ export function mapToWorkDay(
         }
       }
     }
-
   });
 
-  Object.keys(projectTimesByDate).forEach((date) => {
-    const projectTimes = projectTimesByDate[date];
+  Object.keys(projectTimesByDate).forEach((date: string) => {
+    const projectTimes: ProjectDateTimeSpans[] = projectTimesByDate[date];
     const timeSpans = timeSpanByDate[date];
-    const breaks = timeSpans.filter(t => t.type === TimeSpanTypeEnum.Break);
+    const breaks = timeSpans.filter(
+      (t: TimeSpanWithID) => t.type === TimeSpanTypeEnum.Break
+    );
 
     if (!days[date]) {
       days[date] = {
         date: new Date(date),
-        homeoffice: !!timeSpans.find(t => t.homeoffice),
-        sickLeave: !!timeSpans.find(t => t.type === TimeSpanTypeEnum.SickLeave),
+        homeoffice: !!timeSpans.find((t: TimeSpanWithID) => t.homeoffice),
+        sickLeave: !!timeSpans.find(
+          (t: TimeSpanWithID) => t.type === TimeSpanTypeEnum.SickLeave
+        ),
         workTimes: [],
       };
     }
@@ -204,7 +213,9 @@ export function mapToWorkDay(
           days[date].workTimes.push(currentTime);
           currentTime = null;
         } else {
-          const matchingBreak = breaks.find(b => b.fromTime === time.toTime);
+          const matchingBreak = breaks.find(
+            (b: TimeSpanWithID) => b.fromTime === time.toTime
+          );
           if (matchingBreak) {
             currentTime = {
               timeFrom: time.fromTime,

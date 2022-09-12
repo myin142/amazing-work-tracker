@@ -1,3 +1,4 @@
+import { formatDate } from '@myin/models';
 import {
   eachWeekOfInterval,
   addDays,
@@ -13,6 +14,8 @@ import {
   addMonths,
   subMonths,
   isToday,
+  isAfter,
+  isWeekend,
 } from 'date-fns';
 import { isMonday } from 'date-fns/esm';
 import { useEffect, useState } from 'react';
@@ -48,8 +51,10 @@ export function Calendar({
 
   useEffect(() => setRangeStart(null), [rangeSelect]);
 
-  const updateDate = (date: Date) => {
-    setDate(startOfMonth(date));
+  const updateDate = (date: Date | null) => {
+    if (date) {
+      setDate(startOfMonth(date));
+    }
   };
 
   let start = startOfMonth(date);
@@ -71,7 +76,11 @@ export function Calendar({
       if (!rangeStart) {
         setRangeStart(date);
       } else {
-        onRangeSelected({ start: rangeStart, end: date });
+        if (isAfter(rangeStart, date)) {
+          onRangeSelected({ start: date, end: rangeStart });
+        } else {
+          onRangeSelected({ start: rangeStart, end: date });
+        }
       }
     } else {
       onDateClicked(date);
@@ -101,11 +110,18 @@ export function Calendar({
       }
 
       return weekDays.map((d) => {
+        let bg = '';
+        if (isInsideRange(d)) {
+          bg = 'bg-blue-200';
+        } else if (isWeekend(d)) {
+          bg = 'bg-red-50';
+        }
+
         return (
           <div
-            className={`border border-gray-200 p-2 text-sm cursor-pointer ${
+            className={`border border-gray-100 p-2 text-sm cursor-pointer ${
               !isSameMonth(date, d) ? 'opacity-50' : ''
-            } ${isInsideRange(d) ? 'bg-blue-200' : ''}`}
+            } ${bg}`}
             key={d.toISOString()}
             onClick={() => onCellClick(d)}
             onMouseEnter={() => setHoverDate(d)}
@@ -137,7 +153,9 @@ export function Calendar({
           <button onClick={() => setDate(subMonths(date, 1))}>
             <HiChevronLeft />
           </button>
-          <span className="flex-grow text-center">{title}</span>
+          <label className="flex-grow text-center cursor-pointer">
+            {title}
+          </label>
           <button onClick={() => setDate(addMonths(date, 1))}>
             <HiChevronRight />
           </button>
@@ -150,7 +168,9 @@ export function Calendar({
         {weekDayLetters.map((l) => (
           <div
             key={l}
-            className="text-sm border font-bold border-gray-200 p-2 flex items-center justify-center"
+            className={`text-sm border font-bold border-gray-100 p-2 flex items-center justify-center ${
+              l.startsWith('S') ? 'bg-red-100' : ''
+            }`}
           >
             {l}
           </div>
