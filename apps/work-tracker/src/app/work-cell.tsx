@@ -73,7 +73,7 @@ export function WorkCell({ day, date, isSelected }: WorkCellProps) {
       </span>
       {day && (
         <div>
-          {(day.vacation || day.offDuty) && <FaUmbrellaBeach />}
+          {day.vacation && <FaUmbrellaBeach />}
           {day.sickLeave && <HiEmojiSad />}
           {getDuration()}
         </div>

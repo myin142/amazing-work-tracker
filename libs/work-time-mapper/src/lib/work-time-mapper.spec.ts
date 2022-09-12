@@ -378,6 +378,7 @@ describe('workTimeMapper', () => {
         expect.objectContaining({
           date: new Date('2020-01-02'),
           offDuty: OffDutyReasonEnum.ChangeOfResidence,
+          vacation: true,
         }),
         expect.objectContaining({
           date: new Date('2020-01-03'),

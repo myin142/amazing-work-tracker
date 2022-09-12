@@ -6,6 +6,7 @@ import {
   WorkDay,
   WorkTime,
 } from '@myin/models';
+import { OffDutyReasonEnum } from '@myin/openapi';
 import {
   add,
   format,
@@ -52,12 +53,16 @@ export function WorkDialog({
   const [homeoffice, setHomeOffice] = useState(false);
   const [vacation, setVacation] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
+  const [offDutyReason, setOffDutyReason] = useState(
+    null as OffDutyReasonEnum | null
+  );
 
   useEffect(() => {
     setWorkTimes(workDay?.workTimes || []);
     setSickLeave(workDay?.sickLeave || false);
     setHomeOffice(workDay?.homeoffice || false);
     setVacation(workDay?.vacation || false);
+    setOffDutyReason(workDay?.offDuty || null);
   }, [workDay]);
 
   const save = () => {
@@ -67,6 +72,7 @@ export function WorkDialog({
       sickLeave,
       homeoffice,
       vacation,
+      offDuty: offDutyReason || undefined,
     });
   };
 
@@ -202,7 +208,7 @@ export function WorkDialog({
                       <HiPlus />
                     </Button>
                   </div>
-                  <div className="flex gap-2 justify-between">
+                  <div className="flex flex-col gap-2">
                     <div className="flex gap-2">
                       <Button
                         title="homeoffice"
@@ -225,6 +231,16 @@ export function WorkDialog({
                       >
                         <FaUmbrellaBeach />
                       </Button>
+
+                      {vacation && (
+                        <Select
+                          selected={offDutyReason}
+                          onSelected={(v) => setOffDutyReason(v)}
+                          options={Object.values(OffDutyReasonEnum).map(
+                            (v) => ({ value: v, label: v })
+                          )}
+                        ></Select>
+                      )}
                     </div>
                     <Button onClick={() => save()}>Save</Button>
                   </div>

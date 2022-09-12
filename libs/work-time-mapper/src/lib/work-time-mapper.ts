@@ -181,6 +181,7 @@ export function mapToWorkDay(
             break;
           case TimeSpanTypeEnum.OffDuty:
             days[date].offDuty = timeSpan.offDutyReason;
+            days[date].vacation = true;
             break;
         }
       }
