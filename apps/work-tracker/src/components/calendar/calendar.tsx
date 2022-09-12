@@ -1,4 +1,3 @@
-import { formatDate } from '@myin/models';
 import {
   eachWeekOfInterval,
   addDays,
@@ -13,9 +12,7 @@ import {
   isBefore,
   addMonths,
   subMonths,
-  isToday,
   isAfter,
-  isWeekend,
 } from 'date-fns';
 import { isMonday } from 'date-fns/esm';
 import { useEffect, useState } from 'react';
@@ -26,7 +23,7 @@ export interface CalendarProps {
   onDateClicked: (d: Date) => void;
   onRangeSelected: (i: Interval) => void;
   onCalendarChange: (i: Interval) => void;
-  cell?: (d: Date) => JSX.Element;
+  cell?: (d: Date, isSelected: boolean) => JSX.Element;
   rangeSelect: boolean;
 }
 
@@ -82,6 +79,8 @@ export function Calendar({
           onRangeSelected({ start: rangeStart, end: date });
         }
       }
+    } else if (!isWithinInterval(date, { start, end })) {
+      updateDate(date);
     } else {
       onDateClicked(date);
     }
@@ -110,33 +109,17 @@ export function Calendar({
       }
 
       return weekDays.map((d) => {
-        let bg = '';
-        if (isInsideRange(d)) {
-          bg = 'bg-blue-200';
-        } else if (isWeekend(d)) {
-          bg = 'bg-red-50';
-        }
-
         return (
           <div
-            className={`border border-gray-100 p-2 text-sm cursor-pointer ${
+            className={`border border-gray-100 flex text-sm cursor-pointer ${
               !isSameMonth(date, d) ? 'opacity-50' : ''
-            } ${bg}`}
+            }`}
             key={d.toISOString()}
             onClick={() => onCellClick(d)}
             onMouseEnter={() => setHoverDate(d)}
             onMouseLeave={() => setHoverDate(null)}
           >
-            <div className="flex flex-col items-start">
-              <span
-                className={`rounded-full w-6 h-6 flex justify-center items-center ${
-                  isToday(d) ? 'text-white bg-blue-700 font-bold' : ''
-                }`}
-              >
-                <span>{format(d, 'dd')}</span>
-              </span>
-              {cell && cell(d)}
-            </div>
+            {cell && cell(d, isInsideRange(d) || false)}
           </div>
         );
       });

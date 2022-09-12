@@ -107,10 +107,12 @@ export function App() {
             onRangeSelected={onRangeSelected}
             onDateClicked={onDateClicked}
             onCalendarChange={loadWorkDays}
-            cell={(d: Date) => (
-              <div>
-                <WorkCell day={workDays[d.toDateString()]} />
-              </div>
+            cell={(d: Date, isSelected: boolean) => (
+              <WorkCell
+                date={d}
+                day={workDays[d.toDateString()]}
+                isSelected={isSelected}
+              />
             )}
           />
 
