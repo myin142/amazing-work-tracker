@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
@@ -8,7 +8,8 @@ import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
 import { WorkCell } from './work-cell';
-import { Interval, isEqual } from 'date-fns';
+import { Interval, isSameDay } from 'date-fns';
+import useKeyboardShortcut from './use-keyboard-shortcut';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -27,13 +28,29 @@ export function App() {
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
 
-  const getClient = () => new IMSClient(token, environment.baseUrl);
-
   useEffect(() => {
     getClient()
       .getProjects()
       .then((p) => setProjects(p));
   }, []);
+
+  useKeyboardShortcut(['Escape'], () => cancel());
+  useKeyboardShortcut(['1'], () =>
+    toggleFullDayType(Object.values(FullDayType)[0])
+  );
+  useKeyboardShortcut(['2'], () =>
+    toggleFullDayType(Object.values(FullDayType)[1])
+  );
+  useKeyboardShortcut(['3'], () =>
+    toggleFullDayType(Object.values(FullDayType)[2])
+  );
+
+  const getClient = () => new IMSClient(token, environment.baseUrl);
+
+  const cancel = () => {
+    setFullDayType(null);
+    setCopyCell(false);
+  };
 
   const onTokenLogin = (loginToken: string) => {
     localStorage.setItem(LOGIN_TOKEN_KEY, loginToken);
@@ -60,6 +77,13 @@ export function App() {
       date,
     });
     setCopyCell(false);
+  };
+
+  const onCalendarChange = async (i: Interval | null) => {
+    await loadWorkDays(i);
+    if (i?.start) {
+      onDateClicked(new Date(i.start));
+    }
   };
 
   const loadWorkDays = async (i: Interval | null = calendarInterval) => {
@@ -107,18 +131,19 @@ export function App() {
       {(token && (
         <>
           <Calendar
+            currentDate={selectedDate}
             rangeSelect={!!fullDayType}
             cellSelect={copyCell}
             onRangeSelected={onRangeSelected}
             onCellSelected={onCellSelected}
             onDateClicked={onDateClicked}
-            onCalendarChange={loadWorkDays}
+            onCalendarChange={onCalendarChange}
             cell={(d: Date, isSelected: boolean) => (
               <WorkCell
                 date={d}
                 day={workDays[d.toDateString()]}
                 isSelected={isSelected}
-                isOpen={isEqual(selectedDate, d)}
+                isOpen={isSameDay(selectedDate, d)}
               />
             )}
             header={() => (

@@ -63,7 +63,7 @@ export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
     return '';
   };
 
-  const dateColor = () => {
+  const dateStyle = () => {
     let cls = '';
 
     if (isToday(date)) {
@@ -78,9 +78,11 @@ export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
   };
 
   return (
-    <div className={`flex flex-col items-start grow p-2 gap-1 ${bgColor()}`}>
+    <div
+      className={`flex flex-col items-start font-light grow p-2 gap-1 ${bgColor()}`}
+    >
       <span
-        className={`rounded-full w-6 h-6 flex justify-center items-center ${dateColor()}`}
+        className={`rounded-full w-6 h-6 flex justify-center items-center ${dateStyle()}`}
       >
         <span>{format(date, 'dd')}</span>
       </span>

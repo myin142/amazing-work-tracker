@@ -14,11 +14,12 @@ import {
   startOfToday,
   sub,
 } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaCopy, FaUmbrellaBeach } from 'react-icons/fa';
 import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
+import useKeyboardShortcut from '../use-keyboard-shortcut';
 import { parseWorkTime } from './work-time-parser';
 
 export interface WorkDialogProps {
@@ -55,6 +56,17 @@ export function WorkDialog({
   const [offDutyReason, setOffDutyReason] = useState(
     null as OffDutyReasonEnum | null
   );
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useKeyboardShortcut(['Shift', 'w'], () => save());
+  useKeyboardShortcut(['y'], () => onCopy());
+  useKeyboardShortcut(['a'], () => setHomeOffice(!homeoffice));
+  useKeyboardShortcut(['s'], () => setSickLeave(!sickLeave));
+  useKeyboardShortcut(['d'], () => setVacation(!vacation));
+  useKeyboardShortcut(['i'], () => inputRef.current?.focus(), {
+    overrideSystem: true,
+  });
 
   useEffect(() => {
     setWorkTimes(workDay?.workTimes || []);
@@ -146,7 +158,7 @@ export function WorkDialog({
                 ` / ${work.breakFrom} - ${work.breakTo}`}
             </div>
             <Select
-              className="flex-grow"
+              className="grow"
               selected={work.projectId}
               onSelected={(id) => updateWorkTime(i, { projectId: id })}
               options={projects.map((p) => ({
@@ -162,7 +174,8 @@ export function WorkDialog({
 
         <div className="flex gap-2">
           <input
-            className={`flex-grow rounded-md outline-none ring-outset ring-1
+            ref={inputRef}
+            className={`grow rounded-md outline-none ring-outset ring-1
                       bg-white p-2 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                         isInvalid
                           ? 'ring-red-400 focus-visible:ring-red-600'
@@ -178,7 +191,7 @@ export function WorkDialog({
           </Button>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between items-center gap-2">
             <div className="flex gap-2 grow">
               <Button
                 title="homeoffice"

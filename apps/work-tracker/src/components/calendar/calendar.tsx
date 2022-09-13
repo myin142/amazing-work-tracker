@@ -13,10 +13,13 @@ import {
   addMonths,
   subMonths,
   isAfter,
+  subDays,
+  subWeeks,
 } from 'date-fns';
-import { isMonday } from 'date-fns/esm';
+import { addWeeks, isMonday } from 'date-fns/esm';
 import { useEffect, useState } from 'react';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import useKeyboardShortcut from '../../app/use-keyboard-shortcut';
 import Button from '../button/button';
 
 export interface CalendarProps {
@@ -28,6 +31,7 @@ export interface CalendarProps {
   rangeSelect: boolean;
   cellSelect: boolean;
   header?: () => JSX.Element;
+  currentDate: Date;
 }
 
 const createIntervalBetween = (date1: Date, date2: Date): Interval => {
@@ -47,12 +51,30 @@ export function Calendar({
   header,
   rangeSelect,
   cellSelect,
+  currentDate,
 }: CalendarProps) {
   const [date, setDate] = useState(startOfMonth(new Date()));
   const [rangeStart, setRangeStart] = useState(null as Date | null);
   const [hoverDate, setHoverDate] = useState(null as Date | null);
 
+  const isSelecting = cellSelect || rangeSelect;
+  const moveDate = isSelecting ? hoverDate || currentDate : currentDate;
+
+  useKeyboardShortcut(['Shift', 'H'], () => prevMonth());
+  useKeyboardShortcut(['Shift', 'L'], () => nextMonth());
+  useKeyboardShortcut(['H'], () => onKeyMove(subDays(moveDate, 1)));
+  useKeyboardShortcut(['J'], () => onKeyMove(addWeeks(moveDate, 1)));
+  useKeyboardShortcut(['K'], () => onKeyMove(subWeeks(moveDate, 1)));
+  useKeyboardShortcut(['L'], () => onKeyMove(addDays(moveDate, 1)));
+  useKeyboardShortcut([' '], () => onKeyConfirm(), { overrideSystem: true });
+
   useEffect(() => setRangeStart(null), [rangeSelect]);
+  useEffect(() => {
+    onCalendarChange({ start, end });
+  }, [date]);
+
+  const prevMonth = () => setDate(subMonths(date, 1));
+  const nextMonth = () => setDate(addMonths(date, 1));
 
   const updateDate = (date: Date | null) => {
     if (date) {
@@ -70,9 +92,32 @@ export function Calendar({
     end = add(end, { days: 1 });
   }
 
-  useEffect(() => {
-    onCalendarChange({ start, end });
-  }, [date]);
+  const withinRange = (date: Date) => isWithinInterval(date, { start, end });
+  const updateRangeForDate = (date: Date) => {
+    if (!withinRange(date)) {
+      updateDate(date);
+    }
+  };
+
+  const onKeyConfirm = () => {
+    if (isSelecting) {
+      const date = hoverDate || currentDate;
+      onCellClick(date);
+      updateRangeForDate(currentDate);
+    }
+  };
+
+  const onKeyMove = (date: Date) => {
+    if (isSelecting) {
+      updateRangeForDate(date);
+      setHoverDate(date);
+    } else {
+      onCellClick(date);
+      if (!withinRange(date)) {
+        onDateClicked(date);
+      }
+    }
+  };
 
   const onCellClick = (date: Date) => {
     if (cellSelect) {
@@ -86,8 +131,11 @@ export function Calendar({
         } else {
           onRangeSelected({ start: rangeStart, end: date });
         }
+
+        setRangeStart(null);
+        setHoverDate(null);
       }
-    } else if (!isWithinInterval(date, { start, end })) {
+    } else if (!withinRange(date)) {
       updateDate(date);
     } else {
       onDateClicked(date);
@@ -141,13 +189,13 @@ export function Calendar({
     <div className=" text-gray-800 w-full flex-grow flex flex-col">
       <div className="text-4xl font-bold flex items-center justify-between">
         <div className="flex items-center w-96">
-          <button onClick={() => setDate(subMonths(date, 1))}>
+          <button onClick={prevMonth}>
             <HiChevronLeft />
           </button>
           <label className="flex-grow text-center cursor-pointer">
             {title}
           </label>
-          <button onClick={() => setDate(addMonths(date, 1))}>
+          <button onClick={nextMonth}>
             <HiChevronRight />
           </button>
         </div>
