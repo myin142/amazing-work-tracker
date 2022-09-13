@@ -202,6 +202,26 @@ describe('workTimeMapper', () => {
     ]);
   });
 
+  it('should create off-duty vacation', () => {
+    const [timeSpans] = mapToNewTimespans({
+      date: new Date('2020-01-01'),
+      homeoffice: true,
+      vacation: true,
+      offDuty: OffDutyReasonEnum.ChangeOfResidence,
+      workTimes: [{ timeFrom: '08:00', timeTo: '10:00', projectId: 1 }],
+    });
+
+    expect(timeSpans).toEqual([
+      {
+        date: '2020-01-01',
+        type: TimeSpanTypeEnum.OffDuty,
+        offDutyReason: OffDutyReasonEnum.ChangeOfResidence,
+        fromTime: undefined,
+        toTime: undefined,
+      },
+    ]);
+  });
+
   describe('FullDayType', () => {
     it('should create vacation times without weekend', () => {
       const times = mapFullDayTypes(FullDayType.VACATION, {

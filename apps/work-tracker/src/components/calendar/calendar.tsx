@@ -22,9 +22,11 @@ import Button from '../button/button';
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
   onRangeSelected: (i: Interval) => void;
+  onCellSelected: (d: Date) => void;
   onCalendarChange: (i: Interval) => void;
   cell?: (d: Date, isSelected: boolean) => JSX.Element;
   rangeSelect: boolean;
+  cellSelect: boolean;
   header?: () => JSX.Element;
 }
 
@@ -39,10 +41,12 @@ const createIntervalBetween = (date1: Date, date2: Date): Interval => {
 export function Calendar({
   onDateClicked,
   onRangeSelected,
+  onCellSelected,
   onCalendarChange,
   cell,
   header,
   rangeSelect,
+  cellSelect,
 }: CalendarProps) {
   const [date, setDate] = useState(startOfMonth(new Date()));
   const [rangeStart, setRangeStart] = useState(null as Date | null);
@@ -71,7 +75,9 @@ export function Calendar({
   }, [date]);
 
   const onCellClick = (date: Date) => {
-    if (rangeSelect) {
+    if (cellSelect) {
+      onCellSelected(date);
+    } else if (rangeSelect) {
       if (!rangeStart) {
         setRangeStart(date);
       } else {
@@ -89,7 +95,7 @@ export function Calendar({
   };
 
   const isInsideRange = (date: Date) => {
-    if (rangeSelect) {
+    if (rangeSelect || cellSelect) {
       const isHoverDate = hoverDate && isSameDay(hoverDate, date);
       const isRangeStartDate = rangeStart && isSameDay(rangeStart, date);
       const isBetweenStartAndHover =

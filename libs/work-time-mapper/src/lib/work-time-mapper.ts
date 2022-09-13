@@ -30,6 +30,18 @@ export function mapToNewTimespans(
   const date = formatDate(workDay.date);
 
   if (workDay.vacation) {
+    if (workDay.offDuty) {
+      return [
+        [
+          {
+            type: TimeSpanTypeEnum.OffDuty,
+            date,
+            offDutyReason: workDay.offDuty,
+          },
+        ],
+        [],
+      ];
+    }
     return [[{ type: TimeSpanTypeEnum.FullDayVacation, date }], []];
   }
 

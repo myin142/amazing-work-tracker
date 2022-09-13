@@ -15,7 +15,7 @@ import {
   sub,
 } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { FaUmbrellaBeach } from 'react-icons/fa';
+import { FaCopy, FaUmbrellaBeach } from 'react-icons/fa';
 import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
@@ -26,6 +26,8 @@ export interface WorkDialogProps {
   workDay?: WorkDay | null;
   projects: Project[];
   onSave: (workDay: WorkDay) => void;
+  onCopy: () => void;
+  isCopying?: boolean;
 }
 
 const formatDuration = (date: Date): string =>
@@ -41,6 +43,8 @@ export function WorkDialog({
   workDay,
   projects,
   onSave,
+  onCopy,
+  isCopying,
 }: WorkDialogProps) {
   const [workTimeInput, setWorkTimeInput] = useState('');
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
@@ -174,39 +178,50 @@ export function WorkDialog({
           </Button>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Button
-              title="homeoffice"
-              pressed={homeoffice}
-              onClick={() => setHomeOffice(!homeoffice)}
-            >
-              <HiHome />
-            </Button>
-            <Button
-              title="sick leave"
-              pressed={sickLeave}
-              onClick={() => setSickLeave(!sickLeave)}
-            >
-              <HiEmojiSad />
-            </Button>
-            <Button
-              title="vacation"
-              pressed={vacation}
-              onClick={() => setVacation(!vacation)}
-            >
-              <FaUmbrellaBeach />
-            </Button>
+          <div className="flex flex-row justify-between">
+            <div className="flex gap-2 grow">
+              <Button
+                title="homeoffice"
+                pressed={homeoffice}
+                onClick={() => setHomeOffice(!homeoffice)}
+              >
+                <HiHome />
+              </Button>
+              <Button
+                title="sick leave"
+                pressed={sickLeave}
+                onClick={() => setSickLeave(!sickLeave)}
+              >
+                <HiEmojiSad />
+              </Button>
+              <Button
+                title="vacation"
+                pressed={vacation}
+                onClick={() => setVacation(!vacation)}
+              >
+                <FaUmbrellaBeach />
+              </Button>
 
-            {vacation && (
-              <Select
-                selected={offDutyReason}
-                onSelected={(v) => setOffDutyReason(v)}
-                options={Object.values(OffDutyReasonEnum).map((v) => ({
-                  value: v,
-                  label: v,
-                }))}
-              ></Select>
-            )}
+              {vacation && (
+                <Select
+                  selected={offDutyReason}
+                  onSelected={(v) => setOffDutyReason(v)}
+                  className="grow"
+                  options={[
+                    { value: null, label: '<NONE>' },
+                    ...Object.values(OffDutyReasonEnum).map((v) => ({
+                      value: v,
+                      label: v,
+                    })),
+                  ]}
+                ></Select>
+              )}
+            </div>
+            <div>
+              <Button title="copy" onClick={() => onCopy()} pressed={isCopying}>
+                <FaCopy />
+              </Button>
+            </div>
           </div>
           <Button onClick={() => save()}>Save</Button>
         </div>

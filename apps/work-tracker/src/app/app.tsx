@@ -16,6 +16,7 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWorkDay, setCurrentWorkDay] = useState(null as WorkDay | null);
   const [fullDayType, setFullDayType] = useState(null as FullDayType | null);
+  const [copyCell, setCopyCell] = useState(false);
   const [token, setToken] = useState(
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
@@ -53,6 +54,14 @@ export function App() {
     }
   };
 
+  const onCellSelected = (date: Date) => {
+    setCurrentWorkDay({
+      ...(workDays[date.toDateString()] || {}),
+      date,
+    });
+    setCopyCell(false);
+  };
+
   const loadWorkDays = async (i: Interval | null = calendarInterval) => {
     if (!i) {
       return;
@@ -83,7 +92,6 @@ export function App() {
     }
   };
 
-
   const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
     <Button
       key={type}
@@ -100,7 +108,9 @@ export function App() {
         <>
           <Calendar
             rangeSelect={!!fullDayType}
+            cellSelect={copyCell}
             onRangeSelected={onRangeSelected}
+            onCellSelected={onCellSelected}
             onDateClicked={onDateClicked}
             onCalendarChange={loadWorkDays}
             cell={(d: Date, isSelected: boolean) => (
@@ -121,6 +131,8 @@ export function App() {
             workDay={currentWorkDay}
             projects={projects}
             onSave={saveDay}
+            onCopy={() => setCopyCell(!copyCell)}
+            isCopying={copyCell}
           />
         </>
       )) || <Login onLogin={(token) => onTokenLogin(token)} />}
