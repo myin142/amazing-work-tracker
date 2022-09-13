@@ -8,12 +8,11 @@ import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
 import { WorkCell } from './work-cell';
-import { Interval } from 'date-fns';
+import { Interval, isEqual } from 'date-fns';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
 export function App() {
-  const [workDialogOpen, setWorkDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWorkDay, setCurrentWorkDay] = useState(null as WorkDay | null);
   const [fullDayType, setFullDayType] = useState(null as FullDayType | null);
@@ -43,7 +42,6 @@ export function App() {
   const onDateClicked = (d: Date) => {
     setCurrentWorkDay(workDays[d.toDateString()] || {});
     setSelectedDate(d);
-    setWorkDialogOpen(true);
   };
 
   const onRangeSelected = async (i: Interval) => {
@@ -71,13 +69,10 @@ export function App() {
     setCalendarInterval(i);
   };
 
-  const closeDialog = () => setWorkDialogOpen(false);
-
   const saveDay = async (workDay: WorkDay) => {
     console.log(workDay);
     await getClient().saveDay(workDay);
     await loadWorkDays();
-    closeDialog();
   };
 
   const toggleFullDayType = (type: FullDayType) => {
@@ -87,6 +82,7 @@ export function App() {
       setFullDayType(type);
     }
   };
+
 
   const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
     <Button
@@ -99,7 +95,7 @@ export function App() {
   ));
 
   return (
-    <div className="flex flex-col gap-4 items-center p-4 h-full">
+    <div className="flex flex-row gap-4 p-4 h-full">
       {(token && (
         <>
           <Calendar
@@ -112,18 +108,18 @@ export function App() {
                 date={d}
                 day={workDays[d.toDateString()]}
                 isSelected={isSelected}
+                isOpen={isEqual(selectedDate, d)}
               />
             )}
+            header={() => (
+              <div className="flex gap-2">{fullDayTypeButtons}</div>
+            )}
           />
-
-          <div className="flex gap-2">{fullDayTypeButtons}</div>
 
           <WorkDialog
             date={selectedDate}
             workDay={currentWorkDay}
-            open={workDialogOpen}
             projects={projects}
-            onClose={closeDialog}
             onSave={saveDay}
           />
         </>

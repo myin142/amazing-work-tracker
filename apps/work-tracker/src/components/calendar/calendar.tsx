@@ -25,6 +25,7 @@ export interface CalendarProps {
   onCalendarChange: (i: Interval) => void;
   cell?: (d: Date, isSelected: boolean) => JSX.Element;
   rangeSelect: boolean;
+  header?: () => JSX.Element;
 }
 
 const createIntervalBetween = (date1: Date, date2: Date): Interval => {
@@ -40,6 +41,7 @@ export function Calendar({
   onRangeSelected,
   onCalendarChange,
   cell,
+  header,
   rangeSelect,
 }: CalendarProps) {
   const [date, setDate] = useState(startOfMonth(new Date()));
@@ -143,9 +145,10 @@ export function Calendar({
             <HiChevronRight />
           </button>
         </div>
-        <Button className="text-base" onClick={() => updateDate(new Date())}>
-          Today
-        </Button>
+
+        {header && header()}
+
+        <Button onClick={() => updateDate(new Date())}>Today</Button>
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (

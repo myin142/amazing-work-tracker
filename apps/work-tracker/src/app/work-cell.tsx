@@ -12,11 +12,12 @@ import { HiEmojiSad } from 'react-icons/hi';
 
 interface WorkCellProps {
   date: Date;
-  isSelected: boolean;
+  isSelected?: boolean;
+  isOpen?: boolean;
   day?: WorkDay;
 }
 
-export function WorkCell({ day, date, isSelected }: WorkCellProps) {
+export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
   const getDuration = () => {
     if (!day) {
       return '';
@@ -62,17 +63,29 @@ export function WorkCell({ day, date, isSelected }: WorkCellProps) {
     return '';
   };
 
+  const dateColor = () => {
+    let cls = '';
+
+    if (isToday(date)) {
+      cls += ' text-white bg-blue-700';
+    }
+
+    if (isOpen) {
+      cls += ' underline font-bold';
+    }
+
+    return cls;
+  };
+
   return (
-    <div className={`flex flex-col items-start grow p-2 ${bgColor()}`}>
+    <div className={`flex flex-col items-start grow p-2 gap-1 ${bgColor()}`}>
       <span
-        className={`rounded-full w-6 h-6 flex justify-center items-center font-bold ${
-          isToday(date) ? 'text-white bg-blue-700' : ''
-        }`}
+        className={`rounded-full w-6 h-6 flex justify-center items-center ${dateColor()}`}
       >
         <span>{format(date, 'dd')}</span>
       </span>
       {day && (
-        <div>
+        <div className="flex flex-row gap-2 items-center h-8">
           {day.vacation && <FaUmbrellaBeach />}
           {day.sickLeave && <HiEmojiSad />}
           {getDuration()}

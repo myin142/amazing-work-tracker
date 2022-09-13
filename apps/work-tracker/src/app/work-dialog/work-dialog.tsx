@@ -1,4 +1,3 @@
-import { Dialog, Transition } from '@headlessui/react';
 import {
   formatTime,
   parseTime,
@@ -15,7 +14,7 @@ import {
   startOfToday,
   sub,
 } from 'date-fns';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaUmbrellaBeach } from 'react-icons/fa';
 import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
@@ -25,9 +24,7 @@ import { parseWorkTime } from './work-time-parser';
 export interface WorkDialogProps {
   date: Date;
   workDay?: WorkDay | null;
-  open: boolean;
   projects: Project[];
-  onClose: () => void;
   onSave: (workDay: WorkDay) => void;
 }
 
@@ -42,9 +39,7 @@ const intervalTotalTime = (intervals: Interval[]): Date =>
 export function WorkDialog({
   date,
   workDay,
-  open,
   projects,
-  onClose,
   onSave,
 }: WorkDialogProps) {
   const [workTimeInput, setWorkTimeInput] = useState('');
@@ -131,126 +126,92 @@ export function WorkDialog({
   };
 
   return (
-    <Transition appear show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition.Child>
+    <div className="w-1/2">
+      <h1 className="text-2xl py-2 leading-6 text-gray-900 font-bold mb-2 flex justify-between">
+        <span>{format(date, 'dd.MM.yyyy')}</span>
+        <span>{totalTimes()}</span>
+      </h1>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg leading-6 text-gray-900 font-bold mb-2 flex justify-between"
-                >
-                  <span>{format(date, 'dd.MM.yyyy')}</span>
-                  <span>{totalTimes()}</span>
-                </Dialog.Title>
+      <div className="flex flex-col gap-4">
+        {workTimes.map((work, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <div>
+              {work.timeFrom} - {work.timeTo}
+              {work.breakFrom &&
+                work.breakTo &&
+                ` / ${work.breakFrom} - ${work.breakTo}`}
+            </div>
+            <Select
+              className="flex-grow"
+              selected={work.projectId}
+              onSelected={(id) => updateWorkTime(i, { projectId: id })}
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.name,
+              }))}
+            />
+            <Button onClick={() => removeWorkTime(i)}>
+              <HiMinus />
+            </Button>
+          </div>
+        ))}
 
-                <div className="flex flex-col gap-4">
-                  {workTimes.map((work, i) => (
-                    <div key={i} className="flex items-center gap-4">
-                      <div>
-                        {work.timeFrom} - {work.timeTo}
-                        {work.breakFrom &&
-                          work.breakTo &&
-                          ` / ${work.breakFrom} - ${work.breakTo}`}
-                      </div>
-                      <Select
-                        className="flex-grow"
-                        selected={work.projectId}
-                        onSelected={(id) =>
-                          updateWorkTime(i, { projectId: id })
-                        }
-                        options={projects.map((p) => ({
-                          value: p.id,
-                          label: p.name,
-                        }))}
-                      />
-                      <Button onClick={() => removeWorkTime(i)}>
-                        <HiMinus />
-                      </Button>
-                    </div>
-                  ))}
-
-                  <div className="flex gap-2">
-                    <input
-                      className={`flex-grow rounded-md outline-none ring-outset ring-1
+        <div className="flex gap-2">
+          <input
+            className={`flex-grow rounded-md outline-none ring-outset ring-1
                       bg-white p-2 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                         isInvalid
                           ? 'ring-red-400 focus-visible:ring-red-600'
                           : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500'
                       }`}
-                      placeholder="Example: 8-17/12-13"
-                      value={workTimeInput}
-                      onChange={(e) => setWorkTimeInput(e.target.value)}
-                      onKeyUp={workTimeInputKeyUp}
-                    />
-                    <Button onClick={addWorkTime}>
-                      <HiPlus />
-                    </Button>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-2">
-                      <Button
-                        title="homeoffice"
-                        pressed={homeoffice}
-                        onClick={() => setHomeOffice(!homeoffice)}
-                      >
-                        <HiHome />
-                      </Button>
-                      <Button
-                        title="sick leave"
-                        pressed={sickLeave}
-                        onClick={() => setSickLeave(!sickLeave)}
-                      >
-                        <HiEmojiSad />
-                      </Button>
-                      <Button
-                        title="vacation"
-                        pressed={vacation}
-                        onClick={() => setVacation(!vacation)}
-                      >
-                        <FaUmbrellaBeach />
-                      </Button>
-
-                      {vacation && (
-                        <Select
-                          selected={offDutyReason}
-                          onSelected={(v) => setOffDutyReason(v)}
-                          options={Object.values(OffDutyReasonEnum).map(
-                            (v) => ({ value: v, label: v })
-                          )}
-                        ></Select>
-                      )}
-                    </div>
-                    <Button onClick={() => save()}>Save</Button>
-                  </div>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+            placeholder="Example: 8-17/12-13"
+            value={workTimeInput}
+            onChange={(e) => setWorkTimeInput(e.target.value)}
+            onKeyUp={workTimeInputKeyUp}
+          />
+          <Button onClick={addWorkTime}>
+            <HiPlus />
+          </Button>
         </div>
-      </Dialog>
-    </Transition>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button
+              title="homeoffice"
+              pressed={homeoffice}
+              onClick={() => setHomeOffice(!homeoffice)}
+            >
+              <HiHome />
+            </Button>
+            <Button
+              title="sick leave"
+              pressed={sickLeave}
+              onClick={() => setSickLeave(!sickLeave)}
+            >
+              <HiEmojiSad />
+            </Button>
+            <Button
+              title="vacation"
+              pressed={vacation}
+              onClick={() => setVacation(!vacation)}
+            >
+              <FaUmbrellaBeach />
+            </Button>
+
+            {vacation && (
+              <Select
+                selected={offDutyReason}
+                onSelected={(v) => setOffDutyReason(v)}
+                options={Object.values(OffDutyReasonEnum).map((v) => ({
+                  value: v,
+                  label: v,
+                }))}
+              ></Select>
+            )}
+          </div>
+          <Button onClick={() => save()}>Save</Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
