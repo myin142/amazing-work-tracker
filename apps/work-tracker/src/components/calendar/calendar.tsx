@@ -182,13 +182,13 @@ export function Calendar({
     }
   );
 
-  const title = format(date, 'MMMM yyyy');
+  const title = format(date, 'MM / yyyy');
   const weekDayLetters = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Son'];
 
   return (
     <div className=" text-gray-800 w-full flex-grow flex flex-col">
-      <div className="text-4xl font-bold flex items-center justify-between">
-        <div className="flex items-center w-96">
+      <div className="text-3xl font-bold flex items-center justify-between">
+        <div className="flex items-center">
           <button onClick={prevMonth}>
             <HiChevronLeft />
           </button>
