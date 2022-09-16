@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useRef, useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
@@ -147,7 +146,7 @@ export function App() {
               />
             )}
             header={() => (
-              <div className="flex gap-2">{fullDayTypeButtons}</div>
+              <div className="flex gap-2 items-center">{fullDayTypeButtons}</div>
             )}
           />
 
