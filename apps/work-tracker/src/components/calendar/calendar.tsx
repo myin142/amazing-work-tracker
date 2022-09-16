@@ -53,7 +53,7 @@ export function Calendar({
   cellSelect,
   currentDate,
 }: CalendarProps) {
-  const [date, setDate] = useState(startOfMonth(new Date()));
+  const [date, setDate] = useState(new Date());
   const [rangeStart, setRangeStart] = useState(null as Date | null);
   const [hoverDate, setHoverDate] = useState(null as Date | null);
 
@@ -78,7 +78,7 @@ export function Calendar({
 
   const updateDate = (date: Date | null) => {
     if (date) {
-      setDate(startOfMonth(date));
+      setDate(date);
     }
   };
 
@@ -202,7 +202,7 @@ export function Calendar({
 
         {header && header()}
 
-        <Button onClick={() => updateDate(new Date())}>Today</Button>
+        <Button onClick={() => onCellClick(new Date())}>Today</Button>
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (
