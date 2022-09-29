@@ -7,7 +7,7 @@ import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
 import { WorkCell } from './work-cell';
-import { Interval, isSameDay } from 'date-fns';
+import { Interval, isSameDay, isWithinInterval } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
@@ -80,7 +80,7 @@ export function App() {
 
   const onCalendarChange = async (i: Interval | null) => {
     await loadWorkDays(i);
-    if (i?.start) {
+    if (i?.start && !isWithinInterval(selectedDate, i)) {
       onDateClicked(new Date(i.start));
     }
   };
@@ -146,7 +146,9 @@ export function App() {
               />
             )}
             header={() => (
-              <div className="flex gap-2 items-center">{fullDayTypeButtons}</div>
+              <div className="flex gap-2 items-center">
+                {fullDayTypeButtons}
+              </div>
             )}
           />
 
