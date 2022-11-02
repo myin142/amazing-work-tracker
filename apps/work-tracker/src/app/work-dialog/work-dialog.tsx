@@ -20,7 +20,7 @@ import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
 import useKeyboardShortcut from '../use-keyboard-shortcut';
-import { parseWorkTime } from './work-time-parser';
+import { parseWorkTime } from '@myin/work-time-parser';
 
 export interface WorkDialogProps {
   date: Date;

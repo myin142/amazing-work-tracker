@@ -6,6 +6,7 @@
     "models": "libs/models",
     "openapi": "libs/openapi",
     "work-time-mapper": "libs/work-time-mapper",
+    "work-time-parser": "libs/work-time-parser",
     "work-tracker": "apps/work-tracker",
     "work-tracker-e2e": "apps/work-tracker-e2e"
   }

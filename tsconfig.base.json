@@ -18,7 +18,8 @@
       "@myin/client": ["libs/client/src/index.ts"],
       "@myin/models": ["libs/models/src/index.ts"],
       "@myin/openapi": ["libs/openapi/src/index.ts"],
-      "@myin/work-time-mapper": ["libs/work-time-mapper/src/index.ts"]
+      "@myin/work-time-mapper": ["libs/work-time-mapper/src/index.ts"],
+      "@myin/work-time-parser": ["libs/work-time-parser/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
