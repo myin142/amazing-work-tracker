@@ -185,7 +185,7 @@ export function WorkDialog({
                           ? 'ring-red-400 focus-visible:ring-red-600'
                           : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500'
                       }`}
-            placeholder="Example: 8-17/12-13"
+            placeholder="Example: 8-17/12-13 or 8h"
             value={workTimeInput}
             onChange={(e) => setWorkTimeInput(e.target.value)}
             onKeyUp={workTimeInputKeyUp}

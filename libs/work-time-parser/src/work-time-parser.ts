@@ -1,14 +1,45 @@
 import { formatTime, WorkTime } from '@myin/models';
-import {
-  isValid,
-  isWithinInterval,
-  parse,
-} from 'date-fns';
+import { addMinutes, isValid, isWithinInterval, parse } from 'date-fns';
+
+const DEFAULT_HOURS_START_TIME = '08:00';
+const DEFAULT_HOURS_BREAK_MINUTES = 60;
+
+const MAX_WORK_HOURS_WITHOUT_BREAK = 6;
+
+function parseWorkHours(input: string) {
+  const hours = parseFloat(input);
+  const workMinutes = hours * 60;
+  const start = parseTime(DEFAULT_HOURS_START_TIME);
+  if (start) {
+    let breakFrom = null;
+    let breakTo = null;
+    let end = addMinutes(start, workMinutes);
+    if (hours > MAX_WORK_HOURS_WITHOUT_BREAK) {
+      end = addMinutes(end, DEFAULT_HOURS_BREAK_MINUTES);
+      breakFrom = addMinutes(start, Math.floor(workMinutes / 2));
+      breakTo = addMinutes(breakFrom, DEFAULT_HOURS_BREAK_MINUTES);
+    }
+
+    return {
+      timeFrom: DEFAULT_HOURS_START_TIME,
+      timeTo: formatTime(end),
+      breakFrom: breakFrom ? formatTime(breakFrom) : undefined,
+      breakTo: breakTo ? formatTime(breakTo) : undefined,
+      projectId: -1,
+    };
+  }
+
+  return null;
+}
 
 export function parseWorkTime(
   input: string,
   refDate = new Date()
 ): WorkTime | null {
+  if (input.match(/^\d+\.?\d?h$/)) {
+    return parseWorkHours(input);
+  }
+
   const times = input.split('/');
   const timeInterval = parseInterval(times[0], refDate);
   if (!timeInterval) {
