@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
@@ -7,7 +7,13 @@ import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient } from '@myin/client';
 import { WorkCell } from './work-cell';
-import { Interval, isSameDay, isWithinInterval } from 'date-fns';
+import {
+  endOfMonth,
+  Interval,
+  isSameDay,
+  isWithinInterval,
+  startOfMonth,
+} from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
@@ -95,6 +101,10 @@ export function App() {
     const dayMap: { [d: string]: WorkDay } = {};
     days.forEach((day) => {
       dayMap[day.date.toDateString()] = day;
+
+      if (currentWorkDay && isSameDay(day.date, currentWorkDay.date)) {
+        setCurrentWorkDay(day);
+      }
     });
 
     setWorkDays(dayMap);
@@ -115,6 +125,27 @@ export function App() {
     }
   };
 
+  const lockMonth = async () => {
+    await getClient().lockDays({
+      start: startOfMonth(selectedDate),
+      end: endOfMonth(selectedDate),
+    });
+    await loadWorkDays();
+  };
+
+  const withdrawMonth = async () => {
+    await getClient().lockDays(
+      {
+        start: startOfMonth(selectedDate),
+        end: endOfMonth(selectedDate),
+      },
+      true
+    );
+    await loadWorkDays();
+  };
+
+  const hasWorkDays = Object.keys(workDays).length;
+  const monthLocked = Object.values(workDays).some((day) => day.locked);
   const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
     <Button
       key={type}
@@ -124,6 +155,12 @@ export function App() {
       {type}
     </Button>
   ));
+
+  const lockButton = <Button onClick={() => lockMonth()}>Lock Month</Button>;
+  const withDrawButton = (
+    <Button onClick={() => withdrawMonth()}>Withdraw Month</Button>
+  );
+  const loginButton = <Login onLogin={(token) => onTokenLogin(token)} />;
 
   return (
     <div className="flex flex-row gap-4 p-4 h-full">
@@ -152,16 +189,22 @@ export function App() {
             )}
           />
 
-          <WorkDialog
-            date={selectedDate}
-            workDay={currentWorkDay}
-            projects={projects}
-            onSave={saveDay}
-            onCopy={() => setCopyCell(!copyCell)}
-            isCopying={copyCell}
-          />
+          <div className="w-1/2 flex flex-col justify-between">
+            <WorkDialog
+              date={selectedDate}
+              workDay={currentWorkDay}
+              projects={projects}
+              onSave={saveDay}
+              onCopy={() => setCopyCell(!copyCell)}
+              isCopying={copyCell}
+            />
+
+            {(hasWorkDays && ((monthLocked && withDrawButton) || lockButton)) ||
+              ''}
+          </div>
         </>
-      )) || <Login onLogin={(token) => onTokenLogin(token)} />}
+      )) ||
+        loginButton}
     </div>
   );
 }

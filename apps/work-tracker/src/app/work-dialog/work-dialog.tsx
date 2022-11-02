@@ -142,7 +142,7 @@ export function WorkDialog({
   };
 
   return (
-    <div className="w-1/2">
+    <div>
       <h1 className="text-2xl py-2 leading-6 text-gray-900 font-bold mb-2 flex justify-between">
         <span>{format(date, 'dd.MM.yyyy')}</span>
         <span>{totalTimes()}</span>
@@ -161,12 +161,16 @@ export function WorkDialog({
               className="grow"
               selected={work.projectId}
               onSelected={(id) => updateWorkTime(i, { projectId: id })}
+              disabled={workDay?.locked}
               options={projects.map((p) => ({
                 value: p.id,
                 label: p.name,
               }))}
             />
-            <Button onClick={() => removeWorkTime(i)}>
+            <Button
+              onClick={() => removeWorkTime(i)}
+              disabled={workDay?.locked}
+            >
               <HiMinus />
             </Button>
           </div>
@@ -186,7 +190,7 @@ export function WorkDialog({
             onChange={(e) => setWorkTimeInput(e.target.value)}
             onKeyUp={workTimeInputKeyUp}
           />
-          <Button onClick={addWorkTime}>
+          <Button onClick={addWorkTime} disabled={workDay?.locked}>
             <HiPlus />
           </Button>
         </div>
@@ -197,6 +201,7 @@ export function WorkDialog({
                 title="homeoffice"
                 pressed={homeoffice}
                 onClick={() => setHomeOffice(!homeoffice)}
+                disabled={workDay?.locked}
               >
                 <HiHome />
               </Button>
@@ -204,6 +209,7 @@ export function WorkDialog({
                 title="sick leave"
                 pressed={sickLeave}
                 onClick={() => setSickLeave(!sickLeave)}
+                disabled={workDay?.locked}
               >
                 <HiEmojiSad />
               </Button>
@@ -211,6 +217,7 @@ export function WorkDialog({
                 title="vacation"
                 pressed={vacation}
                 onClick={() => setVacation(!vacation)}
+                disabled={workDay?.locked}
               >
                 <FaUmbrellaBeach />
               </Button>
@@ -220,6 +227,7 @@ export function WorkDialog({
                   selected={offDutyReason}
                   onSelected={(v) => setOffDutyReason(v)}
                   className="grow"
+                  disabled={workDay?.locked}
                   options={[
                     { value: null, label: '<NONE>' },
                     ...Object.values(OffDutyReasonEnum).map((v) => ({
@@ -231,12 +239,19 @@ export function WorkDialog({
               )}
             </div>
             <div>
-              <Button title="copy" onClick={() => onCopy()} pressed={isCopying}>
+              <Button
+                title="copy"
+                onClick={() => onCopy()}
+                pressed={isCopying}
+                disabled={workDay?.locked}
+              >
                 <FaCopy />
               </Button>
             </div>
           </div>
-          <Button onClick={() => save()}>Save</Button>
+          <Button onClick={() => save()} disabled={workDay?.locked}>
+            Save
+          </Button>
         </div>
       </div>
     </div>

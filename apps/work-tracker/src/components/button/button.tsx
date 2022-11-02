@@ -3,6 +3,7 @@ export interface ButtonProps {
   title?: string;
   pressed?: boolean;
   className?: string;
+  disabled?: boolean;
 }
 
 export function Button({
@@ -11,12 +12,14 @@ export function Button({
   title,
   pressed,
   className,
+  disabled,
 }: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
       type="button"
       className={`${className} rounded-md border border-transparent px-4 py-2 text-sm
       font-medium focus:outline-none focus-visible:ring-2
+      disabled:opacity-50
       focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
         pressed
           ? 'bg-blue-500 text-white hover:bg-blue-600'
@@ -24,6 +27,7 @@ export function Button({
       }`}
       onClick={onClick}
       title={title}
+      disabled={disabled}
     >
       {children}
     </button>

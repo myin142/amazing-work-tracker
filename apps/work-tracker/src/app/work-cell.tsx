@@ -8,7 +8,7 @@ import {
   startOfDay,
 } from 'date-fns';
 import { FaUmbrellaBeach } from 'react-icons/fa';
-import { HiEmojiSad } from 'react-icons/hi';
+import { HiEmojiSad, HiLockClosed } from 'react-icons/hi';
 
 interface WorkCellProps {
   date: Date;
@@ -81,11 +81,14 @@ export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
     <div
       className={`flex flex-col items-start font-light grow p-2 gap-1 ${bgColor()}`}
     >
-      <span
-        className={`rounded-full w-6 h-6 flex justify-center items-center ${dateStyle()}`}
-      >
-        <span>{format(date, 'dd')}</span>
-      </span>
+      <div className="flex flex-row gap-2 items-center">
+        <span
+          className={`rounded-full w-6 h-6 flex justify-center items-center ${dateStyle()}`}
+        >
+          <span>{format(date, 'dd')}</span>
+        </span>
+        <span>{day?.locked && <HiLockClosed />}</span>
+      </div>
       {day && (
         <div className="flex flex-row gap-2 items-center h-8">
           {day.vacation && <FaUmbrellaBeach />}
