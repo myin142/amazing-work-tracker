@@ -73,6 +73,10 @@ export function Calendar({
     onCalendarChange({ start, end });
   }, [date]);
 
+  useEffect(() => {
+    setHoverDate(currentDate);
+  }, [cellSelect, rangeSelect]);
+
   const prevMonth = () => setDate(subMonths(date, 1));
   const nextMonth = () => setDate(addMonths(date, 1));
 

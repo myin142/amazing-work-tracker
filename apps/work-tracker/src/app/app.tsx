@@ -33,12 +33,18 @@ export function App() {
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
 
+  const hasWorkDays = Object.keys(workDays).length;
+  const monthLocked = Object.values(workDays).some((day) => day.locked);
+
   useEffect(() => {
     getClient()
       .getProjects()
       .then((p) => setProjects(p));
   }, []);
 
+  useKeyboardShortcut(['Shift', 'Enter'], () =>
+    monthLocked ? withdrawMonth() : lockMonth()
+  );
   useKeyboardShortcut(['Escape'], () => cancel());
   useKeyboardShortcut(['1'], () =>
     toggleFullDayType(Object.values(FullDayType)[0])
@@ -144,8 +150,6 @@ export function App() {
     await loadWorkDays();
   };
 
-  const hasWorkDays = Object.keys(workDays).length;
-  const monthLocked = Object.values(workDays).some((day) => day.locked);
   const fullDayTypeButtons = Object.values(FullDayType).map((type) => (
     <Button
       key={type}
