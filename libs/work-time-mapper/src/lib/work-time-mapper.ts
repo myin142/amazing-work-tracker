@@ -179,7 +179,8 @@ export function mapToWorkDay(
         if (!days[date]) {
           days[date] = {
             date: new Date(date),
-            homeoffice: !!timeSpans.find((t: TimeSpanWithID) => t.homeoffice),
+            homeoffice: timeSpans.some((t: TimeSpanWithID) => t.homeoffice),
+            locked: timeSpans.some((t) => t.userlock),
             workTimes: [],
           };
         }

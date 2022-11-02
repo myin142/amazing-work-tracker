@@ -16,6 +16,7 @@ export interface WorkDay {
   homeoffice?: boolean;
   vacation?: boolean;
   offDuty?: OffDutyReasonEnum;
+  locked?: boolean;
 }
 
 export enum FullDayType {
