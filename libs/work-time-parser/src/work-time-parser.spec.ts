@@ -3,28 +3,28 @@ import { parseWorkTime } from './work-time-parser';
 
 describe('Parse Work Time', () => {
   test('should parse work time', () => {
-    expect(parseWorkTime('08:00-17:00')).toEqual(
+    expect(parseWorkTime('08:00-12:00')).toEqual(
       expect.objectContaining({
         timeFrom: '08:00',
-        timeTo: '17:00',
+        timeTo: '12:00',
       } as WorkTime)
     );
   });
 
   test('should parse work time hour shorthand', () => {
-    expect(parseWorkTime('8-17')).toEqual(
+    expect(parseWorkTime('8-12')).toEqual(
       expect.objectContaining({
         timeFrom: '08:00',
-        timeTo: '17:00',
+        timeTo: '12:00',
       } as WorkTime)
     );
   });
 
   test('should parse work time hour shorthand with minutes', () => {
-    expect(parseWorkTime('8:30-17')).toEqual(
+    expect(parseWorkTime('8:30-12')).toEqual(
       expect.objectContaining({
         timeFrom: '08:30',
-        timeTo: '17:00',
+        timeTo: '12:00',
       } as WorkTime)
     );
   });
@@ -41,7 +41,14 @@ describe('Parse Work Time', () => {
   });
 
   test('should parse only break within time', () => {
-    expect(parseWorkTime('8-10/12-13')).toEqual(null);
+    expect(parseWorkTime('8-10/12-13')).toEqual(
+      expect.objectContaining({
+        timeFrom: '08:00',
+        timeTo: '10:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      })
+    );
   });
 
   test('should parse with large time', () => {
