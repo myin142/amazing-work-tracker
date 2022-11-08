@@ -16,7 +16,13 @@ import {
 } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { FaCopy, FaUmbrellaBeach } from 'react-icons/fa';
-import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
+import {
+  HiEmojiSad,
+  HiHome,
+  HiMinus,
+  HiPlus,
+  HiQuestionMarkCircle,
+} from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
 import useKeyboardShortcut from '../use-keyboard-shortcut';
@@ -185,7 +191,7 @@ export function WorkDialog({
                           ? 'ring-red-400 focus-visible:ring-red-600'
                           : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500'
                       }`}
-            placeholder="Example: 8-17/12-13 or 8h"
+            placeholder="Example: 8-17/12-13 or 8h/1h"
             value={workTimeInput}
             onChange={(e) => setWorkTimeInput(e.target.value)}
             onKeyUp={workTimeInputKeyUp}

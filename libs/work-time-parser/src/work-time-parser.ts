@@ -6,45 +6,57 @@ import {
   isValid,
   isWithinInterval,
   parse,
+  setHours,
+  startOfToday,
 } from 'date-fns';
 
-const DEFAULT_HOURS_START_TIME = '08:00';
+const DEFAULT_HOURS_START_TIME = setHours(startOfToday(), 8);
 const DEFAULT_HOURS_BREAK_MINUTES = 60;
 
 const MAX_WORK_HOURS_WITHOUT_BREAK = 6;
 
 function createWorkTime(workTimeInput: string): Interval | null {
   if (isHourInput(workTimeInput)) {
-    return parseWorkHours(DEFAULT_HOURS_START_TIME, workTimeInput);
+    return parseHours(DEFAULT_HOURS_START_TIME, workTimeInput);
   }
 
   return parseInterval(workTimeInput, new Date());
 }
 
-function createBreakTime(
+function intervalInMinutes(interval: Interval) {
+  return differenceInMinutes(interval.end, interval.start);
+}
+
+function createBreakTimeAndAdaptWorkTime(
   workTimeInterval: Interval,
   breakTimeInput?: string
 ): Interval | null {
+  const workMinutes = intervalInMinutes(workTimeInterval);
+  const workTimeCenter = addMinutes(
+    workTimeInterval.start,
+    Math.floor(workMinutes / 2)
+  );
+
   if (breakTimeInput) {
+    if (isHourInput(breakTimeInput)) {
+      const breakTime = parseHours(workTimeCenter, breakTimeInput);
+      if (breakTime) {
+        const addedBreak = intervalInMinutes(breakTime);
+        workTimeInterval.end = addMinutes(workTimeInterval.end, addedBreak);
+        return breakTime;
+      }
+    }
     const interval = parseInterval(breakTimeInput, new Date());
     if (interval && isIntervalWithin(interval, workTimeInterval)) {
       return interval;
     }
   } else if (isWorkTimeNeedsBreak(workTimeInterval)) {
-    const workMinutes = differenceInMinutes(
-      workTimeInterval.end,
-      workTimeInterval.start
-    );
     workTimeInterval.end = addMinutes(
       workTimeInterval.end,
       DEFAULT_HOURS_BREAK_MINUTES
     );
-    const breakFrom = addMinutes(
-      workTimeInterval.start,
-      Math.floor(workMinutes / 2)
-    );
-    const breakTo = addMinutes(breakFrom, DEFAULT_HOURS_BREAK_MINUTES);
-    return { start: breakFrom, end: breakTo };
+    const breakTo = addMinutes(workTimeCenter, DEFAULT_HOURS_BREAK_MINUTES);
+    return { start: workTimeCenter, end: breakTo };
   }
 
   return null;
@@ -59,7 +71,10 @@ export function parseWorkTime(input: string): WorkTime | null {
     return null;
   }
 
-  const breakTimeInterval = createBreakTime(workTimeInterval, times[1]);
+  const breakTimeInterval = createBreakTimeAndAdaptWorkTime(
+    workTimeInterval,
+    times[1]
+  );
 
   return {
     timeFrom: formatTime(workTimeInterval.start),
@@ -91,10 +106,9 @@ function parseTime(time?: string, date = new Date()): Date | null {
   return parse(time, f, date);
 }
 
-function parseWorkHours(startTime: string, input: string): Interval | null {
+function parseHours(start: Date, input: string): Interval | null {
   const hours = parseFloat(input);
   const workMinutes = hours * 60;
-  const start = parseTime(startTime);
   if (start) {
     return { start, end: addMinutes(start, workMinutes) };
   }
