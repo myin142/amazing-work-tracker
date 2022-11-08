@@ -130,4 +130,15 @@ describe('Parse Work Time', () => {
       );
     });
   });
+
+  test('should parse work time with break hours', () => {
+    expect(parseWorkTime('8-18/2h')).toEqual(
+      expect.objectContaining({
+        timeFrom: '08:00',
+        timeTo: '18:00',
+        breakFrom: '13:00',
+        breakTo: '15:00',
+      })
+    );
+  });
 });

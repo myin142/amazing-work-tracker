@@ -27,7 +27,7 @@ function intervalInMinutes(interval: Interval) {
   return differenceInMinutes(interval.end, interval.start);
 }
 
-function createBreakTimeAndAdaptWorkTime(
+function createBreakTime(
   workTimeInterval: Interval,
   breakTimeInput?: string
 ): Interval | null {
@@ -39,22 +39,13 @@ function createBreakTimeAndAdaptWorkTime(
 
   if (breakTimeInput) {
     if (isHourInput(breakTimeInput)) {
-      const breakTime = parseHours(workTimeCenter, breakTimeInput);
-      if (breakTime) {
-        const addedBreak = intervalInMinutes(breakTime);
-        workTimeInterval.end = addMinutes(workTimeInterval.end, addedBreak);
-        return breakTime;
-      }
+      return parseHours(workTimeCenter, breakTimeInput);
     }
     const interval = parseInterval(breakTimeInput, new Date());
     if (interval && isIntervalWithin(interval, workTimeInterval)) {
       return interval;
     }
   } else if (isWorkTimeNeedsBreak(workTimeInterval)) {
-    workTimeInterval.end = addMinutes(
-      workTimeInterval.end,
-      DEFAULT_HOURS_BREAK_MINUTES
-    );
     const breakTo = addMinutes(workTimeCenter, DEFAULT_HOURS_BREAK_MINUTES);
     return { start: workTimeCenter, end: breakTo };
   }
@@ -71,10 +62,14 @@ export function parseWorkTime(input: string): WorkTime | null {
     return null;
   }
 
-  const breakTimeInterval = createBreakTimeAndAdaptWorkTime(
-    workTimeInterval,
-    times[1]
-  );
+  const breakTimeInterval = createBreakTime(workTimeInterval, times[1]);
+
+  if (breakTimeInterval && isHourInput(workTimeInput)) {
+    workTimeInterval.end = addMinutes(
+      workTimeInterval.end,
+      intervalInMinutes(breakTimeInterval)
+    );
+  }
 
   return {
     timeFrom: formatTime(workTimeInterval.start),
@@ -123,8 +118,8 @@ function isWorkTimeNeedsBreak(workTime: Interval) {
   );
 }
 
-function isHourInput(input: string) {
-  return input.match(/^\d+\.?\d?h$/);
+function isHourInput(input: string): boolean {
+  return /^\d+\.?\d?h$/.test(input);
 }
 
 function isIntervalWithin(interval: Interval, boundingInterval: Interval) {
