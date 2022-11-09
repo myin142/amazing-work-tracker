@@ -129,6 +129,17 @@ describe('Parse Work Time', () => {
         })
       );
     });
+
+    test('should parse work hours with decimal', () => {
+      expect(parseWorkTime('6.5h')).toEqual(
+        expect.objectContaining({
+          timeFrom: '08:00',
+          timeTo: '15:30',
+          breakFrom: '11:15',
+          breakTo: '12:15',
+        })
+      );
+    });
   });
 
   test('should parse work time with break hours', () => {

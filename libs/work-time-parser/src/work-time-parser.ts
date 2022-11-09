@@ -1,7 +1,6 @@
 import { formatTime, WorkTime } from '@myin/models';
 import {
   addMinutes,
-  differenceInHours,
   differenceInMinutes,
   isValid,
   isWithinInterval,
@@ -112,10 +111,7 @@ function parseHours(start: Date, input: string): Interval | null {
 }
 
 function isWorkTimeNeedsBreak(workTime: Interval) {
-  return (
-    differenceInHours(workTime.end, workTime.start) >
-    MAX_WORK_HOURS_WITHOUT_BREAK
-  );
+  return intervalInMinutes(workTime) > MAX_WORK_HOURS_WITHOUT_BREAK * 60;
 }
 
 function isHourInput(input: string): boolean {
