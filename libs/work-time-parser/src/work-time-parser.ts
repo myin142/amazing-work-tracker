@@ -14,9 +14,12 @@ const DEFAULT_HOURS_BREAK_MINUTES = 60;
 
 const MAX_WORK_HOURS_WITHOUT_BREAK = 6;
 
-function createWorkTime(workTimeInput: string): Interval | null {
+function createWorkTime(
+  workTimeInput: string,
+  startTime: Date
+): Interval | null {
   if (isHourInput(workTimeInput)) {
-    return parseHours(DEFAULT_HOURS_START_TIME, workTimeInput);
+    return parseHours(startTime, workTimeInput);
   }
 
   return parseInterval(workTimeInput, new Date());
@@ -52,11 +55,26 @@ function createBreakTime(
   return null;
 }
 
-export function parseWorkTime(input: string): WorkTime | null {
+export function parseWorkTimes(input: string): WorkTime[] {
+  const result: WorkTime[] = [];
+  let startTime = DEFAULT_HOURS_START_TIME;
+
+  input.split(';').forEach((i) => {
+    const workTime = parseSingleWorkTime(i, startTime);
+    if (workTime) {
+      result.push(workTime);
+      startTime = parseTime(workTime.timeTo, startTime) || startTime;
+    }
+  });
+
+  return result;
+}
+
+function parseSingleWorkTime(input: string, startTime: Date): WorkTime | null {
   const times = input.split('/');
   const workTimeInput = times[0];
 
-  const workTimeInterval = createWorkTime(workTimeInput);
+  const workTimeInterval = createWorkTime(workTimeInput, startTime);
   if (!workTimeInterval) {
     return null;
   }

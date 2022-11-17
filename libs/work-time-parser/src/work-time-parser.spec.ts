@@ -1,155 +1,206 @@
 import { WorkTime } from '@myin/models';
-import { parseWorkTime } from './work-time-parser';
+import { parseWorkTimes } from './work-time-parser';
 
 describe('Parse Work Time', () => {
   test('should parse work time', () => {
-    expect(parseWorkTime('08:00-12:00')).toEqual(
+    expect(parseWorkTimes('08:00-12:00')).toEqual([
       expect.objectContaining({
         timeFrom: '08:00',
         timeTo: '12:00',
-      } as WorkTime)
-    );
+      } as WorkTime),
+    ]);
   });
 
   test('should parse work time hour shorthand', () => {
-    expect(parseWorkTime('8-12')).toEqual(
+    expect(parseWorkTimes('8-12')).toEqual([
       expect.objectContaining({
         timeFrom: '08:00',
         timeTo: '12:00',
-      } as WorkTime)
-    );
+      } as WorkTime),
+    ]);
   });
 
   test('should parse work time hour shorthand with minutes', () => {
-    expect(parseWorkTime('8:30-12')).toEqual(
+    expect(parseWorkTimes('8:30-12')).toEqual([
       expect.objectContaining({
         timeFrom: '08:30',
         timeTo: '12:00',
-      } as WorkTime)
-    );
+      } as WorkTime),
+    ]);
   });
 
   test('should parse with break time', () => {
-    expect(parseWorkTime('8-17/12-13')).toEqual(
+    expect(parseWorkTimes('8-17/12-13')).toEqual([
       expect.objectContaining({
         timeFrom: '08:00',
         timeTo: '17:00',
         breakFrom: '12:00',
         breakTo: '13:00',
-      } as WorkTime)
-    );
+      } as WorkTime),
+    ]);
   });
 
   test('should parse only break within time', () => {
-    expect(parseWorkTime('8-10/12-13')).toEqual(
+    expect(parseWorkTimes('8-10/12-13')).toEqual([
       expect.objectContaining({
         timeFrom: '08:00',
         timeTo: '10:00',
         breakFrom: undefined,
         breakTo: undefined,
-      })
-    );
+      }),
+    ]);
   });
 
   test('should parse with large time', () => {
-    expect(parseWorkTime('8-100')).toEqual(null);
+    expect(parseWorkTimes('8-100')).toEqual([]);
   });
 
   test('should parse empty input', () => {
-    expect(parseWorkTime('')).toEqual(null);
+    expect(parseWorkTimes('')).toEqual([]);
   });
 
   test('should parse invalid input', () => {
-    expect(parseWorkTime('invalid')).toEqual(null);
+    expect(parseWorkTimes('invalid')).toEqual([]);
   });
 
   describe('Parse Work Hours', () => {
     test('should parse hours with break', () => {
-      expect(parseWorkTime('8h')).toEqual(
+      expect(parseWorkTimes('8h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '17:00',
           breakFrom: '12:00',
           breakTo: '13:00',
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse uneven hours with break', () => {
-      expect(parseWorkTime('7h')).toEqual(
+      expect(parseWorkTimes('7h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '16:00',
           breakFrom: '11:30',
           breakTo: '12:30',
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse hours without break', () => {
-      expect(parseWorkTime('5h')).toEqual(
+      expect(parseWorkTimes('5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '13:00',
           breakFrom: undefined,
           breakTo: undefined,
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse hours with decimal', () => {
-      expect(parseWorkTime('4.5h')).toEqual(
+      expect(parseWorkTimes('4.5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '12:30',
           breakFrom: undefined,
           breakTo: undefined,
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse uneven hours with decimal', () => {
-      expect(parseWorkTime('7.5h')).toEqual(
+      expect(parseWorkTimes('7.5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '16:30',
           breakFrom: '11:45',
           breakTo: '12:45',
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse work hours with break hours', () => {
-      expect(parseWorkTime('8h/2h')).toEqual(
+      expect(parseWorkTimes('8h/2h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '18:00',
           breakFrom: '12:00',
           breakTo: '14:00',
-        })
-      );
+        }),
+      ]);
     });
 
     test('should parse work hours with decimal', () => {
-      expect(parseWorkTime('6.5h')).toEqual(
+      expect(parseWorkTimes('6.5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
           timeTo: '15:30',
           breakFrom: '11:15',
           breakTo: '12:15',
-        })
-      );
+        }),
+      ]);
     });
   });
 
   test('should parse work time with break hours', () => {
-    expect(parseWorkTime('8-18/2h')).toEqual(
+    expect(parseWorkTimes('8-18/2h')).toEqual([
       expect.objectContaining({
         timeFrom: '08:00',
         timeTo: '18:00',
         breakFrom: '13:00',
         breakTo: '15:00',
-      })
-    );
+      }),
+    ]);
+  });
+
+  test('should parse multiple work times', () => {
+    expect(parseWorkTimes('8-10;11-15/12-13')).toEqual([
+      expect.objectContaining({
+        timeFrom: '08:00',
+        timeTo: '10:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+      expect.objectContaining({
+        timeFrom: '11:00',
+        timeTo: '15:00',
+        breakFrom: '12:00',
+        breakTo: '13:00',
+      } as WorkTime),
+    ]);
+  });
+
+  test('should parse multiple work hours', () => {
+    expect(parseWorkTimes('2h;4h')).toEqual([
+      expect.objectContaining({
+        timeFrom: '08:00',
+        timeTo: '10:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+      expect.objectContaining({
+        timeFrom: '10:00',
+        timeTo: '14:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+    ]);
+  });
+
+  test('should parse multiple work times and hours', () => {
+    expect(parseWorkTimes('10-11;2h')).toEqual([
+      expect.objectContaining({
+        timeFrom: '10:00',
+        timeTo: '11:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+      expect.objectContaining({
+        timeFrom: '11:00',
+        timeTo: '13:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+    ]);
   });
 });

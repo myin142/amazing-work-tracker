@@ -16,17 +16,11 @@ import {
 } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { FaCopy, FaUmbrellaBeach } from 'react-icons/fa';
-import {
-  HiEmojiSad,
-  HiHome,
-  HiMinus,
-  HiPlus,
-  HiQuestionMarkCircle,
-} from 'react-icons/hi';
+import { HiEmojiSad, HiHome, HiMinus, HiPlus } from 'react-icons/hi';
 import Button from '../../components/button/button';
 import Select from '../../components/select/select';
 import useKeyboardShortcut from '../use-keyboard-shortcut';
-import { parseWorkTime } from '@myin/work-time-parser';
+import { parseWorkTimes } from '@myin/work-time-parser';
 
 export interface WorkDialogProps {
   date: Date;
@@ -94,9 +88,9 @@ export function WorkDialog({
   };
 
   const addWorkTime = () => {
-    const workTime = parseWorkTime(workTimeInput);
-    if (workTime) {
-      setWorkTimes([...workTimes, workTime]);
+    const newWorkTimes = parseWorkTimes(workTimeInput);
+    if (newWorkTimes.length > 0) {
+      setWorkTimes([...workTimes, ...newWorkTimes]);
       setWorkTimeInput('');
     } else {
       setIsInvalid(true);
