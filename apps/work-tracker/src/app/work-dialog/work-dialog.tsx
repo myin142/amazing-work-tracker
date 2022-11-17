@@ -29,6 +29,7 @@ export interface WorkDialogProps {
   onSave: (workDay: WorkDay) => void;
   onCopy: () => void;
   isCopying?: boolean;
+  error?: string;
 }
 
 const formatDuration = (date: Date): string =>
@@ -46,6 +47,7 @@ export function WorkDialog({
   onSave,
   onCopy,
   isCopying,
+  error,
 }: WorkDialogProps) {
   const [workTimeInput, setWorkTimeInput] = useState('');
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
@@ -252,6 +254,7 @@ export function WorkDialog({
           <Button onClick={() => save()} disabled={workDay?.locked}>
             Save
           </Button>
+          <span className="text-red-700">{error}</span>
         </div>
       </div>
     </div>

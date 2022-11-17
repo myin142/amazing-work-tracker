@@ -26,6 +26,7 @@ export function App() {
   const [token, setToken] = useState(
     localStorage.getItem(LOGIN_TOKEN_KEY) || ''
   );
+  const [error, setError] = useState('');
 
   const [calendarInterval, setCalendarInterval] = useState(
     null as Interval | null
@@ -119,8 +120,13 @@ export function App() {
 
   const saveDay = async (workDay: WorkDay) => {
     console.log(workDay);
-    await getClient().saveDay(workDay);
-    await loadWorkDays();
+    try {
+      setError('');
+      await getClient().saveDay(workDay);
+      await loadWorkDays();
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
   const toggleFullDayType = (type: FullDayType) => {
@@ -201,6 +207,7 @@ export function App() {
               onSave={saveDay}
               onCopy={() => setCopyCell(!copyCell)}
               isCopying={copyCell}
+              error={error}
             />
 
             {(hasWorkDays && ((monthLocked && withDrawButton) || lockButton)) ||

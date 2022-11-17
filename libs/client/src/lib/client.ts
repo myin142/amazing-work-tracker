@@ -69,6 +69,7 @@ export class IMSClient {
         `Failed to save timespan for ${timeSpan.date}`,
         e as RequiredError
       );
+      throw e;
     }
   }
 
@@ -80,6 +81,7 @@ export class IMSClient {
         `Failed to save project time for ${timeSpan.date}`,
         e as RequiredError
       );
+      throw e;
     }
   }
 
