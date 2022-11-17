@@ -203,4 +203,21 @@ describe('Parse Work Time', () => {
       } as WorkTime),
     ]);
   });
+
+  test('should parse multiple work hours with break', () => {
+    expect(parseWorkTimes('4h;4h')).toEqual([
+      expect.objectContaining({
+        timeFrom: '08:00',
+        timeTo: '12:00',
+        breakFrom: undefined,
+        breakTo: undefined,
+      } as WorkTime),
+      expect.objectContaining({
+        timeFrom: '12:00',
+        timeTo: '17:00',
+        breakFrom: '14:00',
+        breakTo: '15:00',
+      } as WorkTime),
+    ]);
+  });
 });

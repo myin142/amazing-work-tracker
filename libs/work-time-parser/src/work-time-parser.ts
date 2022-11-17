@@ -31,7 +31,8 @@ function intervalInMinutes(interval: Interval) {
 
 function createBreakTime(
   workTimeInterval: Interval,
-  breakTimeInput?: string
+  breakTimeInput?: string,
+  continuousWorkMinutes?: number
 ): Interval | null {
   const workMinutes = intervalInMinutes(workTimeInterval);
   const workTimeCenter = addMinutes(
@@ -47,7 +48,11 @@ function createBreakTime(
     if (interval && isIntervalWithin(interval, workTimeInterval)) {
       return interval;
     }
-  } else if (isWorkTimeNeedsBreak(workTimeInterval)) {
+  } else if (
+    isWorkTimeNeedsBreak(
+      intervalInMinutes(workTimeInterval) + (continuousWorkMinutes || 0)
+    )
+  ) {
     const breakTo = addMinutes(workTimeCenter, DEFAULT_HOURS_BREAK_MINUTES);
     return { start: workTimeCenter, end: breakTo };
   }
@@ -58,11 +63,20 @@ function createBreakTime(
 export function parseWorkTimes(input: string): WorkTime[] {
   const result: WorkTime[] = [];
   let startTime = DEFAULT_HOURS_START_TIME;
+  let continuousWorkMinutes = 0;
 
   input.split(';').forEach((i) => {
-    const workTime = parseSingleWorkTime(i, startTime);
+    const workTime = parseSingleWorkTime(i, startTime, continuousWorkMinutes);
     if (workTime) {
       result.push(workTime);
+      if (workTime.breakFrom) {
+        continuousWorkMinutes = 0;
+      } else {
+        continuousWorkMinutes = differenceInMinutes(
+          parseTime(workTime.timeTo) || new Date(),
+          parseTime(workTime.timeFrom) || new Date()
+        );
+      }
       startTime = parseTime(workTime.timeTo, startTime) || startTime;
     }
   });
@@ -70,7 +84,11 @@ export function parseWorkTimes(input: string): WorkTime[] {
   return result;
 }
 
-function parseSingleWorkTime(input: string, startTime: Date): WorkTime | null {
+function parseSingleWorkTime(
+  input: string,
+  startTime: Date,
+  continuousWorkMinutes: number
+): WorkTime | null {
   const times = input.split('/');
   const workTimeInput = times[0];
 
@@ -79,7 +97,11 @@ function parseSingleWorkTime(input: string, startTime: Date): WorkTime | null {
     return null;
   }
 
-  const breakTimeInterval = createBreakTime(workTimeInterval, times[1]);
+  const breakTimeInterval = createBreakTime(
+    workTimeInterval,
+    times[1],
+    continuousWorkMinutes
+  );
 
   if (breakTimeInterval && isHourInput(workTimeInput)) {
     workTimeInterval.end = addMinutes(
@@ -128,8 +150,8 @@ function parseHours(start: Date, input: string): Interval | null {
   return null;
 }
 
-function isWorkTimeNeedsBreak(workTime: Interval) {
-  return intervalInMinutes(workTime) > MAX_WORK_HOURS_WITHOUT_BREAK * 60;
+function isWorkTimeNeedsBreak(workMinutes: number) {
+  return workMinutes > MAX_WORK_HOURS_WITHOUT_BREAK * 60;
 }
 
 function isHourInput(input: string): boolean {
