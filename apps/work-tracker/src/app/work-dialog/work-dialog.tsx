@@ -21,6 +21,7 @@ import Button from '../../components/button/button';
 import Select from '../../components/select/select';
 import useKeyboardShortcut from '../use-keyboard-shortcut';
 import { parseWorkTimes } from '@myin/work-time-parser';
+import { Diary } from '../diary/diary';
 
 export interface WorkDialogProps {
   date: Date;
@@ -58,6 +59,7 @@ export function WorkDialog({
   const [offDutyReason, setOffDutyReason] = useState(
     null as OffDutyReasonEnum | null
   );
+  const [diary, setDiary] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -255,6 +257,8 @@ export function WorkDialog({
             Save
           </Button>
           <span className="text-red-700">{error}</span>
+
+          <Diary text={diary} onChange={(x) => setDiary(x)} />
         </div>
       </div>
     </div>
