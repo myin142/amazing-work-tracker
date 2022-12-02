@@ -447,7 +447,7 @@ describe('workTimeMapper', () => {
       ]);
     });
 
-    it('should map locked day', () => {
+    it('should map locked day for full day', () => {
       const workDays = mapToWorkDay(
         [
           {
@@ -458,6 +458,30 @@ describe('workTimeMapper', () => {
           },
         ],
         []
+      );
+
+      expect(workDays[0].locked).toBeTruthy();
+    });
+
+    it('should map locked day for work day', () => {
+      const workDays = mapToWorkDay(
+        [
+          {
+            id: 0,
+            date: '2020-01-01',
+            fromTime: '08:00',
+            toTime: '10:00',
+            type: TimeSpanTypeEnum.Work,
+            userlock: true,
+          },
+        ],
+        [
+          {
+            date: '2020-01-01',
+            timeSpans: [{ fromTime: '08:00', toTime: '10:00' }],
+            project: 1,
+          },
+        ]
       );
 
       expect(workDays[0].locked).toBeTruthy();

@@ -40,7 +40,10 @@ export function App() {
   useEffect(() => {
     getClient()
       .getProjects()
-      .then((p) => setProjects(p));
+      .then((p) => setProjects(p))
+      .catch((err) => {
+        console.warn('Failed to get projects', err);
+      });
   }, []);
 
   useKeyboardShortcut(['Shift', 'Enter'], () =>

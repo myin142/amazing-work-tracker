@@ -171,18 +171,15 @@ export function mapToWorkDay(
 
   const days: { [date: string]: WorkDay } = {};
 
+  console.log(timeSpanByDate);
+
   Object.keys(timeSpanByDate).forEach((date) => {
     const timeSpans: TimeSpanWithID[] = timeSpanByDate[date];
     if (timeSpans.length === 1) {
       const timeSpan = timeSpans[0];
       if (!timeSpan.toTime && !timeSpan.fromTime) {
         if (!days[date]) {
-          days[date] = {
-            date: new Date(date),
-            homeoffice: timeSpans.some((t: TimeSpanWithID) => t.homeoffice),
-            locked: timeSpans.some((t) => t.userlock),
-            workTimes: [],
-          };
+          days[date] = initWorkDayForTimeSpans(date, timeSpans);
         }
 
         switch (timeSpan.type) {
@@ -209,14 +206,7 @@ export function mapToWorkDay(
     );
 
     if (!days[date]) {
-      days[date] = {
-        date: new Date(date),
-        homeoffice: !!timeSpans.find((t: TimeSpanWithID) => t.homeoffice),
-        sickLeave: !!timeSpans.find(
-          (t: TimeSpanWithID) => t.type === TimeSpanTypeEnum.SickLeave
-        ),
-        workTimes: [],
-      };
+      days[date] = initWorkDayForTimeSpans(date, timeSpans);
     }
 
     projectTimes.forEach((project) => {
@@ -251,4 +241,19 @@ export function mapToWorkDay(
   });
 
   return Object.values(days);
+}
+
+function initWorkDayForTimeSpans(
+  date: string,
+  timeSpans: TimeSpanWithID[]
+): WorkDay {
+  return {
+    date: new Date(date),
+    homeoffice: !!timeSpans.find((t: TimeSpanWithID) => t.homeoffice),
+    sickLeave: !!timeSpans.find(
+      (t: TimeSpanWithID) => t.type === TimeSpanTypeEnum.SickLeave
+    ),
+    locked: timeSpans.some((t) => t.userlock),
+    workTimes: [],
+  };
 }
