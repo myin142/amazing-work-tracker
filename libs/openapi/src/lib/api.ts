@@ -37,34 +37,6 @@ export interface DELETEProjectTimeBookingResponse {
 /**
  * 
  * @export
- * @enum {string}
- */
-
-export const ErrorCodeEnum = {
-    ExistingProjectBookings: 'EXISTING_PROJECT_BOOKINGS',
-    OverlappingTime: 'OVERLAPPING_TIME',
-    TimeOutOfBounds: 'TIME_OUT_OF_BOUNDS',
-    TimeLimitExceeded: 'TIME_LIMIT_EXCEEDED',
-    IllegalTimeBounds: 'ILLEGAL_TIME_BOUNDS',
-    UnbookedTime: 'UNBOOKED_TIME',
-    OperationNotPermitted: 'OPERATION_NOT_PERMITTED',
-    IllegalDate: 'ILLEGAL_DATE',
-    ValidationError: 'VALIDATION_ERROR',
-    ExistingVacation: 'EXISTING_VACATION',
-    ExistingOffDuty: 'EXISTING_OFF_DUTY',
-    ExistingSickLeave: 'EXISTING_SICK_LEAVE',
-    ExistingTimeBookingEntries: 'EXISTING_TIME_BOOKING_ENTRIES',
-    UserLocked: 'USER_LOCKED',
-    BossLocked: 'BOSS_LOCKED',
-    ProjectNotFound: 'PROJECT_NOT_FOUND'
-} as const;
-
-export type ErrorCodeEnum = typeof ErrorCodeEnum[keyof typeof ErrorCodeEnum];
-
-
-/**
- * 
- * @export
  * @interface GETNotBookedTimeResponse
  */
 export interface GETNotBookedTimeResponse {
@@ -147,28 +119,6 @@ export interface NotBookedTimePeriod {
     'timePeriods': Array<TimePeriod>;
 }
 /**
- * Off-duty reason
- * @export
- * @enum {string}
- */
-
-export const OffDutyReasonEnum = {
-    ChildbirthOfPartner: 'CHILDBIRTH_OF_PARTNER',
-    DeceaseOfPartner: 'DECEASE_OF_PARTNER',
-    DeceaseOfPartnerSameHousehold: 'DECEASE_OF_PARTNER_SAME_HOUSEHOLD',
-    DeceaseOfParent: 'DECEASE_OF_PARENT',
-    DeceaseOfChild: 'DECEASE_OF_CHILD',
-    DeceaseOfSiblingGrandparentParentsInLaw: 'DECEASE_OF_SIBLING_GRANDPARENT_PARENTS_IN_LAW',
-    MarriagePartnership: 'MARRIAGE_PARTNERSHIP',
-    MarriagePartnershipOfSiblingChildParent: 'MARRIAGE_PARTNERSHIP_OF_SIBLING_CHILD_PARENT',
-    ChangeOfResidence: 'CHANGE_OF_RESIDENCE',
-    Other: 'OTHER'
-} as const;
-
-export type OffDutyReasonEnum = typeof OffDutyReasonEnum[keyof typeof OffDutyReasonEnum];
-
-
-/**
  * 
  * @export
  * @interface PUTPOSTProjectTimeSpansRequest
@@ -192,56 +142,6 @@ export interface PUTPOSTProjectTimeSpansRequest {
      * @memberof PUTPOSTProjectTimeSpansRequest
      */
     'timeSpans': Array<ProjectTimeSpan>;
-}
-/**
- * 
- * @export
- * @interface PUTTimeBookingRequest
- */
-export interface PUTTimeBookingRequest {
-    /**
-     * 
-     * @type {Array<PUTTimeBookingTimeSpan>}
-     * @memberof PUTTimeBookingRequest
-     */
-    'timeSpans'?: Array<PUTTimeBookingTimeSpan>;
-}
-/**
- * 
- * @export
- * @interface PUTTimeBookingTimeSpan
- */
-export interface PUTTimeBookingTimeSpan {
-    /**
-     * 
-     * @type {TimeSpanTypeEnum}
-     * @memberof PUTTimeBookingTimeSpan
-     */
-    'type': TimeSpanTypeEnum;
-    /**
-     * Date of timebooking span
-     * @type {string}
-     * @memberof PUTTimeBookingTimeSpan
-     */
-    'date'?: string;
-    /**
-     * Time Format in a 00:00 - 23:45 range, in 15 min units
-     * @type {string}
-     * @memberof PUTTimeBookingTimeSpan
-     */
-    'toTime'?: string;
-    /**
-     * Time Format in a 00:00 - 23:45 range, in 15 min units
-     * @type {string}
-     * @memberof PUTTimeBookingTimeSpan
-     */
-    'fromTime'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PUTTimeBookingTimeSpan
-     */
-    'id': number;
 }
 /**
  * 
@@ -313,7 +213,7 @@ export interface ProjectNameIDMap {
     'projectName'?: string;
 }
 /**
- * 
+ * Timespans
  * @export
  * @interface ProjectTimeSpan
  */
@@ -351,11 +251,33 @@ export interface TimeBookingError {
     'message'?: string;
     /**
      * 
-     * @type {ErrorCodeEnum}
+     * @type {string}
      * @memberof TimeBookingError
      */
-    'code': ErrorCodeEnum;
+    'code': TimeBookingErrorCodeEnum;
 }
+
+export const TimeBookingErrorCodeEnum = {
+    ExistingProjectBookings: 'EXISTING_PROJECT_BOOKINGS',
+    OverlappingTime: 'OVERLAPPING_TIME',
+    TimeOutOfBounds: 'TIME_OUT_OF_BOUNDS',
+    TimeLimitExceeded: 'TIME_LIMIT_EXCEEDED',
+    IllegalTimeBounds: 'ILLEGAL_TIME_BOUNDS',
+    UnbookedTime: 'UNBOOKED_TIME',
+    OperationNotPermitted: 'OPERATION_NOT_PERMITTED',
+    IllegalDate: 'ILLEGAL_DATE',
+    ValidationError: 'VALIDATION_ERROR',
+    ExistingVacation: 'EXISTING_VACATION',
+    ExistingOffDuty: 'EXISTING_OFF_DUTY',
+    ExistingSickLeave: 'EXISTING_SICK_LEAVE',
+    ExistingTimeBookingEntries: 'EXISTING_TIME_BOOKING_ENTRIES',
+    UserLocked: 'USER_LOCKED',
+    BossLocked: 'BOSS_LOCKED',
+    ProjectNotFound: 'PROJECT_NOT_FOUND'
+} as const;
+
+export type TimeBookingErrorCodeEnum = typeof TimeBookingErrorCodeEnum[keyof typeof TimeBookingErrorCodeEnum];
+
 /**
  * 
  * @export
@@ -388,7 +310,7 @@ export interface TimeBookingLockDate {
     'employee': number;
 }
 /**
- * 
+ * Array of time periods
  * @export
  * @interface TimePeriod
  */
@@ -406,26 +328,6 @@ export interface TimePeriod {
      */
     'toTime': string;
 }
-/**
- * Enum for timespan types
- * @export
- * @enum {string}
- */
-
-export const TimeSpanTypeEnum = {
-    Work: 'WORK',
-    FullDayVacation: 'FULL_DAY_VACATION',
-    HalfDayVacation: 'HALF_DAY_VACATION',
-    SickLeave: 'SICK_LEAVE',
-    Break: 'BREAK',
-    OffDuty: 'OFF_DUTY',
-    OnCallDuty: 'ON_CALL_DUTY',
-    SpecialWork: 'SPECIAL_WORK'
-} as const;
-
-export type TimeSpanTypeEnum = typeof TimeSpanTypeEnum[keyof typeof TimeSpanTypeEnum];
-
-
 /**
  * Time span object with ID
  * @export
@@ -458,10 +360,10 @@ export interface TimeSpanWithID {
     'date': string;
     /**
      * 
-     * @type {TimeSpanTypeEnum}
+     * @type {string}
      * @memberof TimeSpanWithID
      */
-    'type': TimeSpanTypeEnum;
+    'type': TimeSpanWithIDTypeEnum;
     /**
      * Time Format in a 00:00 - 23:45 range, in 15 min units
      * @type {string}
@@ -482,36 +384,39 @@ export interface TimeSpanWithID {
     'homeoffice'?: boolean;
     /**
      * 
-     * @type {OffDutyReasonEnum}
+     * @type {string}
      * @memberof TimeSpanWithID
      */
-    'offDutyReason'?: OffDutyReasonEnum;
+    'offDutyReason'?: TimeSpanWithIDOffDutyReasonEnum;
 }
-/**
- * 
- * @export
- * @interface TimeSpanWithIDAllOf
- */
-export interface TimeSpanWithIDAllOf {
-    /**
-     * Enables/disables the user lock. The user lock is used to lock a given date span for the current user. This prohibits any further editing of timebookings.
-     * @type {boolean}
-     * @memberof TimeSpanWithIDAllOf
-     */
-    'userlock'?: boolean;
-    /**
-     * Enables/disables the boss lock. The boss lock is used by the admin to lock and finalize a given date span for a user. This prohibits any further editing of timebookings by the user.
-     * @type {boolean}
-     * @memberof TimeSpanWithIDAllOf
-     */
-    'bosslock'?: boolean;
-    /**
-     * Time span ID
-     * @type {number}
-     * @memberof TimeSpanWithIDAllOf
-     */
-    'id': number;
-}
+
+export const TimeSpanWithIDTypeEnum = {
+    Work: 'WORK',
+    FullDayVacation: 'FULL_DAY_VACATION',
+    HalfDayVacation: 'HALF_DAY_VACATION',
+    SickLeave: 'SICK_LEAVE',
+    Break: 'BREAK',
+    OffDuty: 'OFF_DUTY',
+    OnCallDuty: 'ON_CALL_DUTY',
+    SpecialWork: 'SPECIAL_WORK'
+} as const;
+
+export type TimeSpanWithIDTypeEnum = typeof TimeSpanWithIDTypeEnum[keyof typeof TimeSpanWithIDTypeEnum];
+export const TimeSpanWithIDOffDutyReasonEnum = {
+    ChildbirthOfPartner: 'CHILDBIRTH_OF_PARTNER',
+    DeceaseOfPartner: 'DECEASE_OF_PARTNER',
+    DeceaseOfPartnerSameHousehold: 'DECEASE_OF_PARTNER_SAME_HOUSEHOLD',
+    DeceaseOfParent: 'DECEASE_OF_PARENT',
+    DeceaseOfChild: 'DECEASE_OF_CHILD',
+    DeceaseOfSiblingGrandparentParentsInLaw: 'DECEASE_OF_SIBLING_GRANDPARENT_PARENTS_IN_LAW',
+    MarriagePartnership: 'MARRIAGE_PARTNERSHIP',
+    MarriagePartnershipOfSiblingChildParent: 'MARRIAGE_PARTNERSHIP_OF_SIBLING_CHILD_PARENT',
+    ChangeOfResidence: 'CHANGE_OF_RESIDENCE',
+    Other: 'OTHER'
+} as const;
+
+export type TimeSpanWithIDOffDutyReasonEnum = typeof TimeSpanWithIDOffDutyReasonEnum[keyof typeof TimeSpanWithIDOffDutyReasonEnum];
+
 /**
  * Timespan object without ID
  * @export
@@ -526,10 +431,10 @@ export interface TimeSpanWithoutID {
     'date': string;
     /**
      * 
-     * @type {TimeSpanTypeEnum}
+     * @type {string}
      * @memberof TimeSpanWithoutID
      */
-    'type': TimeSpanTypeEnum;
+    'type': TimeSpanWithoutIDTypeEnum;
     /**
      * Time Format in a 00:00 - 23:45 range, in 15 min units
      * @type {string}
@@ -550,17 +455,45 @@ export interface TimeSpanWithoutID {
     'homeoffice'?: boolean;
     /**
      * 
-     * @type {OffDutyReasonEnum}
+     * @type {string}
      * @memberof TimeSpanWithoutID
      */
-    'offDutyReason'?: OffDutyReasonEnum;
+    'offDutyReason'?: TimeSpanWithoutIDOffDutyReasonEnum;
 }
 
+export const TimeSpanWithoutIDTypeEnum = {
+    Work: 'WORK',
+    FullDayVacation: 'FULL_DAY_VACATION',
+    HalfDayVacation: 'HALF_DAY_VACATION',
+    SickLeave: 'SICK_LEAVE',
+    Break: 'BREAK',
+    OffDuty: 'OFF_DUTY',
+    OnCallDuty: 'ON_CALL_DUTY',
+    SpecialWork: 'SPECIAL_WORK'
+} as const;
+
+export type TimeSpanWithoutIDTypeEnum = typeof TimeSpanWithoutIDTypeEnum[keyof typeof TimeSpanWithoutIDTypeEnum];
+export const TimeSpanWithoutIDOffDutyReasonEnum = {
+    ChildbirthOfPartner: 'CHILDBIRTH_OF_PARTNER',
+    DeceaseOfPartner: 'DECEASE_OF_PARTNER',
+    DeceaseOfPartnerSameHousehold: 'DECEASE_OF_PARTNER_SAME_HOUSEHOLD',
+    DeceaseOfParent: 'DECEASE_OF_PARENT',
+    DeceaseOfChild: 'DECEASE_OF_CHILD',
+    DeceaseOfSiblingGrandparentParentsInLaw: 'DECEASE_OF_SIBLING_GRANDPARENT_PARENTS_IN_LAW',
+    MarriagePartnership: 'MARRIAGE_PARTNERSHIP',
+    MarriagePartnershipOfSiblingChildParent: 'MARRIAGE_PARTNERSHIP_OF_SIBLING_CHILD_PARENT',
+    ChangeOfResidence: 'CHANGE_OF_RESIDENCE',
+    Other: 'OTHER'
+} as const;
+
+export type TimeSpanWithoutIDOffDutyReasonEnum = typeof TimeSpanWithoutIDOffDutyReasonEnum[keyof typeof TimeSpanWithoutIDOffDutyReasonEnum];
+
+
 /**
- * DefaultApi - axios parameter creator
+ * CsvApi - axios parameter creator
  * @export
  */
-export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
+export const CsvApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
@@ -576,7 +509,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('csvGet', 'fromDate', fromDate)
             // verify required parameter 'toDate' is not null or undefined
             assertParamExists('csvGet', 'toDate', toDate)
-            const localVarPath = `/csv`;
+            const localVarPath = `/api/v1/csv`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -618,6 +551,83 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+    }
+};
+
+/**
+ * CsvApi - functional programming interface
+ * @export
+ */
+export const CsvApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = CsvApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Export timebookings as CSV file
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {number} [exportEmployeeId] ID of employee to export CSV for
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.csvGet(fromDate, toDate, exportEmployeeId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * CsvApi - factory interface
+ * @export
+ */
+export const CsvApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = CsvApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Export timebookings as CSV file
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {number} [exportEmployeeId] ID of employee to export CSV for
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: any): AxiosPromise<string> {
+            return localVarFp.csvGet(fromDate, toDate, exportEmployeeId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * CsvApi - object-oriented interface
+ * @export
+ * @class CsvApi
+ * @extends {BaseAPI}
+ */
+export class CsvApi extends BaseAPI {
+    /**
+     * 
+     * @summary Export timebookings as CSV file
+     * @param {string} fromDate Example: 2022-01-01
+     * @param {string} toDate Example: 2022-01-31
+     * @param {number} [exportEmployeeId] ID of employee to export CSV for
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof CsvApi
+     */
+    public csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: AxiosRequestConfig) {
+        return CsvApiFp(this.configuration).csvGet(fromDate, toDate, exportEmployeeId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ProjectApi - axios parameter creator
+ * @export
+ */
+export const ProjectApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
         /**
          * 
          * @summary Get all available projects to book time on for the current user
@@ -625,7 +635,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         projectGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/project`;
+            const localVarPath = `/api/v1/project`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -651,6 +661,74 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+    }
+};
+
+/**
+ * ProjectApi - functional programming interface
+ * @export
+ */
+export const ProjectApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ProjectApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all available projects to book time on for the current user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETProjectResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ProjectApi - factory interface
+ * @export
+ */
+export const ProjectApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ProjectApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all available projects to book time on for the current user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectGet(options?: any): AxiosPromise<GETProjectResponse> {
+            return localVarFp.projectGet(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ProjectApi - object-oriented interface
+ * @export
+ * @class ProjectApi
+ * @extends {BaseAPI}
+ */
+export class ProjectApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get all available projects to book time on for the current user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectApi
+     */
+    public projectGet(options?: AxiosRequestConfig) {
+        return ProjectApiFp(this.configuration).projectGet(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ProjectTimeBookingApi - axios parameter creator
+ * @export
+ */
+export const ProjectTimeBookingApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
         /**
          * 
          * @summary Delete project time booking
@@ -662,7 +740,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         projectTimeBookingDelete: async (day: string, project?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'day' is not null or undefined
             assertParamExists('projectTimeBookingDelete', 'day', day)
-            const localVarPath = `/project-time-booking`;
+            const localVarPath = `/api/v1/project-time-booking`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -711,7 +789,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('projectTimeBookingGet', 'fromDate', fromDate)
             // verify required parameter 'toDate' is not null or undefined
             assertParamExists('projectTimeBookingGet', 'toDate', toDate)
-            const localVarPath = `/project-time-booking`;
+            const localVarPath = `/api/v1/project-time-booking`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -762,7 +840,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('projectTimeBookingNotBookedGet', 'fromDate', fromDate)
             // verify required parameter 'toDate' is not null or undefined
             assertParamExists('projectTimeBookingNotBookedGet', 'toDate', toDate)
-            const localVarPath = `/project-time-booking/not-booked`;
+            const localVarPath = `/api/v1/project-time-booking/not-booked`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -810,7 +888,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         projectTimeBookingPost: async (pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pUTPOSTProjectTimeSpansRequest' is not null or undefined
             assertParamExists('projectTimeBookingPost', 'pUTPOSTProjectTimeSpansRequest', pUTPOSTProjectTimeSpansRequest)
-            const localVarPath = `/project-time-booking`;
+            const localVarPath = `/api/v1/project-time-booking`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -849,7 +927,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         projectTimeBookingPut: async (pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pUTPOSTProjectTimeSpansRequest' is not null or undefined
             assertParamExists('projectTimeBookingPut', 'pUTPOSTProjectTimeSpansRequest', pUTPOSTProjectTimeSpansRequest)
-            const localVarPath = `/project-time-booking`;
+            const localVarPath = `/api/v1/project-time-booking`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -878,347 +956,16 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @summary Submit/withdraw time booking
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {boolean} [boss] Sets the boss lock
-         * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
-         * @param {number} [employee] Employee ID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingCommitPatch: async (fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'fromDate' is not null or undefined
-            assertParamExists('timeBookingCommitPatch', 'fromDate', fromDate)
-            // verify required parameter 'toDate' is not null or undefined
-            assertParamExists('timeBookingCommitPatch', 'toDate', toDate)
-            const localVarPath = `/time-booking/commit`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (boss !== undefined) {
-                localVarQueryParameter['boss'] = boss;
-            }
-
-            if (withdraw !== undefined) {
-                localVarQueryParameter['withdraw'] = withdraw;
-            }
-
-            if (fromDate !== undefined) {
-                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
-                    (fromDate as any).toISOString().substr(0,10) :
-                    fromDate;
-            }
-
-            if (toDate !== undefined) {
-                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
-                    (toDate as any).toISOString().substr(0,10) :
-                    toDate;
-            }
-
-            if (employee !== undefined) {
-                localVarQueryParameter['employee'] = employee;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get time bookings within a date range (from-to)
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingGet: async (fromDate: string, toDate: string, employeeId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'fromDate' is not null or undefined
-            assertParamExists('timeBookingGet', 'fromDate', fromDate)
-            // verify required parameter 'toDate' is not null or undefined
-            assertParamExists('timeBookingGet', 'toDate', toDate)
-            const localVarPath = `/time-booking`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (fromDate !== undefined) {
-                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
-                    (fromDate as any).toISOString().substr(0,10) :
-                    fromDate;
-            }
-
-            if (toDate !== undefined) {
-                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
-                    (toDate as any).toISOString().substr(0,10) :
-                    toDate;
-            }
-
-            if (employeeId !== undefined) {
-                localVarQueryParameter['employeeId'] = employeeId;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Save a time booking
-         * @param {TimeSpanWithoutID} timeSpanWithoutID 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingPost: async (timeSpanWithoutID: TimeSpanWithoutID, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'timeSpanWithoutID' is not null or undefined
-            assertParamExists('timeBookingPost', 'timeSpanWithoutID', timeSpanWithoutID)
-            const localVarPath = `/time-booking`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(timeSpanWithoutID, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Delete time booking by ID
-         * @param {number} timeSpanId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingTimeSpanIdDelete: async (timeSpanId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'timeSpanId' is not null or undefined
-            assertParamExists('timeBookingTimeSpanIdDelete', 'timeSpanId', timeSpanId)
-            const localVarPath = `/time-booking/{timeSpanId}`
-                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get time booking by ID
-         * @param {number} timeSpanId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingTimeSpanIdGet: async (timeSpanId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'timeSpanId' is not null or undefined
-            assertParamExists('timeBookingTimeSpanIdGet', 'timeSpanId', timeSpanId)
-            const localVarPath = `/time-booking/{timeSpanId}`
-                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update time span
-         * @param {number} timeSpanId 
-         * @param {TimeSpanWithoutID} [timeSpanWithoutID] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        timeBookingTimeSpanIdPut: async (timeSpanId: number, timeSpanWithoutID?: TimeSpanWithoutID, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'timeSpanId' is not null or undefined
-            assertParamExists('timeBookingTimeSpanIdPut', 'timeSpanId', timeSpanId)
-            const localVarPath = `/time-booking/{timeSpanId}`
-                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(timeSpanWithoutID, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Gets information about the related employee with the api key
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        userinfoMeGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/userinfo/me`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication ApiKey required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
 /**
- * DefaultApi - functional programming interface
+ * ProjectTimeBookingApi - functional programming interface
  * @export
  */
-export const DefaultApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
+export const ProjectTimeBookingApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ProjectTimeBookingApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @summary Export timebookings as CSV file
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {number} [exportEmployeeId] ID of employee to export CSV for
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.csvGet(fromDate, toDate, exportEmployeeId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get all available projects to book time on for the current user
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async projectGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETProjectResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.projectGet(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
         /**
          * 
          * @summary Delete project time booking
@@ -1277,6 +1024,436 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+    }
+};
+
+/**
+ * ProjectTimeBookingApi - factory interface
+ * @export
+ */
+export const ProjectTimeBookingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ProjectTimeBookingApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Delete project time booking
+         * @param {string} day Date of project time e.g. 2022-01-30
+         * @param {number} [project] Project ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectTimeBookingDelete(day: string, project?: number, options?: any): AxiosPromise<DELETEProjectTimeBookingResponse> {
+            return localVarFp.projectTimeBookingDelete(day, project, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get project timespans within a date range (from-to)
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectTimeBookingGet(fromDate: string, toDate: string, options?: any): AxiosPromise<GETProjectTimeSpansResponse> {
+            return localVarFp.projectTimeBookingGet(fromDate, toDate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get all non-booked time periods within from and to date
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectTimeBookingNotBookedGet(fromDate: string, toDate: string, options?: any): AxiosPromise<GETNotBookedTimeResponse> {
+            return localVarFp.projectTimeBookingNotBookedGet(fromDate, toDate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Saves project time booking
+         * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: any): AxiosPromise<ProjectDateTimeSpans> {
+            return localVarFp.projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update project time booking
+         * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: any): AxiosPromise<ProjectDateTimeSpans> {
+            return localVarFp.projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ProjectTimeBookingApi - object-oriented interface
+ * @export
+ * @class ProjectTimeBookingApi
+ * @extends {BaseAPI}
+ */
+export class ProjectTimeBookingApi extends BaseAPI {
+    /**
+     * 
+     * @summary Delete project time booking
+     * @param {string} day Date of project time e.g. 2022-01-30
+     * @param {number} [project] Project ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectTimeBookingApi
+     */
+    public projectTimeBookingDelete(day: string, project?: number, options?: AxiosRequestConfig) {
+        return ProjectTimeBookingApiFp(this.configuration).projectTimeBookingDelete(day, project, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get project timespans within a date range (from-to)
+     * @param {string} fromDate Example: 2022-01-01
+     * @param {string} toDate Example: 2022-01-31
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectTimeBookingApi
+     */
+    public projectTimeBookingGet(fromDate: string, toDate: string, options?: AxiosRequestConfig) {
+        return ProjectTimeBookingApiFp(this.configuration).projectTimeBookingGet(fromDate, toDate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get all non-booked time periods within from and to date
+     * @param {string} fromDate Example: 2022-01-01
+     * @param {string} toDate Example: 2022-01-31
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectTimeBookingApi
+     */
+    public projectTimeBookingNotBookedGet(fromDate: string, toDate: string, options?: AxiosRequestConfig) {
+        return ProjectTimeBookingApiFp(this.configuration).projectTimeBookingNotBookedGet(fromDate, toDate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Saves project time booking
+     * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectTimeBookingApi
+     */
+    public projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: AxiosRequestConfig) {
+        return ProjectTimeBookingApiFp(this.configuration).projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update project time booking
+     * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProjectTimeBookingApi
+     */
+    public projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: AxiosRequestConfig) {
+        return ProjectTimeBookingApiFp(this.configuration).projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * TimeBookingApi - axios parameter creator
+ * @export
+ */
+export const TimeBookingApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Submit/withdraw time booking
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {boolean} [boss] Sets the boss lock
+         * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
+         * @param {number} [employee] Employee ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingCommitPatch: async (fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fromDate' is not null or undefined
+            assertParamExists('timeBookingCommitPatch', 'fromDate', fromDate)
+            // verify required parameter 'toDate' is not null or undefined
+            assertParamExists('timeBookingCommitPatch', 'toDate', toDate)
+            const localVarPath = `/api/v1/time-booking/commit`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (fromDate !== undefined) {
+                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
+                    (fromDate as any).toISOString().substr(0,10) :
+                    fromDate;
+            }
+
+            if (toDate !== undefined) {
+                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
+                    (toDate as any).toISOString().substr(0,10) :
+                    toDate;
+            }
+
+            if (boss !== undefined) {
+                localVarQueryParameter['boss'] = boss;
+            }
+
+            if (withdraw !== undefined) {
+                localVarQueryParameter['withdraw'] = withdraw;
+            }
+
+            if (employee !== undefined) {
+                localVarQueryParameter['employee'] = employee;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get time bookings within a date range (from-to)
+         * @param {string} fromDate Example: 2022-01-01
+         * @param {string} toDate Example: 2022-01-31
+         * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingGet: async (fromDate: string, toDate: string, employeeId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fromDate' is not null or undefined
+            assertParamExists('timeBookingGet', 'fromDate', fromDate)
+            // verify required parameter 'toDate' is not null or undefined
+            assertParamExists('timeBookingGet', 'toDate', toDate)
+            const localVarPath = `/api/v1/time-booking`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (fromDate !== undefined) {
+                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
+                    (fromDate as any).toISOString().substr(0,10) :
+                    fromDate;
+            }
+
+            if (toDate !== undefined) {
+                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
+                    (toDate as any).toISOString().substr(0,10) :
+                    toDate;
+            }
+
+            if (employeeId !== undefined) {
+                localVarQueryParameter['employeeId'] = employeeId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Save a time booking
+         * @param {TimeSpanWithoutID} timeSpanWithoutID 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingPost: async (timeSpanWithoutID: TimeSpanWithoutID, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'timeSpanWithoutID' is not null or undefined
+            assertParamExists('timeBookingPost', 'timeSpanWithoutID', timeSpanWithoutID)
+            const localVarPath = `/api/v1/time-booking`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(timeSpanWithoutID, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete time booking by ID
+         * @param {number} timeSpanId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingTimeSpanIdDelete: async (timeSpanId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'timeSpanId' is not null or undefined
+            assertParamExists('timeBookingTimeSpanIdDelete', 'timeSpanId', timeSpanId)
+            const localVarPath = `/api/v1/time-booking/{timeSpanId}`
+                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get time booking by ID
+         * @param {number} timeSpanId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingTimeSpanIdGet: async (timeSpanId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'timeSpanId' is not null or undefined
+            assertParamExists('timeBookingTimeSpanIdGet', 'timeSpanId', timeSpanId)
+            const localVarPath = `/api/v1/time-booking/{timeSpanId}`
+                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Update time span
+         * @param {number} timeSpanId 
+         * @param {TimeSpanWithoutID} [timeSpanWithoutID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        timeBookingTimeSpanIdPut: async (timeSpanId: number, timeSpanWithoutID?: TimeSpanWithoutID, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'timeSpanId' is not null or undefined
+            assertParamExists('timeBookingTimeSpanIdPut', 'timeSpanId', timeSpanId)
+            const localVarPath = `/api/v1/time-booking/{timeSpanId}`
+                .replace(`{${"timeSpanId"}}`, encodeURIComponent(String(timeSpanId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(timeSpanWithoutID, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * TimeBookingApi - functional programming interface
+ * @export
+ */
+export const TimeBookingApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = TimeBookingApiAxiosParamCreator(configuration)
+    return {
         /**
          * 
          * @summary Submit/withdraw time booking
@@ -1350,99 +1527,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.timeBookingTimeSpanIdPut(timeSpanId, timeSpanWithoutID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-        /**
-         * Gets information about the related employee with the api key
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async userinfoMeGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETUserinfoResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.userinfoMeGet(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
     }
 };
 
 /**
- * DefaultApi - factory interface
+ * TimeBookingApi - factory interface
  * @export
  */
-export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = DefaultApiFp(configuration)
+export const TimeBookingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = TimeBookingApiFp(configuration)
     return {
-        /**
-         * 
-         * @summary Export timebookings as CSV file
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {number} [exportEmployeeId] ID of employee to export CSV for
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: any): AxiosPromise<string> {
-            return localVarFp.csvGet(fromDate, toDate, exportEmployeeId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get all available projects to book time on for the current user
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectGet(options?: any): AxiosPromise<GETProjectResponse> {
-            return localVarFp.projectGet(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Delete project time booking
-         * @param {string} day Date of project time e.g. 2022-01-30
-         * @param {number} [project] Project ID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectTimeBookingDelete(day: string, project?: number, options?: any): AxiosPromise<DELETEProjectTimeBookingResponse> {
-            return localVarFp.projectTimeBookingDelete(day, project, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get project timespans within a date range (from-to)
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectTimeBookingGet(fromDate: string, toDate: string, options?: any): AxiosPromise<GETProjectTimeSpansResponse> {
-            return localVarFp.projectTimeBookingGet(fromDate, toDate, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get all non-booked time periods within from and to date
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectTimeBookingNotBookedGet(fromDate: string, toDate: string, options?: any): AxiosPromise<GETNotBookedTimeResponse> {
-            return localVarFp.projectTimeBookingNotBookedGet(fromDate, toDate, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Saves project time booking
-         * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: any): AxiosPromise<ProjectDateTimeSpans> {
-            return localVarFp.projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update project time booking
-         * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: any): AxiosPromise<ProjectDateTimeSpans> {
-            return localVarFp.projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(axios, basePath));
-        },
         /**
          * 
          * @summary Submit/withdraw time booking
@@ -1510,112 +1604,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         timeBookingTimeSpanIdPut(timeSpanId: number, timeSpanWithoutID?: TimeSpanWithoutID, options?: any): AxiosPromise<TimeSpanWithID> {
             return localVarFp.timeBookingTimeSpanIdPut(timeSpanId, timeSpanWithoutID, options).then((request) => request(axios, basePath));
         },
-        /**
-         * Gets information about the related employee with the api key
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        userinfoMeGet(options?: any): AxiosPromise<GETUserinfoResponse> {
-            return localVarFp.userinfoMeGet(options).then((request) => request(axios, basePath));
-        },
     };
 };
 
 /**
- * DefaultApi - object-oriented interface
+ * TimeBookingApi - object-oriented interface
  * @export
- * @class DefaultApi
+ * @class TimeBookingApi
  * @extends {BaseAPI}
  */
-export class DefaultApi extends BaseAPI {
-    /**
-     * 
-     * @summary Export timebookings as CSV file
-     * @param {string} fromDate Example: 2022-01-01
-     * @param {string} toDate Example: 2022-01-31
-     * @param {number} [exportEmployeeId] ID of employee to export CSV for
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).csvGet(fromDate, toDate, exportEmployeeId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get all available projects to book time on for the current user
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectGet(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectGet(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Delete project time booking
-     * @param {string} day Date of project time e.g. 2022-01-30
-     * @param {number} [project] Project ID
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectTimeBookingDelete(day: string, project?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectTimeBookingDelete(day, project, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get project timespans within a date range (from-to)
-     * @param {string} fromDate Example: 2022-01-01
-     * @param {string} toDate Example: 2022-01-31
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectTimeBookingGet(fromDate: string, toDate: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectTimeBookingGet(fromDate, toDate, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get all non-booked time periods within from and to date
-     * @param {string} fromDate Example: 2022-01-01
-     * @param {string} toDate Example: 2022-01-31
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectTimeBookingNotBookedGet(fromDate: string, toDate: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectTimeBookingNotBookedGet(fromDate, toDate, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Saves project time booking
-     * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectTimeBookingPost(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update project time booking
-     * @param {PUTPOSTProjectTimeSpansRequest} pUTPOSTProjectTimeSpansRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest: PUTPOSTProjectTimeSpansRequest, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).projectTimeBookingPut(pUTPOSTProjectTimeSpansRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
+export class TimeBookingApi extends BaseAPI {
     /**
      * 
      * @summary Submit/withdraw time booking
@@ -1626,10 +1624,10 @@ export class DefaultApi extends BaseAPI {
      * @param {number} [employee] Employee ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingCommitPatch(fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingCommitPatch(fromDate, toDate, boss, withdraw, employee, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingCommitPatch(fromDate, toDate, boss, withdraw, employee, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1640,10 +1638,10 @@ export class DefaultApi extends BaseAPI {
      * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingGet(fromDate: string, toDate: string, employeeId?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingGet(fromDate, toDate, employeeId, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingGet(fromDate, toDate, employeeId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1652,10 +1650,10 @@ export class DefaultApi extends BaseAPI {
      * @param {TimeSpanWithoutID} timeSpanWithoutID 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingPost(timeSpanWithoutID: TimeSpanWithoutID, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingPost(timeSpanWithoutID, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingPost(timeSpanWithoutID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1664,10 +1662,10 @@ export class DefaultApi extends BaseAPI {
      * @param {number} timeSpanId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingTimeSpanIdDelete(timeSpanId: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingTimeSpanIdDelete(timeSpanId, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingTimeSpanIdDelete(timeSpanId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1676,10 +1674,10 @@ export class DefaultApi extends BaseAPI {
      * @param {number} timeSpanId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingTimeSpanIdGet(timeSpanId: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingTimeSpanIdGet(timeSpanId, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingTimeSpanIdGet(timeSpanId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1689,20 +1687,111 @@ export class DefaultApi extends BaseAPI {
      * @param {TimeSpanWithoutID} [timeSpanWithoutID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof TimeBookingApi
      */
     public timeBookingTimeSpanIdPut(timeSpanId: number, timeSpanWithoutID?: TimeSpanWithoutID, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).timeBookingTimeSpanIdPut(timeSpanId, timeSpanWithoutID, options).then((request) => request(this.axios, this.basePath));
+        return TimeBookingApiFp(this.configuration).timeBookingTimeSpanIdPut(timeSpanId, timeSpanWithoutID, options).then((request) => request(this.axios, this.basePath));
     }
+}
 
+
+/**
+ * UserinfoApi - axios parameter creator
+ * @export
+ */
+export const UserinfoApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Gets information about the related employee with the api key
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userinfoMeGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/userinfo/me`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * UserinfoApi - functional programming interface
+ * @export
+ */
+export const UserinfoApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = UserinfoApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Gets information about the related employee with the api key
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userinfoMeGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETUserinfoResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userinfoMeGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * UserinfoApi - factory interface
+ * @export
+ */
+export const UserinfoApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = UserinfoApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Gets information about the related employee with the api key
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userinfoMeGet(options?: any): AxiosPromise<GETUserinfoResponse> {
+            return localVarFp.userinfoMeGet(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * UserinfoApi - object-oriented interface
+ * @export
+ * @class UserinfoApi
+ * @extends {BaseAPI}
+ */
+export class UserinfoApi extends BaseAPI {
     /**
-     * Gets information about the related employee with the api key
+     * 
+     * @summary Gets information about the related employee with the api key
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @memberof UserinfoApi
      */
     public userinfoMeGet(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).userinfoMeGet(options).then((request) => request(this.axios, this.basePath));
+        return UserinfoApiFp(this.configuration).userinfoMeGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

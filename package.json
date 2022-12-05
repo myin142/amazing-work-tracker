@@ -6,7 +6,7 @@
     "start": "nx serve",
     "build": "nx build --prod",
     "test": "nx test",
-    "generate:api": "openapi-generator-cli generate -g typescript-axios -i openapi.yml -o libs/openapi/src/lib"
+    "generate:api": "openapi-generator-cli generate -g typescript-axios -i https://ims-dev.it-experts.at/ims/v3/api-docs -o libs/openapi/src/lib --skip-validate-spec"
   },
   "private": true,
   "dependencies": {

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://ims.it-experts.at/ims/api/v1',
+  baseUrl: 'https://ims.it-experts.at/ims',
 };

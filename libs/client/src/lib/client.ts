@@ -1,8 +1,10 @@
 import {
   Configuration,
-  DefaultApi,
   ProjectDateTimeSpans,
   TimeSpanWithoutID,
+  TimeBookingApi,
+  ProjectApi,
+  ProjectTimeBookingApi,
 } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import {
@@ -11,15 +13,18 @@ import {
   mapToWorkDay,
 } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
-import { RequiredError } from 'libs/openapi/src/lib/base';
 
 export class IMSClient {
-  private api: DefaultApi;
+  private timeBookingApi: TimeBookingApi;
+  private projectApi: ProjectApi;
+  private projectTimebookingApi: ProjectTimeBookingApi;
 
   constructor(token: string, baseUrl: string) {
-    this.api = new DefaultApi(
-      new Configuration({ apiKey: token, basePath: baseUrl })
-    );
+    const config = new Configuration({ apiKey: token, basePath: baseUrl });
+
+    this.timeBookingApi = new TimeBookingApi(config);
+    this.projectApi = new ProjectApi(config);
+    this.projectTimebookingApi = new ProjectTimeBookingApi(config);
   }
 
   async saveDay(workDay: WorkDay) {
@@ -40,17 +45,17 @@ export class IMSClient {
   ) {
     await Promise.all(
       eachDayOfInterval({ start: from, end: to }).map((d) =>
-        this.api.projectTimeBookingDelete(formatDate(d))
+        this.projectTimebookingApi.projectTimeBookingDelete(formatDate(d))
       )
     );
 
-    const { data: existing } = await this.api.timeBookingGet(
+    const { data: existing } = await this.timeBookingApi.timeBookingGet(
       formatDate(from),
       formatDate(to)
     );
     await Promise.all(
       existing.timeSpans?.map((timespan) =>
-        this.api.timeBookingTimeSpanIdDelete(timespan.id)
+        this.timeBookingApi.timeBookingTimeSpanIdDelete(timespan.id)
       ) || []
     );
   }
@@ -63,30 +68,27 @@ export class IMSClient {
 
   private async saveTimeSpan(timeSpan: TimeSpanWithoutID): Promise<void> {
     try {
-      await this.api.timeBookingPost(timeSpan);
+      await this.timeBookingApi.timeBookingPost(timeSpan);
     } catch (e: any) {
-      console.warn(
-        `Failed to save timespan for ${timeSpan.date}`,
-        e as RequiredError
-      );
+      console.warn(`Failed to save timespan for ${timeSpan.date}`, e as any);
       throw e;
     }
   }
 
   private async saveProjectTime(timeSpan: ProjectDateTimeSpans): Promise<void> {
     try {
-      await this.api.projectTimeBookingPost(timeSpan);
+      await this.projectTimebookingApi.projectTimeBookingPost(timeSpan);
     } catch (e: any) {
       console.warn(
         `Failed to save project time for ${timeSpan.date}`,
-        e as RequiredError
+        e as any
       );
       throw e;
     }
   }
 
   async getProjects(): Promise<Project[]> {
-    return this.api
+    return this.projectApi
       .projectGet()
       .then((x) => x.data.projects || [])
       .then((projects) =>
@@ -101,11 +103,12 @@ export class IMSClient {
     const fromStr = formatDate(interval.start);
     const toStr = formatDate(interval.end);
 
-    const { data: timeSpans } = await this.api.timeBookingGet(fromStr, toStr);
-    const { data: projectTimes } = await this.api.projectTimeBookingGet(
+    const { data: timeSpans } = await this.timeBookingApi.timeBookingGet(
       fromStr,
       toStr
     );
+    const { data: projectTimes } =
+      await this.projectTimebookingApi.projectTimeBookingGet(fromStr, toStr);
 
     return mapToWorkDay(
       timeSpans.timeSpans || [],
@@ -116,6 +119,11 @@ export class IMSClient {
   async lockDays(range: Interval, withdraw = false): Promise<void> {
     const fromStr = formatDate(range.start);
     const toStr = formatDate(range.end);
-    await this.api.timeBookingCommitPatch(fromStr, toStr, false, withdraw);
+    await this.timeBookingApi.timeBookingCommitPatch(
+      fromStr,
+      toStr,
+      false,
+      withdraw
+    );
   }
 }
