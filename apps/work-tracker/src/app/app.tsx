@@ -5,7 +5,7 @@ import Button from '../components/button/button';
 import Login from './login/login';
 import { WorkDay, FullDayType, Project } from '@myin/models';
 import { environment } from '../environments/environment';
-import { IMSClient } from '@myin/client';
+import { IMSClient, UserInfo } from '@myin/client';
 import { WorkCell } from './work-cell';
 import {
   endOfMonth,
@@ -15,6 +15,7 @@ import {
   startOfMonth,
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
+import { Info } from './info/Info';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 
@@ -33,6 +34,7 @@ export function App() {
   );
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
+  const [userInfo, setUserInfo] = useState(null as UserInfo | null);
 
   const hasWorkDays = Object.keys(workDays).length;
   const monthLocked = Object.values(workDays).some((day) => day.locked);
@@ -43,6 +45,13 @@ export function App() {
       .then((p) => setProjects(p))
       .catch((err) => {
         console.warn('Failed to get projects', err);
+      });
+
+    getClient()
+      .userInfo()
+      .then((i) => setUserInfo(i))
+      .catch((err) => {
+        console.warn('Failed to user info', err);
       });
   }, []);
 
@@ -70,6 +79,11 @@ export function App() {
   const onTokenLogin = (loginToken: string) => {
     localStorage.setItem(LOGIN_TOKEN_KEY, loginToken);
     setToken(loginToken);
+  };
+
+  const onTokenLogout = () => {
+    localStorage.removeItem(LOGIN_TOKEN_KEY);
+    setToken('');
   };
 
   const onDateClicked = (d: Date) => {
@@ -202,19 +216,27 @@ export function App() {
             )}
           />
 
-          <div className="w-1/2 flex flex-col justify-between">
-            <WorkDialog
-              date={selectedDate}
-              workDay={currentWorkDay}
-              projects={projects}
-              onSave={saveDay}
-              onCopy={() => setCopyCell(!copyCell)}
-              isCopying={copyCell}
-              error={error}
-            />
+          <div className="w-1/2 flex flex-col gap-2">
+            {userInfo && (
+              <div className="basis-10 flex items-center">
+                <Info info={userInfo} onLogout={onTokenLogout} />
+              </div>
+            )}
+            <div className=" grow flex flex-col justify-between">
+              <WorkDialog
+                date={selectedDate}
+                workDay={currentWorkDay}
+                projects={projects}
+                onSave={saveDay}
+                onCopy={() => setCopyCell(!copyCell)}
+                isCopying={copyCell}
+                error={error}
+              />
 
-            {(hasWorkDays && ((monthLocked && withDrawButton) || lockButton)) ||
-              ''}
+              {(hasWorkDays &&
+                ((monthLocked && withDrawButton) || lockButton)) ||
+                ''}
+            </div>
           </div>
         </>
       )) ||

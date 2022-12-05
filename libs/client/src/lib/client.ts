@@ -5,6 +5,7 @@ import {
   TimeBookingApi,
   ProjectApi,
   ProjectTimeBookingApi,
+  UserinfoApi,
 } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import {
@@ -14,10 +15,15 @@ import {
 } from '@myin/work-time-mapper';
 import { eachDayOfInterval, Interval } from 'date-fns';
 
+export interface UserInfo {
+  email: string;
+}
+
 export class IMSClient {
   private timeBookingApi: TimeBookingApi;
   private projectApi: ProjectApi;
   private projectTimebookingApi: ProjectTimeBookingApi;
+  private userApi: UserinfoApi;
 
   constructor(token: string, baseUrl: string) {
     const config = new Configuration({ apiKey: token, basePath: baseUrl });
@@ -25,6 +31,12 @@ export class IMSClient {
     this.timeBookingApi = new TimeBookingApi(config);
     this.projectApi = new ProjectApi(config);
     this.projectTimebookingApi = new ProjectTimeBookingApi(config);
+    this.userApi = new UserinfoApi(config);
+  }
+
+  async userInfo(): Promise<UserInfo> {
+    const { data } = await this.userApi.userinfoMeGet();
+    return { email: data.email };
   }
 
   async saveDay(workDay: WorkDay) {
