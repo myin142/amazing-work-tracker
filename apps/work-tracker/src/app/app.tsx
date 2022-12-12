@@ -209,6 +209,12 @@ export function App() {
                 isOpen={isSameDay(selectedDate, d)}
               />
             )}
+            rightHeader={() => (
+              // eslint-disable-next-line react/jsx-no-useless-fragment
+              <div className="basis-10 flex items-center text-lg">
+                <Info info={userInfo} onLogout={onTokenLogout} />
+              </div>
+            )}
             header={() => (
               <div className="flex gap-2 items-center">
                 {fullDayTypeButtons}
@@ -217,11 +223,6 @@ export function App() {
           />
 
           <div className="w-1/2 flex flex-col gap-2">
-            {userInfo && (
-              <div className="basis-10 flex items-center">
-                <Info info={userInfo} onLogout={onTokenLogout} />
-              </div>
-            )}
             <div className=" grow flex flex-col justify-between">
               <WorkDialog
                 date={selectedDate}

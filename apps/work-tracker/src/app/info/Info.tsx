@@ -4,7 +4,7 @@ import { AiFillSetting } from 'react-icons/ai';
 import Button from '../../components/button/button';
 
 interface InfoProps {
-  info: UserInfo;
+  info?: UserInfo | null;
   onLogout: () => void;
 }
 
@@ -18,7 +18,7 @@ export function Info({ info, onLogout }: InfoProps) {
       </div>
       {visible && (
         <div className="absolute bg-blue-100 p-2 rounded flex flex-col gap-2 text-sm w-80">
-          <div>{info.email}</div>
+          <div>{info?.email || '<EMPTY>'}</div>
           <Button onClick={() => onLogout()}>Logout</Button>
         </div>
       )}

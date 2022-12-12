@@ -31,6 +31,7 @@ export interface CalendarProps {
   rangeSelect: boolean;
   cellSelect: boolean;
   header?: () => JSX.Element;
+  rightHeader?: () => JSX.Element;
   currentDate: Date;
 }
 
@@ -49,6 +50,7 @@ export function Calendar({
   onCalendarChange,
   cell,
   header,
+  rightHeader,
   rangeSelect,
   cellSelect,
   currentDate,
@@ -206,7 +208,10 @@ export function Calendar({
 
         {header && header()}
 
-        <Button onClick={() => onCellClick(new Date())}>Today</Button>
+        <div className="flex gap-2">
+          {rightHeader && rightHeader()}
+          <Button onClick={() => onCellClick(new Date())}>Today</Button>
+        </div>
       </div>
       <div className="grid mt-4 grid-cols-7 flex-grow grid-rows-[3rem_auto]">
         {weekDayLetters.map((l) => (
