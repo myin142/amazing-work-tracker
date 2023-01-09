@@ -203,6 +203,7 @@ export function App() {
 
   const getMonthlySummary = () => {
     const homeoffice = Object.values(workDays).filter((d) => d.homeoffice);
+    const vacation = Object.values(workDays).filter((d) => d.vacation);
     const dayHoursWorked = Object.values(workDays)
       .map((x) => getWorkHoursInDay(x))
       .filter((x) => !!x)
@@ -218,6 +219,7 @@ export function App() {
       diff: diff / 60,
       actual: workedMinutes / 60,
       homeoffice: homeoffice.length,
+      vacation: vacation.length,
     };
   };
 
@@ -273,12 +275,13 @@ export function App() {
                 error={error}
               />
 
-              <div>
+              <div className="text-sm text-slate-500">
                 <div>
                   Hours: {monthlySummary.actual} / {monthlySummary.target}
                 </div>
                 <div>Diff: {monthlySummary.diff}</div>
                 <div>Homeoffice: {monthlySummary.homeoffice}</div>
+                <div>Vacation: {monthlySummary.vacation}</div>
               </div>
 
               {(hasWorkDays &&
