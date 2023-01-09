@@ -94,7 +94,12 @@ export function App() {
   const onRangeSelected = async (i: Interval) => {
     if (fullDayType) {
       console.log(fullDayType, i);
-      await getClient().saveFullDay(fullDayType, i);
+      try {
+        await getClient().saveFullDay(fullDayType, i);
+      } catch (e) {
+        console.log('Some full day request failed');
+      }
+
       await loadWorkDays();
       setFullDayType(null);
     }
