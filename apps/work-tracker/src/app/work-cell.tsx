@@ -1,12 +1,6 @@
-import { WorkDay, parseTime, formatTime } from '@myin/models';
-import {
-  add,
-  format,
-  intervalToDuration,
-  isToday,
-  isWeekend,
-  startOfDay,
-} from 'date-fns';
+import { WorkDay } from '@myin/models';
+import { getWorkHoursInDay } from '@myin/work-time-parser';
+import { format, isToday, isWeekend } from 'date-fns';
 import { FaUmbrellaBeach } from 'react-icons/fa';
 import { HiEmojiSad, HiLockClosed } from 'react-icons/hi';
 
@@ -18,39 +12,6 @@ interface WorkCellProps {
 }
 
 export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
-  const getDuration = () => {
-    if (!day) {
-      return '';
-    }
-
-    const start = startOfDay(new Date());
-    const end = day.workTimes
-      .map((time) => {
-        if (time.breakFrom && time.breakTo) {
-          return [
-            {
-              start: parseTime(time.timeFrom),
-              end: parseTime(time.breakFrom),
-            },
-            {
-              start: parseTime(time.breakTo),
-              end: parseTime(time.timeTo),
-            },
-          ];
-        }
-
-        return [
-          {
-            start: parseTime(time.timeFrom),
-            end: parseTime(time.timeTo),
-          },
-        ];
-      })
-      .reduce((prev, curr) => prev.concat(curr), [])
-      .reduce((prev, curr) => add(prev, intervalToDuration(curr)), start);
-    return start !== end ? formatTime(end) : '';
-  };
-
   const bgColor = () => {
     if (isSelected) {
       return 'bg-blue-200';
@@ -93,7 +54,7 @@ export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
         <div className="flex flex-row gap-2 items-center h-8">
           {day.vacation && <FaUmbrellaBeach />}
           {day.sickLeave && <HiEmojiSad />}
-          {getDuration()}
+          {getWorkHoursInDay(day)}
         </div>
       )}
     </div>

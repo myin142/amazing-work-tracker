@@ -171,8 +171,6 @@ export function mapToWorkDay(
 
   const days: { [date: string]: WorkDay } = {};
 
-  console.log(timeSpanByDate);
-
   Object.keys(timeSpanByDate).forEach((date) => {
     const timeSpans: TimeSpanWithID[] = timeSpanByDate[date];
     if (timeSpans.length === 1) {

@@ -3,11 +3,20 @@ import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import Login from './login/login';
-import { WorkDay, FullDayType, Project } from '@myin/models';
+import {
+  WorkDay,
+  FullDayType,
+  Project,
+  formatDate,
+  WorkTime,
+  parseTime,
+} from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient, UserInfo } from '@myin/client';
 import { WorkCell } from './work-cell';
 import {
+  add,
+  differenceInMinutes,
   endOfMonth,
   Interval,
   isSameDay,
@@ -16,8 +25,12 @@ import {
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 import { Info } from './info/Info';
+import { sum } from 'lodash';
+import { getWorkHoursInDay } from '@myin/work-time-parser';
+import { startOfToday } from 'date-fns/esm';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
+const DAILY_TARGET_HOURS = 7;
 
 export function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -87,7 +100,7 @@ export function App() {
   };
 
   const onDateClicked = (d: Date) => {
-    setCurrentWorkDay(workDays[d.toDateString()] || {});
+    setCurrentWorkDay(workDays[formatDate(d)] || {});
     setSelectedDate(d);
   };
 
@@ -107,7 +120,7 @@ export function App() {
 
   const onCellSelected = (date: Date) => {
     setCurrentWorkDay({
-      ...(workDays[date.toDateString()] || {}),
+      ...(workDays[formatDate(date)] || {}),
       date,
     });
     setCopyCell(false);
@@ -129,7 +142,7 @@ export function App() {
 
     const dayMap: { [d: string]: WorkDay } = {};
     days.forEach((day) => {
-      dayMap[day.date.toDateString()] = day;
+      dayMap[formatDate(day.date)] = day;
 
       if (currentWorkDay && isSameDay(day.date, currentWorkDay.date)) {
         setCurrentWorkDay(day);
@@ -188,6 +201,27 @@ export function App() {
     </Button>
   ));
 
+  const getMonthlySummary = () => {
+    const homeoffice = Object.values(workDays).filter((d) => d.homeoffice);
+    const dayHoursWorked = Object.values(workDays)
+      .map((x) => getWorkHoursInDay(x))
+      .filter((x) => !!x)
+      .map((t) => differenceInMinutes(parseTime(t), startOfToday()))
+      .filter((x) => x > 0);
+
+    const monthlyTarget = DAILY_TARGET_HOURS * dayHoursWorked.length;
+    const workedMinutes = sum(dayHoursWorked);
+    const diff = workedMinutes - monthlyTarget * 60;
+
+    return {
+      target: monthlyTarget,
+      diff: diff / 60,
+      actual: workedMinutes / 60,
+      homeoffice: homeoffice.length,
+    };
+  };
+
+  const monthlySummary = getMonthlySummary();
   const lockButton = <Button onClick={() => lockMonth()}>Lock Month</Button>;
   const withDrawButton = (
     <Button onClick={() => withdrawMonth()}>Withdraw Month</Button>
@@ -209,7 +243,7 @@ export function App() {
             cell={(d: Date, isSelected: boolean) => (
               <WorkCell
                 date={d}
-                day={workDays[d.toDateString()]}
+                day={workDays[formatDate(d)]}
                 isSelected={isSelected}
                 isOpen={isSameDay(selectedDate, d)}
               />
@@ -238,6 +272,14 @@ export function App() {
                 isCopying={copyCell}
                 error={error}
               />
+
+              <div>
+                <div>
+                  Hours: {monthlySummary.actual} / {monthlySummary.target}
+                </div>
+                <div>Diff: {monthlySummary.diff}</div>
+                <div>Homeoffice: {monthlySummary.homeoffice}</div>
+              </div>
 
               {(hasWorkDays &&
                 ((monthLocked && withDrawButton) || lockButton)) ||

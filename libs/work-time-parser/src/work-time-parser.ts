@@ -1,11 +1,14 @@
-import { formatTime, WorkTime } from '@myin/models';
+import { formatTime, WorkDay, WorkTime } from '@myin/models';
 import {
+  add,
   addMinutes,
   differenceInMinutes,
+  intervalToDuration,
   isValid,
   isWithinInterval,
   parse,
   setHours,
+  startOfDay,
   startOfToday,
 } from 'date-fns';
 
@@ -164,3 +167,36 @@ function isIntervalWithin(interval: Interval, boundingInterval: Interval) {
     isWithinInterval(interval.end, boundingInterval)
   );
 }
+
+export const getWorkHoursInDay = (day?: WorkDay) => {
+  if (!day) {
+    return '';
+  }
+
+  const start = startOfDay(new Date());
+  const end = day.workTimes
+    .map((time) => {
+      if (time.breakFrom && time.breakTo) {
+        return [
+          {
+            start: parseTime(time.timeFrom) as Date,
+            end: parseTime(time.breakFrom) as Date,
+          },
+          {
+            start: parseTime(time.breakTo) as Date,
+            end: parseTime(time.timeTo) as Date,
+          },
+        ];
+      }
+
+      return [
+        {
+          start: parseTime(time.timeFrom) as Date,
+          end: parseTime(time.timeTo) as Date,
+        },
+      ];
+    })
+    .reduce((prev, curr) => prev.concat(curr), [])
+    .reduce((prev, curr) => add(prev, intervalToDuration(curr)), start);
+  return start !== end ? formatTime(end) : '';
+};
