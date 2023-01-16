@@ -1,9 +1,5 @@
 import { FullDayType } from '@myin/models';
-import {
-  OffDutyReasonEnum,
-  TimeSpanTypeEnum,
-  TimeSpanWithoutID,
-} from '@myin/openapi';
+import { OffDutyReasonEnum, TimeSpanTypeEnum } from '@myin/openapi';
 import {
   mapFullDayTypes,
   mapToNewTimespans,

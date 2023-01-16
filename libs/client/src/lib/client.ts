@@ -6,6 +6,7 @@ import {
   ProjectApi,
   ProjectTimeBookingApi,
   UserinfoApi,
+  TimeSpanTypeEnum,
 } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import {
@@ -66,9 +67,17 @@ export class IMSClient {
       formatDate(to)
     );
     await Promise.all(
-      existing.timeSpans?.map((timespan) =>
-        this.timeBookingApi.timeBookingTimeSpanIdDelete(timespan.id)
-      ) || []
+      existing.timeSpans
+        ?.sort((t1, t2) =>
+          t1.type === TimeSpanTypeEnum.Break
+            ? 1
+            : t2.type === TimeSpanTypeEnum.Break
+            ? -1
+            : 0
+        )
+        .map((timespan) =>
+          this.timeBookingApi.timeBookingTimeSpanIdDelete(timespan.id)
+        ) || []
     );
   }
 
