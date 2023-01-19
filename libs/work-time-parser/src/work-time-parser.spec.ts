@@ -68,9 +68,9 @@ describe('Parse Work Time', () => {
       expect(parseWorkTimes('8h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
-          timeTo: '17:00',
+          timeTo: '16:30',
           breakFrom: '12:00',
-          breakTo: '13:00',
+          breakTo: '12:30',
         }),
       ]);
     });
@@ -79,9 +79,9 @@ describe('Parse Work Time', () => {
       expect(parseWorkTimes('7h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
-          timeTo: '16:00',
+          timeTo: '15:30',
           breakFrom: '11:30',
-          breakTo: '12:30',
+          breakTo: '12:00',
         }),
       ]);
     });
@@ -112,9 +112,9 @@ describe('Parse Work Time', () => {
       expect(parseWorkTimes('7.5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
-          timeTo: '16:30',
+          timeTo: '16:00',
           breakFrom: '11:45',
-          breakTo: '12:45',
+          breakTo: '12:15',
         }),
       ]);
     });
@@ -134,9 +134,9 @@ describe('Parse Work Time', () => {
       expect(parseWorkTimes('6.5h')).toEqual([
         expect.objectContaining({
           timeFrom: '08:00',
-          timeTo: '15:30',
+          timeTo: '15:00',
           breakFrom: '11:15',
-          breakTo: '12:15',
+          breakTo: '11:45',
         }),
       ]);
     });
@@ -214,9 +214,9 @@ describe('Parse Work Time', () => {
       } as WorkTime),
       expect.objectContaining({
         timeFrom: '12:00',
-        timeTo: '17:00',
+        timeTo: '16:30',
         breakFrom: '14:00',
-        breakTo: '15:00',
+        breakTo: '14:30',
       } as WorkTime),
     ]);
   });

@@ -13,7 +13,7 @@ import {
 } from 'date-fns';
 
 const DEFAULT_HOURS_START_TIME = setHours(startOfToday(), 8);
-const DEFAULT_HOURS_BREAK_MINUTES = 60;
+const DEFAULT_HOURS_BREAK_MINUTES = 30;
 
 const MAX_WORK_HOURS_WITHOUT_BREAK = 6;
 
