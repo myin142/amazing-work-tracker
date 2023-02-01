@@ -9,12 +9,23 @@ interface WorkCellProps {
   isSelected?: boolean;
   isOpen?: boolean;
   day?: WorkDay;
+  holiday?: string;
 }
 
-export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
+export function WorkCell({
+  day,
+  date,
+  isSelected,
+  isOpen,
+  holiday,
+}: WorkCellProps) {
   const bgColor = () => {
     if (isSelected) {
       return 'bg-blue-200';
+    }
+
+    if (holiday) {
+      return isWeekend(date) ? 'bg-green-50' : 'bg-green-100';
     }
 
     if (isWeekend(date)) {
@@ -50,6 +61,8 @@ export function WorkCell({ day, date, isSelected, isOpen }: WorkCellProps) {
         </span>
         <span>{day?.locked && <HiLockClosed />}</span>
       </div>
+      {holiday && <span>{holiday}</span>}
+
       {day && (
         <div className="flex flex-row gap-2 items-center h-8">
           {day.vacation && <FaUmbrellaBeach />}

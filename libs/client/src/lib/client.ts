@@ -7,6 +7,7 @@ import {
   ProjectTimeBookingApi,
   UserinfoApi,
   TimeSpanTypeEnum,
+  HolidaysApi,
 } from '@myin/openapi';
 import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
 import {
@@ -25,6 +26,7 @@ export class IMSClient {
   private projectApi: ProjectApi;
   private projectTimebookingApi: ProjectTimeBookingApi;
   private userApi: UserinfoApi;
+  private holidayApi: HolidaysApi;
 
   constructor(token: string, baseUrl: string) {
     const config = new Configuration({ apiKey: token, basePath: baseUrl });
@@ -33,6 +35,19 @@ export class IMSClient {
     this.projectApi = new ProjectApi(config);
     this.projectTimebookingApi = new ProjectTimeBookingApi(config);
     this.userApi = new UserinfoApi(config);
+    this.holidayApi = new HolidaysApi(config);
+  }
+
+  async holidays(date: Date): Promise<Record<string, string>> {
+    const { data } = await this.holidayApi.holidaysYearMonthGet(
+      date.getFullYear(),
+      date.getMonth() + 1
+    );
+
+    return data.holidays.reduce(
+      (prev, curr) => ({ ...prev, [curr.date]: curr.name }),
+      {}
+    );
   }
 
   async userInfo(): Promise<UserInfo> {

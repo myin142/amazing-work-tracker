@@ -8,14 +8,12 @@ import {
   FullDayType,
   Project,
   formatDate,
-  WorkTime,
   parseTime,
 } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient, UserInfo } from '@myin/client';
 import { WorkCell } from './work-cell';
 import {
-  add,
   differenceInMinutes,
   endOfMonth,
   Interval,
@@ -48,6 +46,7 @@ export function App() {
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
   const [userInfo, setUserInfo] = useState(null as UserInfo | null);
+  const [holidays, setHolidays] = useState({} as Record<string, string>);
 
   const hasWorkDays = Object.keys(workDays).length;
   const monthLocked = Object.values(workDays).some((day) => day.locked);
@@ -66,6 +65,8 @@ export function App() {
       .catch((err) => {
         console.warn('Failed to user info', err);
       });
+
+    loadHolidays(selectedDate);
   }, []);
 
   useKeyboardShortcut(['Shift', 'Enter'], () =>
@@ -83,6 +84,11 @@ export function App() {
   );
 
   const getClient = () => new IMSClient(token, environment.baseUrl);
+
+  const loadHolidays = async (date: Date) => {
+    const holidays = await getClient().holidays(date);
+    setHolidays(holidays);
+  };
 
   const cancel = () => {
     setFullDayType(null);
@@ -127,9 +133,12 @@ export function App() {
   };
 
   const onCalendarChange = async (i: Interval | null) => {
-    await loadWorkDays(i);
-    if (i?.start && !isWithinInterval(selectedDate, i)) {
-      onDateClicked(new Date(i.start));
+    if (i) {
+      await loadWorkDays(i);
+      await loadHolidays(new Date(i.start));
+      if (!isWithinInterval(selectedDate, i)) {
+        onDateClicked(new Date(i.start));
+      }
     }
   };
 
@@ -245,6 +254,7 @@ export function App() {
             cell={(d: Date, isSelected: boolean) => (
               <WorkCell
                 date={d}
+                holiday={holidays[formatDate(d)]}
                 day={workDays[formatDate(d)]}
                 isSelected={isSelected}
                 isOpen={isSameDay(selectedDate, d)}
