@@ -37,6 +37,32 @@ export interface DELETEProjectTimeBookingResponse {
 /**
  * 
  * @export
+ * @interface GETHolidaysResponse
+ */
+export interface GETHolidaysResponse {
+    /**
+     * 
+     * @type {Array<HolidayInfo>}
+     * @memberof GETHolidaysResponse
+     */
+    'holidays': Array<HolidayInfo>;
+}
+/**
+ * 
+ * @export
+ * @interface GETMonthWorkHoursDifferenceResponse
+ */
+export interface GETMonthWorkHoursDifferenceResponse {
+    /**
+     * Amount of hours difference between \"SOLL\" and \"IST\". Positive value -> having greater \"IST\" than \"SOLL\". Negative value -> having greater \"SOLL\" than \"IST\". 
+     * @type {number}
+     * @memberof GETMonthWorkHoursDifferenceResponse
+     */
+    'workHoursDifference': number;
+}
+/**
+ * 
+ * @export
  * @interface GETNotBookedTimeResponse
  */
 export interface GETNotBookedTimeResponse {
@@ -98,6 +124,31 @@ export interface GETUserinfoResponse {
      * @memberof GETUserinfoResponse
      */
     'email': string;
+}
+/**
+ * Information about a holiday
+ * @export
+ * @interface HolidayInfo
+ */
+export interface HolidayInfo {
+    /**
+     * The name of the holiday
+     * @type {string}
+     * @memberof HolidayInfo
+     */
+    'name': string;
+    /**
+     * The date of the holiday
+     * @type {string}
+     * @memberof HolidayInfo
+     */
+    'date': string;
+    /**
+     * If the holiday is Workable, this means that it is a half-day
+     * @type {boolean}
+     * @memberof HolidayInfo
+     */
+    'workable': boolean;
 }
 /**
  * Time periods that has no booking
@@ -618,6 +669,242 @@ export class CsvApi extends BaseAPI {
      */
     public csvGet(fromDate: string, toDate: string, exportEmployeeId?: number, options?: AxiosRequestConfig) {
         return CsvApiFp(this.configuration).csvGet(fromDate, toDate, exportEmployeeId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * HolidaysApi - axios parameter creator
+ * @export
+ */
+export const HolidaysApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Gets Holiday information for the supplied year and month
+         * @param {number} year 
+         * @param {number} month 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        holidaysYearMonthGet: async (year: number, month: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'year' is not null or undefined
+            assertParamExists('holidaysYearMonthGet', 'year', year)
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('holidaysYearMonthGet', 'month', month)
+            const localVarPath = `/api/v1/holidays/{year}/{month}`
+                .replace(`{${"year"}}`, encodeURIComponent(String(year)))
+                .replace(`{${"month"}}`, encodeURIComponent(String(month)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HolidaysApi - functional programming interface
+ * @export
+ */
+export const HolidaysApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HolidaysApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Gets Holiday information for the supplied year and month
+         * @param {number} year 
+         * @param {number} month 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async holidaysYearMonthGet(year: number, month: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETHolidaysResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.holidaysYearMonthGet(year, month, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * HolidaysApi - factory interface
+ * @export
+ */
+export const HolidaysApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HolidaysApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Gets Holiday information for the supplied year and month
+         * @param {number} year 
+         * @param {number} month 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        holidaysYearMonthGet(year: number, month: number, options?: any): AxiosPromise<GETHolidaysResponse> {
+            return localVarFp.holidaysYearMonthGet(year, month, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HolidaysApi - object-oriented interface
+ * @export
+ * @class HolidaysApi
+ * @extends {BaseAPI}
+ */
+export class HolidaysApi extends BaseAPI {
+    /**
+     * 
+     * @summary Gets Holiday information for the supplied year and month
+     * @param {number} year 
+     * @param {number} month 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HolidaysApi
+     */
+    public holidaysYearMonthGet(year: number, month: number, options?: AxiosRequestConfig) {
+        return HolidaysApiFp(this.configuration).holidaysYearMonthGet(year, month, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * MonthStatsApi - axios parameter creator
+ * @export
+ */
+export const MonthStatsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the working time target is calculated
+         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        workHoursDifference: async (year: number, month: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'year' is not null or undefined
+            assertParamExists('workHoursDifference', 'year', year)
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('workHoursDifference', 'month', month)
+            const localVarPath = `/api/v1/month-stats/work-hours-difference`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (year !== undefined) {
+                localVarQueryParameter['year'] = year;
+            }
+
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * MonthStatsApi - functional programming interface
+ * @export
+ */
+export const MonthStatsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = MonthStatsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the working time target is calculated
+         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async workHoursDifference(year: number, month: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETMonthWorkHoursDifferenceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.workHoursDifference(year, month, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * MonthStatsApi - factory interface
+ * @export
+ */
+export const MonthStatsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = MonthStatsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the working time target is calculated
+         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        workHoursDifference(year: number, month: number, options?: any): AxiosPromise<GETMonthWorkHoursDifferenceResponse> {
+            return localVarFp.workHoursDifference(year, month, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * MonthStatsApi - object-oriented interface
+ * @export
+ * @class MonthStatsApi
+ * @extends {BaseAPI}
+ */
+export class MonthStatsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
+     * @param {number} year Specify the year of which the working time target is calculated
+     * @param {number} month Specify the month of which the working time target is calculated
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MonthStatsApi
+     */
+    public workHoursDifference(year: number, month: number, options?: AxiosRequestConfig) {
+        return MonthStatsApiFp(this.configuration).workHoursDifference(year, month, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
