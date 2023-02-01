@@ -24,9 +24,9 @@ import Button from '../button/button';
 
 export interface CalendarProps {
   onDateClicked: (d: Date) => void;
+  onDateChange: (d: Date) => void;
   onRangeSelected: (i: Interval) => void;
   onCellSelected: (d: Date) => void;
-  onCalendarChange: (i: Interval) => void;
   cell?: (d: Date, isSelected: boolean) => JSX.Element;
   rangeSelect: boolean;
   cellSelect: boolean;
@@ -47,7 +47,7 @@ export function Calendar({
   onDateClicked,
   onRangeSelected,
   onCellSelected,
-  onCalendarChange,
+  onDateChange,
   cell,
   header,
   rightHeader,
@@ -72,7 +72,7 @@ export function Calendar({
 
   useEffect(() => setRangeStart(null), [rangeSelect]);
   useEffect(() => {
-    onCalendarChange({ start, end });
+    onDateChange(date);
   }, [date]);
 
   useEffect(() => {

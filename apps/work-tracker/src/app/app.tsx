@@ -132,6 +132,10 @@ export function App() {
     setCopyCell(false);
   };
 
+  const onDateChange = async (d: Date) => {
+    onCalendarChange({ start: startOfMonth(d), end: endOfMonth(d) });
+  };
+
   const onCalendarChange = async (i: Interval | null) => {
     if (i) {
       await loadWorkDays(i);
@@ -250,7 +254,7 @@ export function App() {
             onRangeSelected={onRangeSelected}
             onCellSelected={onCellSelected}
             onDateClicked={onDateClicked}
-            onCalendarChange={onCalendarChange}
+            onDateChange={onDateChange}
             cell={(d: Date, isSelected: boolean) => (
               <WorkCell
                 date={d}
