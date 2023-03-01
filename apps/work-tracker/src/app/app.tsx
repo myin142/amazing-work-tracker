@@ -186,21 +186,12 @@ export function App() {
   };
 
   const lockMonth = async () => {
-    await getClient().lockDays({
-      start: startOfMonth(selectedDate),
-      end: endOfMonth(selectedDate),
-    });
+    await getClient().lockDays(selectedDate);
     await loadWorkDays();
   };
 
   const withdrawMonth = async () => {
-    await getClient().lockDays(
-      {
-        start: startOfMonth(selectedDate),
-        end: endOfMonth(selectedDate),
-      },
-      true
-    );
+    await getClient().lockDays(selectedDate, true);
     await loadWorkDays();
   };
 

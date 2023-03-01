@@ -152,12 +152,10 @@ export class IMSClient {
     );
   }
 
-  async lockDays(range: Interval, withdraw = false): Promise<void> {
-    const fromStr = formatDate(range.start);
-    const toStr = formatDate(range.end);
+  async lockDays(month: Date, withdraw = false): Promise<void> {
     await this.timeBookingApi.timeBookingCommitPatch(
-      fromStr,
-      toStr,
+      month.getFullYear(),
+      month.getMonth() + 1,
       false,
       withdraw
     );
