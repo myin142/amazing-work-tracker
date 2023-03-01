@@ -50,6 +50,25 @@ export interface GETHolidaysResponse {
 /**
  * 
  * @export
+ * @interface GETMonthLocks
+ */
+export interface GETMonthLocks {
+    /**
+     * Is month bosslocked?
+     * @type {boolean}
+     * @memberof GETMonthLocks
+     */
+    'bosslock': boolean;
+    /**
+     * Is month userlocked?
+     * @type {boolean}
+     * @memberof GETMonthLocks
+     */
+    'userlock': boolean;
+}
+/**
+ * 
+ * @export
  * @interface GETMonthWorkHoursDifferenceResponse
  */
 export interface GETMonthWorkHoursDifferenceResponse {
@@ -324,7 +343,9 @@ export const TimeBookingErrorCodeEnum = {
     ExistingTimeBookingEntries: 'EXISTING_TIME_BOOKING_ENTRIES',
     UserLocked: 'USER_LOCKED',
     BossLocked: 'BOSS_LOCKED',
-    ProjectNotFound: 'PROJECT_NOT_FOUND'
+    ProjectNotFound: 'PROJECT_NOT_FOUND',
+    NotBossLocked: 'NOT_BOSS_LOCKED',
+    MissingTimespanlocks: 'MISSING_TIMESPANLOCKS'
 } as const;
 
 export type TimeBookingErrorCodeEnum = typeof TimeBookingErrorCodeEnum[keyof typeof TimeBookingErrorCodeEnum];
@@ -796,9 +817,108 @@ export const MonthStatsApiAxiosParamCreator = function (configuration?: Configur
     return {
         /**
          * 
+         * @summary Get difference hours (SOLL-IST) of a bosslocked month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDifferenceHoursOfMonthlyTimeBookingSummary: async (year: number, month: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'year' is not null or undefined
+            assertParamExists('getDifferenceHoursOfMonthlyTimeBookingSummary', 'year', year)
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('getDifferenceHoursOfMonthlyTimeBookingSummary', 'month', month)
+            const localVarPath = `/api/v1/month-stats/work-hours-difference-bosslocked`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (year !== undefined) {
+                localVarQueryParameter['year'] = year;
+            }
+
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get information about bosslock and userlock of a month, based on the employee.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLocks: async (year: number, month: number, employeeId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'year' is not null or undefined
+            assertParamExists('getLocks', 'year', year)
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('getLocks', 'month', month)
+            const localVarPath = `/api/v1/month-stats/locks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (year !== undefined) {
+                localVarQueryParameter['year'] = year;
+            }
+
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
+            }
+
+            if (employeeId !== undefined) {
+                localVarQueryParameter['employeeId'] = employeeId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
-         * @param {number} year Specify the year of which the working time target is calculated
-         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -853,9 +973,34 @@ export const MonthStatsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Get difference hours (SOLL-IST) of a bosslocked month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDifferenceHoursOfMonthlyTimeBookingSummary(year: number, month: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETMonthWorkHoursDifferenceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDifferenceHoursOfMonthlyTimeBookingSummary(year, month, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get information about bosslock and userlock of a month, based on the employee.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLocks(year: number, month: number, employeeId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GETMonthLocks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLocks(year, month, employeeId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
-         * @param {number} year Specify the year of which the working time target is calculated
-         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -875,9 +1020,32 @@ export const MonthStatsApiFactory = function (configuration?: Configuration, bas
     return {
         /**
          * 
+         * @summary Get difference hours (SOLL-IST) of a bosslocked month, specified for the employee with the api key.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDifferenceHoursOfMonthlyTimeBookingSummary(year: number, month: number, options?: any): AxiosPromise<GETMonthWorkHoursDifferenceResponse> {
+            return localVarFp.getDifferenceHoursOfMonthlyTimeBookingSummary(year, month, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get information about bosslock and userlock of a month, based on the employee.
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
+         * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLocks(year: number, month: number, employeeId?: number, options?: any): AxiosPromise<GETMonthLocks> {
+            return localVarFp.getLocks(year, month, employeeId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
-         * @param {number} year Specify the year of which the working time target is calculated
-         * @param {number} month Specify the month of which the working time target is calculated
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -896,9 +1064,36 @@ export const MonthStatsApiFactory = function (configuration?: Configuration, bas
 export class MonthStatsApi extends BaseAPI {
     /**
      * 
+     * @summary Get difference hours (SOLL-IST) of a bosslocked month, specified for the employee with the api key.
+     * @param {number} year Specify the year of which the response is calculated
+     * @param {number} month Specify the month of which the response is calculated
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MonthStatsApi
+     */
+    public getDifferenceHoursOfMonthlyTimeBookingSummary(year: number, month: number, options?: AxiosRequestConfig) {
+        return MonthStatsApiFp(this.configuration).getDifferenceHoursOfMonthlyTimeBookingSummary(year, month, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get information about bosslock and userlock of a month, based on the employee.
+     * @param {number} year Specify the year of which the response is calculated
+     * @param {number} month Specify the month of which the response is calculated
+     * @param {number} [employeeId] Access timebooking of another employee. Only allowed for boss. Example: 1
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MonthStatsApi
+     */
+    public getLocks(year: number, month: number, employeeId?: number, options?: AxiosRequestConfig) {
+        return MonthStatsApiFp(this.configuration).getLocks(year, month, employeeId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Get working time difference (\"SOLL\"-\"IST\"-difference) in a given year-month, specified for the employee with the api key.
-     * @param {number} year Specify the year of which the working time target is calculated
-     * @param {number} month Specify the month of which the working time target is calculated
+     * @param {number} year Specify the year of which the response is calculated
+     * @param {number} month Specify the month of which the response is calculated
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MonthStatsApi
@@ -1458,19 +1653,19 @@ export const TimeBookingApiAxiosParamCreator = function (configuration?: Configu
         /**
          * 
          * @summary Submit/withdraw time booking
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {boolean} [boss] Sets the boss lock
          * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
          * @param {number} [employee] Employee ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        timeBookingCommitPatch: async (fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'fromDate' is not null or undefined
-            assertParamExists('timeBookingCommitPatch', 'fromDate', fromDate)
-            // verify required parameter 'toDate' is not null or undefined
-            assertParamExists('timeBookingCommitPatch', 'toDate', toDate)
+        timeBookingCommitPatch: async (year: number, month: number, boss?: boolean, withdraw?: boolean, employee?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'year' is not null or undefined
+            assertParamExists('timeBookingCommitPatch', 'year', year)
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('timeBookingCommitPatch', 'month', month)
             const localVarPath = `/api/v1/time-booking/commit`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1486,16 +1681,12 @@ export const TimeBookingApiAxiosParamCreator = function (configuration?: Configu
             // authentication ApiKey required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
-            if (fromDate !== undefined) {
-                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
-                    (fromDate as any).toISOString().substr(0,10) :
-                    fromDate;
+            if (year !== undefined) {
+                localVarQueryParameter['year'] = year;
             }
 
-            if (toDate !== undefined) {
-                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
-                    (toDate as any).toISOString().substr(0,10) :
-                    toDate;
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
             }
 
             if (boss !== undefined) {
@@ -1744,16 +1935,16 @@ export const TimeBookingApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Submit/withdraw time booking
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {boolean} [boss] Sets the boss lock
          * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
          * @param {number} [employee] Employee ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async timeBookingCommitPatch(fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PatchTimeBookingCommitResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.timeBookingCommitPatch(fromDate, toDate, boss, withdraw, employee, options);
+        async timeBookingCommitPatch(year: number, month: number, boss?: boolean, withdraw?: boolean, employee?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PatchTimeBookingCommitResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.timeBookingCommitPatch(year, month, boss, withdraw, employee, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1827,16 +2018,16 @@ export const TimeBookingApiFactory = function (configuration?: Configuration, ba
         /**
          * 
          * @summary Submit/withdraw time booking
-         * @param {string} fromDate Example: 2022-01-01
-         * @param {string} toDate Example: 2022-01-31
+         * @param {number} year Specify the year of which the response is calculated
+         * @param {number} month Specify the month of which the response is calculated
          * @param {boolean} [boss] Sets the boss lock
          * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
          * @param {number} [employee] Employee ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        timeBookingCommitPatch(fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options?: any): AxiosPromise<PatchTimeBookingCommitResponse> {
-            return localVarFp.timeBookingCommitPatch(fromDate, toDate, boss, withdraw, employee, options).then((request) => request(axios, basePath));
+        timeBookingCommitPatch(year: number, month: number, boss?: boolean, withdraw?: boolean, employee?: number, options?: any): AxiosPromise<PatchTimeBookingCommitResponse> {
+            return localVarFp.timeBookingCommitPatch(year, month, boss, withdraw, employee, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1904,8 +2095,8 @@ export class TimeBookingApi extends BaseAPI {
     /**
      * 
      * @summary Submit/withdraw time booking
-     * @param {string} fromDate Example: 2022-01-01
-     * @param {string} toDate Example: 2022-01-31
+     * @param {number} year Specify the year of which the response is calculated
+     * @param {number} month Specify the month of which the response is calculated
      * @param {boolean} [boss] Sets the boss lock
      * @param {boolean} [withdraw] Un-do the submit of the current timesheet by setting withdraw to true
      * @param {number} [employee] Employee ID
@@ -1913,8 +2104,8 @@ export class TimeBookingApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TimeBookingApi
      */
-    public timeBookingCommitPatch(fromDate: string, toDate: string, boss?: boolean, withdraw?: boolean, employee?: number, options?: AxiosRequestConfig) {
-        return TimeBookingApiFp(this.configuration).timeBookingCommitPatch(fromDate, toDate, boss, withdraw, employee, options).then((request) => request(this.axios, this.basePath));
+    public timeBookingCommitPatch(year: number, month: number, boss?: boolean, withdraw?: boolean, employee?: number, options?: AxiosRequestConfig) {
+        return TimeBookingApiFp(this.configuration).timeBookingCommitPatch(year, month, boss, withdraw, employee, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
