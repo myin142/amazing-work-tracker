@@ -24,7 +24,7 @@ export function WorkCell({
       return 'bg-blue-200';
     }
 
-    if (holiday) {
+    if (holiday || day?.vacation) {
       return isWeekend(date) ? 'bg-green-50' : 'bg-green-100';
     }
 
