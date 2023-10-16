@@ -2,7 +2,7 @@ import { WorkDay } from '@myin/models';
 import { getWorkHoursInDay } from '@myin/work-time-parser';
 import { format, isToday, isWeekend } from 'date-fns';
 import { FaUmbrellaBeach } from 'react-icons/fa';
-import { HiEmojiSad, HiLockClosed } from 'react-icons/hi';
+import { HiEmojiSad, HiHome, HiLockClosed } from 'react-icons/hi';
 
 interface WorkCellProps {
   date: Date;
@@ -67,6 +67,7 @@ export function WorkCell({
         <div className="flex flex-row gap-2 items-center h-8">
           {day.vacation && <FaUmbrellaBeach />}
           {day.sickLeave && <HiEmojiSad />}
+          {day.homeoffice && <HiHome />}
           {getWorkHoursInDay(day)}
         </div>
       )}
