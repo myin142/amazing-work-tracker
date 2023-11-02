@@ -289,8 +289,8 @@ export function App() {
                 </div>
                 <ul>
                   {Object.keys(monthlySummary.projects).map((p) => (
-                    <li className="px-2 text-slate-300">
-                      {projects.find((x) => x.id === parseInt(p))?.name} -{' '}
+                    <li className="px-2 text-slate-400">
+                      {projects.find((x) => x.id === parseInt(p))?.name}:{' '}
                       {monthlySummary.projects[p]}
                     </li>
                   ))}
