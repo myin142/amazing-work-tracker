@@ -168,13 +168,9 @@ function isIntervalWithin(interval: Interval, boundingInterval: Interval) {
   );
 }
 
-export const getWorkHoursInDay = (day?: WorkDay) => {
-  if (!day) {
-    return '';
-  }
-
+export const getWorkHoursInDay = (times: WorkTime[]) => {
   const start = startOfDay(new Date());
-  const end = day.workTimes
+  const end = times
     .map((time) => {
       if (time.breakFrom && time.breakTo) {
         return [
@@ -199,4 +195,13 @@ export const getWorkHoursInDay = (day?: WorkDay) => {
     .reduce((prev, curr) => prev.concat(curr), [])
     .reduce((prev, curr) => add(prev, intervalToDuration(curr)), start);
   return start !== end ? formatTime(end) : '';
+};
+
+export const getWorkHoursInMinutes = (times: WorkTime[]) => {
+  const dayHours = getWorkHoursInDay(times);
+  if (!dayHours) {
+    return 0;
+  }
+
+  return differenceInMinutes(parseTime(dayHours) ?? 0, startOfToday());
 };

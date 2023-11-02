@@ -68,7 +68,7 @@ export function WorkCell({
           {day.vacation && <FaUmbrellaBeach />}
           {day.sickLeave && <HiEmojiSad />}
           {day.homeoffice && <HiHome />}
-          {getWorkHoursInDay(day)}
+          {getWorkHoursInDay(day.workTimes)}
         </div>
       )}
     </div>

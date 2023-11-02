@@ -3,18 +3,11 @@ import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import Login from './login/login';
-import {
-  WorkDay,
-  FullDayType,
-  Project,
-  formatDate,
-  parseTime,
-} from '@myin/models';
+import { WorkDay, FullDayType, Project, formatDate } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient, UserInfo } from '@myin/client';
 import { WorkCell } from './work-cell';
 import {
-  differenceInMinutes,
   endOfMonth,
   Interval,
   isSameDay,
@@ -23,9 +16,8 @@ import {
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 import { Info } from './info/Info';
-import { sum } from 'lodash';
-import { getWorkHoursInDay } from '@myin/work-time-parser';
-import { startOfToday } from 'date-fns/esm';
+import { groupBy, sum } from 'lodash';
+import { getWorkHoursInMinutes } from '@myin/work-time-parser';
 
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 const DAILY_TARGET_HOURS = 7;
@@ -209,10 +201,20 @@ export function App() {
     const homeoffice = Object.values(workDays).filter((d) => d.homeoffice);
     const vacation = Object.values(workDays).filter((d) => d.vacation);
     const dayHoursWorked = Object.values(workDays)
-      .map((x) => getWorkHoursInDay(x))
-      .filter((x) => !!x)
-      .map((t) => differenceInMinutes(parseTime(t), startOfToday()))
+      .map((x) => getWorkHoursInMinutes(x.workTimes))
       .filter((x) => x > 0);
+
+    const projectHours: Record<string, number> = {};
+    const projectTimes = groupBy(
+      Object.values(workDays)
+        .map((d) => d.workTimes)
+        .reduce((prev, curr) => [...prev, ...curr], []),
+      (x) => x.projectId
+    );
+    Object.keys(projectTimes).forEach((project) => {
+      const m = getWorkHoursInMinutes(projectTimes[project]);
+      projectHours[project] = m / 60;
+    });
 
     const monthlyTarget = DAILY_TARGET_HOURS * dayHoursWorked.length;
     const workedMinutes = sum(dayHoursWorked);
@@ -224,6 +226,7 @@ export function App() {
       actual: workedMinutes / 60,
       homeoffice: homeoffice.length,
       vacation: vacation.length,
+      projects: projectHours,
     };
   };
 
@@ -284,6 +287,14 @@ export function App() {
                 <div>
                   Hours: {monthlySummary.actual} / {monthlySummary.target}
                 </div>
+                <ul>
+                  {Object.keys(monthlySummary.projects).map((p) => (
+                    <li>
+                      {projects.find((x) => x.id === parseInt(p))?.name} -{' '}
+                      {monthlySummary.projects[p]}
+                    </li>
+                  ))}
+                </ul>
                 <div>Diff: {monthlySummary.diff}</div>
                 <div>Homeoffice: {monthlySummary.homeoffice}</div>
                 <div>Vacation: {monthlySummary.vacation}</div>
