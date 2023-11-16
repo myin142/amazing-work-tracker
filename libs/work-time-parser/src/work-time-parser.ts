@@ -1,4 +1,4 @@
-import { formatTime, WorkDay, WorkTime } from '@myin/models';
+import { formatTime, WorkTime } from '@myin/models';
 import {
   add,
   addMinutes,

@@ -100,10 +100,10 @@ export interface GETNotBookedTimeResponse {
 export interface GETProjectResponse {
     /**
      * 
-     * @type {Array<ProjectNameIDMap>}
+     * @type {Array<ProjectNameIDWithDateRange>}
      * @memberof GETProjectResponse
      */
-    'projects'?: Array<ProjectNameIDMap>;
+    'projects'?: Array<ProjectNameIDWithDateRange>;
 }
 /**
  * 
@@ -264,23 +264,35 @@ export interface ProjectDateTimeSpans {
     'bosslock'?: boolean;
 }
 /**
- * Project name and ID map
+ * Project name and ID, with date range of effectiveness
  * @export
- * @interface ProjectNameIDMap
+ * @interface ProjectNameIDWithDateRange
  */
-export interface ProjectNameIDMap {
+export interface ProjectNameIDWithDateRange {
     /**
      * Project ID
      * @type {number}
-     * @memberof ProjectNameIDMap
+     * @memberof ProjectNameIDWithDateRange
      */
-    'projectId'?: number;
+    'projectId': number;
     /**
      * Project name
      * @type {string}
-     * @memberof ProjectNameIDMap
+     * @memberof ProjectNameIDWithDateRange
      */
-    'projectName'?: string;
+    'projectName': string;
+    /**
+     * Example: 2022-12-31
+     * @type {string}
+     * @memberof ProjectNameIDWithDateRange
+     */
+    'activeFrom': string;
+    /**
+     * Example: 2022-12-31
+     * @type {string}
+     * @memberof ProjectNameIDWithDateRange
+     */
+    'activeTo'?: string;
 }
 /**
  * Timespans
@@ -484,6 +496,7 @@ export const TimeSpanWithIDOffDutyReasonEnum = {
     MarriagePartnership: 'MARRIAGE_PARTNERSHIP',
     MarriagePartnershipOfSiblingChildParent: 'MARRIAGE_PARTNERSHIP_OF_SIBLING_CHILD_PARENT',
     ChangeOfResidence: 'CHANGE_OF_RESIDENCE',
+    DoctorsVisit: 'DOCTORS_VISIT',
     Other: 'OTHER'
 } as const;
 
@@ -555,6 +568,7 @@ export const TimeSpanWithoutIDOffDutyReasonEnum = {
     MarriagePartnership: 'MARRIAGE_PARTNERSHIP',
     MarriagePartnershipOfSiblingChildParent: 'MARRIAGE_PARTNERSHIP_OF_SIBLING_CHILD_PARENT',
     ChangeOfResidence: 'CHANGE_OF_RESIDENCE',
+    DoctorsVisit: 'DOCTORS_VISIT',
     Other: 'OTHER'
 } as const;
 
