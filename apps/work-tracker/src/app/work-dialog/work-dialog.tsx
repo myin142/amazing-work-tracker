@@ -147,7 +147,7 @@ export function WorkDialog({
 
   return (
     <div>
-      <h1 className="text-2xl py-2 leading-6 text-gray-900 font-bold mb-2 flex justify-between">
+      <h1 className="text-2xl py-2 leading-6 font-bold mb-2 flex justify-between">
         <span>{format(date, 'dd.MM.yyyy')}</span>
         <span>{totalTimes()}</span>
       </h1>
@@ -184,10 +184,10 @@ export function WorkDialog({
           <input
             ref={inputRef}
             className={`grow rounded-md outline-none ring-outset ring-1
-                      bg-white p-2 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                      bg-transparent p-2 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                         isInvalid
                           ? 'ring-red-400 focus-visible:ring-red-600'
-                          : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500'
+                          : 'ring-slate-200 hover:ring-slate-400 focus-visible:ring-blue-500 dark:ring-slate-700 dark:hover:ring-slate-900'
                       }`}
             placeholder="Example: 8-17/12-13 or 8h/1h"
             value={workTimeInput}

@@ -238,7 +238,7 @@ export function App() {
   const loginButton = <Login onLogin={(token) => onTokenLogin(token)} />;
 
   return (
-    <div className="flex flex-row gap-4 p-4 h-full">
+    <div className="flex flex-row gap-4 p-4 h-full dark:bg-slate-900 dark:text-white/75">
       {(token && (
         <>
           <Calendar

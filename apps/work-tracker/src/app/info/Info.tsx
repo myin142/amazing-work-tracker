@@ -17,7 +17,7 @@ export function Info({ info, onLogout }: InfoProps) {
         <AiFillSetting />
       </div>
       {visible && (
-        <div className="absolute bg-blue-100 p-2 rounded flex flex-col gap-2 text-sm w-80">
+        <div className="absolute bg-blue-100 dark:bg-slate-800 p-4 rounded flex flex-col gap-2 text-sm w-80">
           <div>{info?.email || '<EMPTY>'}</div>
           <Button onClick={() => onLogout()}>Logout</Button>
         </div>

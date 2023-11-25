@@ -52,7 +52,7 @@ export function Diary({ text, onChange }: DiaryProps) {
           value={text}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Dear Diary..."
-          className="border rounded p-2"
+          className="border rounded p-2 bg-transparent dark:border-slate-700"
           rows={15}
         />
       )}

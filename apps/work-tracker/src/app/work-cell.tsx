@@ -25,11 +25,11 @@ export function WorkCell({
     }
 
     if (holiday || day?.vacation) {
-      return isWeekend(date) ? 'bg-green-50' : 'bg-green-100';
+      return isWeekend(date) ? 'bg-green-50 dark:bg-green-800/30' : 'bg-green-100 dark:bg-green-900/30';
     }
 
     if (isWeekend(date)) {
-      return 'bg-red-50';
+      return 'bg-red-50 dark:bg-red-800/30';
     }
 
     return '';

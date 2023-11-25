@@ -173,7 +173,7 @@ export function Calendar({
       return weekDays.map((d) => {
         return (
           <div
-            className={`border border-gray-100 flex text-sm cursor-pointer ${
+            className={`border border-gray-100 dark:border-slate-700 flex text-sm cursor-pointer ${
               !isSameMonth(date, d) ? 'opacity-50' : ''
             }`}
             key={d.toISOString()}
@@ -192,7 +192,7 @@ export function Calendar({
   const weekDayLetters = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Son'];
 
   return (
-    <div className=" text-gray-800 w-full flex-grow flex flex-col">
+    <div className=" w-full flex-grow flex flex-col">
       <div className="text-3xl font-bold flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={prevMonth}>
@@ -217,8 +217,8 @@ export function Calendar({
         {weekDayLetters.map((l) => (
           <div
             key={l}
-            className={`text-sm border font-bold border-gray-100 p-2 flex items-center justify-center ${
-              l.startsWith('S') ? 'bg-red-100' : ''
+            className={`text-sm border font-bold border-gray-100 dark:border-slate-700 p-2 flex items-center justify-center ${
+              l.startsWith('S') ? 'bg-red-100 dark:bg-red-800/50' : ''
             }`}
           >
             {l}

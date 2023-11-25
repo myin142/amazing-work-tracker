@@ -22,8 +22,8 @@ export function Button({
       disabled:opacity-50
       focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
         pressed
-          ? 'bg-blue-500 text-white hover:bg-blue-600'
-          : 'bg-blue-100 text-blue-900 hover:bg-blue-200'
+          ? 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-200/75 dark:text-slate-700 dark:hover:bg-blue-100'
+          : 'bg-blue-100 text-blue-900 hover:bg-blue-200 dark:bg-blue-900/40 dark:text-white/75 dark:hover:bg-blue-800'
       }`}
       onClick={onClick}
       title={title}

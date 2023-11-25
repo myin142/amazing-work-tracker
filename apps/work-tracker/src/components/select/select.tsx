@@ -31,9 +31,9 @@ export function Select({
       <div className={`relative mt-1 ${className}`}>
         <Listbox.Button
           className={({ disabled }) =>
-            `relative w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left outline-none ring-1 ring-slate-200 ring-opacity-75 sm:text-sm
+            `relative w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left outline-none ring-1 ring-slate-200 dark:ring-slate-700 ring-opacity-75 sm:text-sm
             focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-              disabled ? 'bg-slate-100 text-slate-400' : 'bg-white'
+              disabled ? 'bg-slate-100 text-slate-400' : 'bg-transparent'
             }`
           }
         >
@@ -48,13 +48,13 @@ export function Select({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="z-10 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="z-10 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-slate-900 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {options.map((opt) => (
               <Listbox.Option
                 key={opt.value}
                 className={({ active }) =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
+                    active ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/75 dark:text-amber-100' : ''
                   }`
                 }
                 value={opt.value}
