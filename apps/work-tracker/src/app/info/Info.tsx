@@ -14,7 +14,7 @@ interface InfoProps {
   darkMode?: boolean;
   isModeManual?: boolean;
   onLogout: () => void;
-  onSetDarkMode: (darkMode: boolean) => void;
+  onSetDarkMode: (darkMode?: boolean) => void;
 }
 
 function getModeIcon(darkMode?: boolean, isManual?: boolean) {
@@ -45,6 +45,7 @@ export function Info({
             <div>{info?.email || '<EMPTY>'}</div>
             <Button
               onClick={() => onSetDarkMode(!darkMode)}
+              onHold={() => onSetDarkMode(undefined)}
               title={darkMode ? 'Light Mode' : 'Dark Mode'}
             >
               {getModeIcon(darkMode, isModeManual)}

@@ -68,7 +68,7 @@ export function App() {
       });
 
     loadHolidays(selectedDate);
-  }, []);
+  }, [darkMode]);
 
   useKeyboardShortcut(['Shift', 'Enter'], () =>
     monthLocked ? withdrawMonth() : lockMonth()
@@ -106,9 +106,14 @@ export function App() {
     setToken('');
   };
 
-  const onDarkModeChange = (darkMode: boolean) => {
-    setDarkMode(darkMode);
-    localStorage.setItem(DARK_THEME_KEY, darkMode ? 'true' : 'false');
+  const onDarkModeChange = (darkMode?: boolean) => {
+    if (darkMode === undefined) {
+      localStorage.removeItem(DARK_THEME_KEY);
+      setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    } else {
+      localStorage.setItem(DARK_THEME_KEY, darkMode ? 'true' : 'false');
+      setDarkMode(darkMode);
+    }
   };
 
   const onDateClicked = (d: Date) => {
