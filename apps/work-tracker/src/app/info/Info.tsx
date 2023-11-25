@@ -1,14 +1,37 @@
 import { UserInfo } from '@myin/client';
 import { useState } from 'react';
 import { AiFillSetting } from 'react-icons/ai';
+import {
+  MdDarkMode,
+  MdLightMode,
+  MdOutlineDarkMode,
+  MdOutlineLightMode,
+} from 'react-icons/md';
 import Button from '../../components/button/button';
 
 interface InfoProps {
   info?: UserInfo | null;
+  darkMode?: boolean;
+  isModeManual?: boolean;
   onLogout: () => void;
+  onSetDarkMode: (darkMode: boolean) => void;
 }
 
-export function Info({ info, onLogout }: InfoProps) {
+function getModeIcon(darkMode?: boolean, isManual?: boolean) {
+  if (isManual) {
+    return darkMode ? <MdLightMode /> : <MdDarkMode />;
+  }
+
+  return darkMode ? <MdOutlineLightMode /> : <MdOutlineDarkMode />;
+}
+
+export function Info({
+  info,
+  darkMode,
+  isModeManual,
+  onLogout,
+  onSetDarkMode,
+}: InfoProps) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -17,8 +40,16 @@ export function Info({ info, onLogout }: InfoProps) {
         <AiFillSetting />
       </div>
       {visible && (
-        <div className="absolute bg-blue-100 dark:bg-slate-800 p-4 rounded flex flex-col gap-2 text-sm w-80">
-          <div>{info?.email || '<EMPTY>'}</div>
+        <div className="absolute bg-slate-100 drop-shadow-md dark:bg-slate-800 p-4 rounded flex flex-col gap-2 text-sm w-80">
+          <div className="flex justify-between items-center">
+            <div>{info?.email || '<EMPTY>'}</div>
+            <Button
+              onClick={() => onSetDarkMode(!darkMode)}
+              title={darkMode ? 'Light Mode' : 'Dark Mode'}
+            >
+              {getModeIcon(darkMode, isModeManual)}
+            </Button>
+          </div>
           <Button onClick={() => onLogout()}>Logout</Button>
         </div>
       )}

@@ -19,6 +19,7 @@ import { Info } from './info/Info';
 import { groupBy, sum } from 'lodash';
 import { getWorkHoursInMinutes } from '@myin/work-time-parser';
 
+const DARK_THEME_KEY = 'myin-work-tracker-dark-mode';
 const LOGIN_TOKEN_KEY = 'myin-work-tracker-login-token';
 const DAILY_TARGET_HOURS = 7;
 
@@ -39,11 +40,19 @@ export function App() {
   const [projects, setProjects] = useState([] as Project[]);
   const [userInfo, setUserInfo] = useState(null as UserInfo | null);
   const [holidays, setHolidays] = useState({} as Record<string, string>);
+  const [darkMode, setDarkMode] = useState(
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  );
 
   const hasWorkDays = Object.keys(workDays).length;
   const monthLocked = Object.values(workDays).some((day) => day.locked);
+  const savedDarkMode = localStorage.getItem(DARK_THEME_KEY);
 
   useEffect(() => {
+    if (savedDarkMode != null) {
+      setDarkMode(savedDarkMode === 'true');
+    }
+
     getClient()
       .getProjects()
       .then((p) => setProjects(p))
@@ -95,6 +104,11 @@ export function App() {
   const onTokenLogout = () => {
     localStorage.removeItem(LOGIN_TOKEN_KEY);
     setToken('');
+  };
+
+  const onDarkModeChange = (darkMode: boolean) => {
+    setDarkMode(darkMode);
+    localStorage.setItem(DARK_THEME_KEY, darkMode ? 'true' : 'false');
   };
 
   const onDateClicked = (d: Date) => {
@@ -238,76 +252,84 @@ export function App() {
   const loginButton = <Login onLogin={(token) => onTokenLogin(token)} />;
 
   return (
-    <div className="flex flex-row gap-4 p-4 h-full dark:bg-slate-900 dark:text-white/75">
-      {(token && (
-        <>
-          <Calendar
-            currentDate={selectedDate}
-            rangeSelect={!!fullDayType}
-            cellSelect={copyCell}
-            onRangeSelected={onRangeSelected}
-            onCellSelected={onCellSelected}
-            onDateClicked={onDateClicked}
-            onDateChange={onDateChange}
-            cell={(d: Date, isSelected: boolean) => (
-              <WorkCell
-                date={d}
-                holiday={holidays[formatDate(d)]}
-                day={workDays[formatDate(d)]}
-                isSelected={isSelected}
-                isOpen={isSameDay(selectedDate, d)}
-              />
-            )}
-            rightHeader={() => (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <div className="basis-10 flex items-center text-lg">
-                <Info info={userInfo} onLogout={onTokenLogout} />
-              </div>
-            )}
-            header={() => (
-              <div className="flex gap-2 items-center">
-                {fullDayTypeButtons}
-              </div>
-            )}
-          />
-
-          <div className="w-1/2 flex flex-col gap-2">
-            <div className=" grow flex flex-col justify-between">
-              <WorkDialog
-                date={selectedDate}
-                workDay={currentWorkDay}
-                projects={projects}
-                onSave={saveDay}
-                onCopy={() => setCopyCell(!copyCell)}
-                isCopying={copyCell}
-                error={error}
-              />
-
-              <div className="text-sm text-slate-500">
-                <div>
-                  Hours: {monthlySummary.actual} / {monthlySummary.target}
+    <div className={(darkMode ? 'dark' : '') + ' h-full'}>
+      <div className="flex flex-row gap-4 p-4 h-full dark:bg-slate-900 dark:text-white/75">
+        {(token && (
+          <>
+            <Calendar
+              currentDate={selectedDate}
+              rangeSelect={!!fullDayType}
+              cellSelect={copyCell}
+              onRangeSelected={onRangeSelected}
+              onCellSelected={onCellSelected}
+              onDateClicked={onDateClicked}
+              onDateChange={onDateChange}
+              cell={(d: Date, isSelected: boolean) => (
+                <WorkCell
+                  date={d}
+                  holiday={holidays[formatDate(d)]}
+                  day={workDays[formatDate(d)]}
+                  isSelected={isSelected}
+                  isOpen={isSameDay(selectedDate, d)}
+                />
+              )}
+              rightHeader={() => (
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <div className="basis-10 flex items-center text-lg">
+                  <Info
+                    info={userInfo}
+                    darkMode={darkMode}
+                    isModeManual={savedDarkMode != null}
+                    onSetDarkMode={onDarkModeChange}
+                    onLogout={onTokenLogout}
+                  />
                 </div>
-                <ul>
-                  {Object.keys(monthlySummary.projects).map((p) => (
-                    <li className="px-2 text-slate-400">
-                      {projects.find((x) => x.id === parseInt(p))?.name}:{' '}
-                      {monthlySummary.projects[p]}
-                    </li>
-                  ))}
-                </ul>
-                <div>Diff: {monthlySummary.diff}</div>
-                <div>Homeoffice: {monthlySummary.homeoffice}</div>
-                <div>Vacation: {monthlySummary.vacation}</div>
-              </div>
+              )}
+              header={() => (
+                <div className="flex gap-2 items-center">
+                  {fullDayTypeButtons}
+                </div>
+              )}
+            />
 
-              {(hasWorkDays &&
-                ((monthLocked && withDrawButton) || lockButton)) ||
-                ''}
+            <div className="w-1/2 flex flex-col gap-2">
+              <div className=" grow flex flex-col justify-between">
+                <WorkDialog
+                  date={selectedDate}
+                  workDay={currentWorkDay}
+                  projects={projects}
+                  onSave={saveDay}
+                  onCopy={() => setCopyCell(!copyCell)}
+                  isCopying={copyCell}
+                  error={error}
+                />
+
+                <div className="text-sm text-slate-500">
+                  <div>
+                    Hours: {monthlySummary.actual} / {monthlySummary.target}
+                  </div>
+                  <ul>
+                    {Object.keys(monthlySummary.projects).map((p) => (
+                      <li className="px-2 text-slate-400">
+                        {projects.find((x) => x.id === parseInt(p))?.name}:{' '}
+                        {monthlySummary.projects[p]}
+                      </li>
+                    ))}
+                  </ul>
+                  <div>Diff: {monthlySummary.diff}</div>
+                  <div>Homeoffice: {monthlySummary.homeoffice}</div>
+                  <div>Vacation: {monthlySummary.vacation}</div>
+                </div>
+
+                {(hasWorkDays &&
+                  ((monthLocked && withDrawButton) || lockButton)) ||
+                  ''}
+              </div>
             </div>
-          </div>
-        </>
-      )) ||
-        loginButton}
+          </>
+        )) ||
+          loginButton}
+      </div>
     </div>
   );
 }
