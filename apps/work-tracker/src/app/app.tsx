@@ -68,7 +68,7 @@ export function App() {
       });
 
     loadHolidays(selectedDate);
-  }, [darkMode]);
+  }, []);
 
   useKeyboardShortcut(['Shift', 'Enter'], () =>
     monthLocked ? withdrawMonth() : lockMonth()
