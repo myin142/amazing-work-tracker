@@ -3,7 +3,13 @@ import Calendar from '../components/calendar/calendar';
 import WorkDialog from './work-dialog/work-dialog';
 import Button from '../components/button/button';
 import Login from './login/login';
-import { WorkDay, FullDayType, Project, formatDate } from '@myin/models';
+import {
+  WorkDay,
+  FullDayType,
+  Project,
+  formatDate,
+  WorkTime,
+} from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient, UserInfo } from '@myin/client';
 import { WorkCell } from './work-cell';
@@ -16,7 +22,7 @@ import {
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 import { Info } from './info/Info';
-import { groupBy, sum } from 'lodash';
+import { each, flatMap, groupBy, sum } from 'lodash';
 import { getWorkHoursInMinutes } from '@myin/work-time-parser';
 
 const DARK_THEME_KEY = 'myin-work-tracker-dark-mode';
@@ -216,6 +222,20 @@ export function App() {
     </Button>
   ));
 
+  const groupedMinutesForProjects = (workTime: WorkTime[]) => {
+    const result: { projectId: number; time: number }[] = [];
+    each(
+      groupBy(workTime, (x) => x.projectId),
+      (value, key) => {
+        result.push({
+          projectId: parseInt(key),
+          time: getWorkHoursInMinutes(value),
+        });
+      }
+    );
+    return result;
+  };
+
   const getMonthlySummary = () => {
     const homeoffice = Object.values(workDays).filter((d) => d.homeoffice);
     const vacation = Object.values(workDays).filter((d) => d.vacation);
@@ -225,13 +245,15 @@ export function App() {
 
     const projectHours: Record<string, number> = {};
     const projectTimes = groupBy(
-      Object.values(workDays)
-        .map((d) => d.workTimes)
-        .reduce((prev, curr) => [...prev, ...curr], []),
+      flatMap(
+        Object.values(workDays).map((d) =>
+          groupedMinutesForProjects(d.workTimes)
+        )
+      ),
       (x) => x.projectId
     );
     Object.keys(projectTimes).forEach((project) => {
-      const m = getWorkHoursInMinutes(projectTimes[project]);
+      const m = sum(projectTimes[project].map((x) => x.time));
       projectHours[project] = m / 60;
     });
 
