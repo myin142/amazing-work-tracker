@@ -28,6 +28,8 @@ export enum FullDayType {
 export interface Project {
   id: number;
   name: string;
+  activeFrom: Date;
+  activeTo?: Date;
 }
 
 export function formatTime(date: Date | number) {

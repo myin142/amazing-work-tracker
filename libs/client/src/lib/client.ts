@@ -131,6 +131,8 @@ export class IMSClient {
         projects.map((p) => ({
           name: p.projectName || '',
           id: p.projectId || -1,
+          activeFrom: new Date(p.activeFrom ?? ''),
+          activeTo: p.activeTo ? new Date(p.activeTo) : undefined,
         }))
       );
   }

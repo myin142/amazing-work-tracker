@@ -19,6 +19,7 @@ import {
   isSameDay,
   isWithinInterval,
   startOfMonth,
+  isPast
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 import { Info } from './info/Info';
@@ -61,7 +62,7 @@ export function App() {
 
     getClient()
       .getProjects()
-      .then((p) => setProjects(p))
+      .then((p) => setProjects(p.filter(x => !x.activeTo || isPast(x.activeTo))))
       .catch((err) => {
         console.warn('Failed to get projects', err);
       });
