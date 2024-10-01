@@ -73,7 +73,7 @@ export function WorkDialog({
   });
 
   useEffect(() => {
-    setWorkTimes(workDay?.workTimes || []);
+    setWorkTimes((workDay?.workTimes || []).sort((a, b) => a.timeFrom.localeCompare(b.timeFrom)));
     setSickLeave(workDay?.sickLeave || false);
     setHomeOffice(workDay?.homeoffice || false);
     setVacation(workDay?.vacation || false);
@@ -87,12 +87,12 @@ export function WorkDialog({
       sickLeave,
       homeoffice,
       vacation,
-      offDuty: offDutyReason || undefined,
+      offDuty: offDutyReason ?? undefined,
     });
   };
 
   const addWorkTime = () => {
-    const newWorkTimes = parseWorkTimes(workTimeInput);
+    const newWorkTimes = parseWorkTimes(workTimeInput, workTimes);
     if (newWorkTimes.length > 0) {
       setWorkTimes([...workTimes, ...newWorkTimes]);
       setWorkTimeInput('');
