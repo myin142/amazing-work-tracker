@@ -92,7 +92,7 @@ export function WorkDialog({
   };
 
   const addWorkTime = () => {
-    const newWorkTimes = parseWorkTimes(workTimeInput, workTimes);
+    const newWorkTimes = parseWorkTimes(workTimeInput);
     if (newWorkTimes.length > 0) {
       setWorkTimes([...workTimes, ...newWorkTimes]);
       setWorkTimeInput('');
