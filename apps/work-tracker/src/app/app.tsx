@@ -19,7 +19,7 @@ import {
   isSameDay,
   isWithinInterval,
   startOfMonth,
-  isPast
+  isBefore,
 } from 'date-fns';
 import useKeyboardShortcut from './use-keyboard-shortcut';
 import { Info } from './info/Info';
@@ -62,7 +62,7 @@ export function App() {
 
     getClient()
       .getProjects()
-      .then((p) => setProjects(p.filter(x => !x.activeTo || isPast(x.activeTo))))
+      .then((p) => setProjects(p))
       .catch((err) => {
         console.warn('Failed to get projects', err);
       });
@@ -325,7 +325,9 @@ export function App() {
                 <WorkDialog
                   date={selectedDate}
                   workDay={currentWorkDay}
-                  projects={projects}
+                  projects={projects.filter(
+                    (p) => !p.activeTo || isBefore(selectedDate, p.activeTo)
+                  )}
                   onSave={saveDay}
                   onCopy={() => setCopyCell(!copyCell)}
                   isCopying={copyCell}

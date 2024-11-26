@@ -53,7 +53,7 @@ export function WorkDialog({
   const [workTimeInput, setWorkTimeInput] = useState('');
   const [workTimes, setWorkTimes] = useState([] as WorkTime[]);
   const [sickLeave, setSickLeave] = useState(false);
-  const [homeoffice, setHomeOffice] = useState(false);
+  const [homeoffice, setHomeoffice] = useState(false);
   const [vacation, setVacation] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
   const [offDutyReason, setOffDutyReason] = useState(
@@ -63,19 +63,19 @@ export function WorkDialog({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useKeyboardShortcut(['Shift', 'w'], () => save());
-  useKeyboardShortcut(['y'], () => onCopy());
-  useKeyboardShortcut(['a'], () => setHomeOffice(!homeoffice));
-  useKeyboardShortcut(['s'], () => setSickLeave(!sickLeave));
-  useKeyboardShortcut(['d'], () => setVacation(!vacation));
-  useKeyboardShortcut(['i'], () => inputRef.current?.focus(), {
-    overrideSystem: true,
-  });
+  // useKeyboardShortcut(['Shift', 'w'], () => save());
+  // useKeyboardShortcut(['y'], () => onCopy());
+  // useKeyboardShortcut(['a'], () => setHomeOffice(!homeoffice));
+  // useKeyboardShortcut(['s'], () => setSickLeave(!sickLeave));
+  // useKeyboardShortcut(['d'], () => setVacation(!vacation));
+  // useKeyboardShortcut(['i'], () => inputRef.current?.focus(), {
+  //   overrideSystem: true,
+  // });
 
   useEffect(() => {
     setWorkTimes((workDay?.workTimes || []).sort((a, b) => a.timeFrom.localeCompare(b.timeFrom)));
     setSickLeave(workDay?.sickLeave || false);
-    setHomeOffice(workDay?.homeoffice || false);
+    setHomeoffice(workDay?.homeoffice || false);
     setVacation(workDay?.vacation || false);
     setOffDutyReason(workDay?.offDuty || null);
   }, [workDay]);
@@ -168,7 +168,7 @@ export function WorkDialog({
               disabled={workDay?.locked}
               options={projects.map((p) => ({
                 value: p.id,
-                label: p.name,
+                label: `${p.name} - ${p.activeTo ?? 'unset'}`,
               }))}
             />
             <Button
@@ -204,7 +204,7 @@ export function WorkDialog({
               <Button
                 title="homeoffice"
                 pressed={homeoffice}
-                onClick={() => setHomeOffice(!homeoffice)}
+                onClick={() => setHomeoffice(!homeoffice)}
                 disabled={workDay?.locked}
               >
                 <HiHome />
