@@ -143,7 +143,7 @@ export class IMSClient {
             startOfDay(new Date())
           ),
           activeTo: p.activeTo
-            ? parse(p.activeTo, 'yyyy-MM-dd', endOfDay(new Date()))
+            ? endOfDay(parse(p.activeTo, 'yyyy-MM-dd', new Date()))
             : undefined,
         }))
       );
