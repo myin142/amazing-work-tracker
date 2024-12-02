@@ -168,7 +168,7 @@ export function WorkDialog({
               disabled={workDay?.locked}
               options={projects.map((p) => ({
                 value: p.id,
-                label: `${p.name} - ${p.activeTo ?? 'unset'}`,
+                label: `${p.name} - ${p.activeTo ? format(p.activeTo, 'yyyy-MM-dd HH:mm') : ''}`,
               }))}
             />
             <Button
