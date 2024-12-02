@@ -15,7 +15,13 @@ import {
   mapToNewTimespans,
   mapToWorkDay,
 } from '@myin/work-time-mapper';
-import { eachDayOfInterval, Interval, parse } from 'date-fns';
+import {
+  eachDayOfInterval,
+  Interval,
+  parse,
+  endOfDay,
+  startOfDay,
+} from 'date-fns';
 
 export interface UserInfo {
   email: string;
@@ -131,9 +137,13 @@ export class IMSClient {
         projects.map((p) => ({
           name: p.projectName || '',
           id: p.projectId || -1,
-          activeFrom: new Date(p.activeFrom ?? ''),
+          activeFrom: parse(
+            p.activeFrom ?? '',
+            'yyyy-MM-dd',
+            startOfDay(new Date())
+          ),
           activeTo: p.activeTo
-            ? parse(p.activeTo, 'yyyy-MM-dd', new Date())
+            ? parse(p.activeTo, 'yyyy-MM-dd', endOfDay(new Date()))
             : undefined,
         }))
       );
