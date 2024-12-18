@@ -1,4 +1,10 @@
-import { formatDate, FullDayType, WorkDay, WorkTime } from '@myin/models';
+import {
+  formatDate,
+  FullDayType,
+  Holiday,
+  WorkDay,
+  WorkTime,
+} from '@myin/models';
 import {
   OffDutyReasonEnum,
   ProjectDateTimeSpans,
@@ -7,7 +13,7 @@ import {
   TimeSpanWithID,
   TimeSpanWithoutID,
 } from '@myin/openapi';
-import { eachDayOfInterval, isWeekend } from 'date-fns';
+import { eachDayOfInterval, isSameDay, isWeekend } from 'date-fns';
 import { groupBy } from 'lodash';
 
 const projectTimeType: TimeSpanTypeEnum[] = [
@@ -16,14 +22,15 @@ const projectTimeType: TimeSpanTypeEnum[] = [
   TimeSpanTypeEnum.SpecialWork,
 ];
 
-const fullDayTypeMap = {
+const fullDayTypeMap: Record<FullDayType, TimeSpanTypeEnum> = {
   [FullDayType.VACATION]: TimeSpanTypeEnum.FullDayVacation,
   [FullDayType.SICK]: TimeSpanTypeEnum.SickLeave,
   [FullDayType.OFF_DUTY]: TimeSpanTypeEnum.OffDuty,
 };
 
 export function mapToNewTimespans(
-  workDay: WorkDay
+  workDay: WorkDay,
+  holidays: Holiday[] = []
 ): [TimeSpanWithoutID[], ProjectDateTimeSpans[]] {
   const times: TimeSpanWithoutID[] = [];
   const projectTimes: ProjectDateTimeSpans[] = [];
@@ -42,7 +49,19 @@ export function mapToNewTimespans(
         [],
       ];
     }
-    return [[{ type: TimeSpanTypeEnum.FullDayVacation, date }], []];
+    return [
+      [
+        {
+          type: holidays
+            .filter((h) => h.workable)
+            .find((h) => isSameDay(h.date, workDay.date))
+            ? TimeSpanTypeEnum.HalfDayVacation
+            : TimeSpanTypeEnum.FullDayVacation,
+          date,
+        },
+      ],
+      [],
+    ];
   }
 
   workDay.workTimes
@@ -145,18 +164,33 @@ function toTimespan(
 }
 
 export function mapFullDayTypes(
-  type: FullDayType,
+  fullDayType: FullDayType,
   range: Interval,
+  holidays: Holiday[] = [],
   offDutyReason: OffDutyReasonEnum = OffDutyReasonEnum.Other
 ): TimeSpanWithoutID[] {
+  const fullDayHoliday = holidays.filter((x) => !x.workable);
+  const workableHoliday = holidays.filter((x) => x.workable);
+
   return eachDayOfInterval(range)
-    .filter((date) => !isWeekend(date))
+    .filter(
+      (date) =>
+        !isWeekend(date) && !fullDayHoliday.find((h) => isSameDay(h.date, date))
+    )
     .map((date) => {
-      const reason = type == FullDayType.OFF_DUTY ? offDutyReason : undefined;
+      const reason =
+        fullDayType == FullDayType.OFF_DUTY ? offDutyReason : undefined;
+      let type = fullDayTypeMap[fullDayType];
+      if (
+        fullDayType === FullDayType.VACATION &&
+        workableHoliday.find((h) => isSameDay(h.date, date))
+      ) {
+        type = TimeSpanTypeEnum.HalfDayVacation;
+      }
 
       return {
         date: formatDate(date),
-        type: fullDayTypeMap[type],
+        type,
         offDutyReason: reason,
       };
     });
@@ -182,6 +216,7 @@ export function mapToWorkDay(
 
         switch (timeSpan.type) {
           case TimeSpanTypeEnum.FullDayVacation:
+          case TimeSpanTypeEnum.HalfDayVacation:
             days[date].vacation = true;
             break;
           case TimeSpanTypeEnum.SickLeave:

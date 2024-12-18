@@ -32,6 +32,12 @@ export interface Project {
   activeTo?: Date;
 }
 
+export interface Holiday {
+  date: Date;
+  name: string;
+  workable: boolean;
+}
+
 export function formatTime(date: Date | number) {
   return format(date, 'HH:mm');
 }
@@ -43,4 +49,8 @@ export function parseTime(timeStr?: string) {
 
 export function formatDate(date: Date | number) {
   return format(date, 'yyyy-MM-dd');
+}
+
+export function parseDateOnly(dateStr: string) {
+  return parse(dateStr, 'yyyy-MM-dd', new Date());
 }

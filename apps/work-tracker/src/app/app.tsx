@@ -9,6 +9,7 @@ import {
   Project,
   formatDate,
   WorkTime,
+  Holiday,
 } from '@myin/models';
 import { environment } from '../environments/environment';
 import { IMSClient, UserInfo } from '@myin/client';
@@ -46,7 +47,7 @@ export function App() {
   const [workDays, setWorkDays] = useState({} as { [d: string]: WorkDay });
   const [projects, setProjects] = useState([] as Project[]);
   const [userInfo, setUserInfo] = useState(null as UserInfo | null);
-  const [holidays, setHolidays] = useState({} as Record<string, string>);
+  const [holidays, setHolidays] = useState({} as Record<string, Holiday>);
   const [darkMode, setDarkMode] = useState(
     window.matchMedia('(prefers-color-scheme: dark)').matches
   );
@@ -132,7 +133,7 @@ export function App() {
     if (fullDayType) {
       console.log(fullDayType, i);
       try {
-        await getClient().saveFullDay(fullDayType, i);
+        await getClient().saveFullDay(fullDayType, i, Object.values(holidays));
       } catch (e) {
         console.log('Some full day request failed');
       }
@@ -188,7 +189,7 @@ export function App() {
     console.log(workDay);
     try {
       setError('');
-      await getClient().saveDay(workDay);
+      await getClient().saveDay(workDay, Object.values(holidays));
       await loadWorkDays();
     } catch (e: any) {
       setError(e.message);

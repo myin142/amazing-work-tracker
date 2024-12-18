@@ -203,6 +203,27 @@ describe('workTimeMapper', () => {
       ]);
     });
 
+    it('should create half day vacation', () => {
+      const [timeSpans] = mapToNewTimespans(
+        {
+          date: new Date('2020-01-01'),
+          homeoffice: true,
+          vacation: true,
+          workTimes: [{ timeFrom: '08:00', timeTo: '10:00', projectId: 1 }],
+        },
+        [{ date: new Date('2020-01-01'), name: 'Test', workable: true }]
+      );
+
+      expect(timeSpans).toEqual([
+        {
+          date: '2020-01-01',
+          type: TimeSpanTypeEnum.HalfDayVacation,
+          fromTime: undefined,
+          toTime: undefined,
+        },
+      ]);
+    });
+
     it('should create off-duty vacation', () => {
       const [timeSpans] = mapToNewTimespans({
         date: new Date('2020-01-01'),
@@ -284,10 +305,42 @@ describe('workTimeMapper', () => {
       );
     });
 
+    it('should skip non-workable holidays and set half vacations', () => {
+      const times = mapFullDayTypes(
+        FullDayType.VACATION,
+        {
+          start: new Date('2020-01-01'),
+          end: new Date('2020-01-05'),
+        },
+        [
+          { date: new Date('2020-01-02'), name: 'Test', workable: false },
+          { date: new Date('2020-01-03'), name: 'Test', workable: true },
+        ]
+      );
+
+      expect(times).toEqual(
+        expect.arrayContaining([
+          {
+            date: '2020-01-01',
+            type: TimeSpanTypeEnum.FullDayVacation,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+          {
+            date: '2020-01-03',
+            type: TimeSpanTypeEnum.HalfDayVacation,
+            fromTime: undefined,
+            toTime: undefined,
+          },
+        ])
+      );
+    });
+
     it('should create offduty times without weekend', () => {
       const times = mapFullDayTypes(
         FullDayType.OFF_DUTY,
         { start: new Date('2020-01-01'), end: new Date('2020-01-05') },
+        [],
         OffDutyReasonEnum.ChangeOfResidence
       );
 
@@ -387,6 +440,7 @@ describe('workTimeMapper', () => {
             offDutyReason: OffDutyReasonEnum.ChangeOfResidence,
           },
           { type: TimeSpanTypeEnum.SickLeave, id: 1, date: '2020-01-03' },
+          { type: TimeSpanTypeEnum.HalfDayVacation, id: 1, date: '2020-01-04' },
         ],
         []
       );
@@ -404,6 +458,10 @@ describe('workTimeMapper', () => {
         expect.objectContaining({
           date: new Date('2020-01-03'),
           sickLeave: true,
+        }),
+        expect.objectContaining({
+          date: new Date('2020-01-04'),
+          vacation: true,
         }),
       ]);
     });

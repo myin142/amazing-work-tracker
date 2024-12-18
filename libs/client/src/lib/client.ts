@@ -9,7 +9,14 @@ import {
   TimeSpanTypeEnum,
   HolidaysApi,
 } from '@myin/openapi';
-import { formatDate, FullDayType, Project, WorkDay } from '@myin/models';
+import {
+  formatDate,
+  FullDayType,
+  Holiday,
+  parseDateOnly,
+  Project,
+  WorkDay,
+} from '@myin/models';
 import {
   mapFullDayTypes,
   mapToNewTimespans,
@@ -28,11 +35,11 @@ export interface UserInfo {
 }
 
 export class IMSClient {
-  private timeBookingApi: TimeBookingApi;
-  private projectApi: ProjectApi;
-  private projectTimebookingApi: ProjectTimeBookingApi;
-  private userApi: UserinfoApi;
-  private holidayApi: HolidaysApi;
+  private readonly timeBookingApi: TimeBookingApi;
+  private readonly projectApi: ProjectApi;
+  private readonly projectTimebookingApi: ProjectTimeBookingApi;
+  private readonly userApi: UserinfoApi;
+  private readonly holidayApi: HolidaysApi;
 
   constructor(token: string, baseUrl: string) {
     const config = new Configuration({ apiKey: token, basePath: baseUrl });
@@ -44,14 +51,21 @@ export class IMSClient {
     this.holidayApi = new HolidaysApi(config);
   }
 
-  async holidays(date: Date): Promise<Record<string, string>> {
+  async holidays(date: Date): Promise<Record<string, Holiday>> {
     const { data } = await this.holidayApi.holidaysYearMonthGet(
       date.getFullYear(),
       date.getMonth() + 1
     );
 
-    return data.holidays.reduce(
-      (prev, curr) => ({ ...prev, [curr.date]: curr.name }),
+    return data.holidays.reduce<Record<string, Holiday>>(
+      (prev, curr) => ({
+        ...prev,
+        [curr.date]: {
+          date: parseDateOnly(curr.date),
+          name: curr.name,
+          workable: curr.workable,
+        },
+      }),
       {}
     );
   }
@@ -61,8 +75,8 @@ export class IMSClient {
     return { email: data.email };
   }
 
-  async saveDay(workDay: WorkDay) {
-    const [timeSpans, projectTimes] = mapToNewTimespans(workDay);
+  async saveDay(workDay: WorkDay, holidays: Holiday[]): Promise<void> {
+    const [timeSpans, projectTimes] = mapToNewTimespans(workDay, holidays);
 
     await this.deleteExistingTimes(workDay.date);
 
@@ -102,8 +116,8 @@ export class IMSClient {
     );
   }
 
-  async saveFullDay(type: FullDayType, interval: Interval) {
-    const timeSpans = mapFullDayTypes(type, interval);
+  async saveFullDay(type: FullDayType, interval: Interval, holidays: Holiday[]) {
+    const timeSpans = mapFullDayTypes(type, interval, holidays);
     await this.deleteExistingTimes(interval.start, interval.end);
     await Promise.all(timeSpans.map((timeSpan) => this.saveTimeSpan(timeSpan)));
   }

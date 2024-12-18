@@ -1,4 +1,4 @@
-import { WorkDay } from '@myin/models';
+import { WorkDay, Holiday } from '@myin/models';
 import { getWorkHoursInDay } from '@myin/work-time-parser';
 import { format, isToday, isWeekend } from 'date-fns';
 import { FaUmbrellaBeach } from 'react-icons/fa';
@@ -9,7 +9,7 @@ interface WorkCellProps {
   isSelected?: boolean;
   isOpen?: boolean;
   day?: WorkDay;
-  holiday?: string;
+  holiday?: Holiday;
 }
 
 export function WorkCell({
@@ -24,7 +24,7 @@ export function WorkCell({
       return 'bg-blue-200';
     }
 
-    if (holiday || day?.vacation) {
+    if ((holiday && !holiday.workable) || day?.vacation) {
       return isWeekend(date) ? 'bg-green-50 dark:bg-green-800/30' : 'bg-green-100 dark:bg-green-900/30';
     }
 
@@ -61,7 +61,7 @@ export function WorkCell({
         </span>
         <span>{day?.locked && <HiLockClosed />}</span>
       </div>
-      {holiday && <span>{holiday}</span>}
+      {holiday && <span>{holiday.name}</span>}
 
       {day && (
         <div className="flex flex-row gap-2 items-center h-8">
